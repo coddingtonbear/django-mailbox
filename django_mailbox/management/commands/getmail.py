@@ -11,7 +11,7 @@ class Command(BaseCommand):
             self.stdout.write('Gathering messages for %s\n' % mailbox.name)
             messages = mailbox.get_new_mail()
             for message in messages:
-                self.stdout.write('Recieved %s (from %s)' % (
+                self.stdout.write('Recieved %s (from %s)\n' % (
                         message.subject,
                         message.from_address
                     ))
