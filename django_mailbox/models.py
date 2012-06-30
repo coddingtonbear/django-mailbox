@@ -12,7 +12,7 @@ class Mailbox(models.Model):
     uri = models.CharField(
             max_length=255,
             help_text="""
-                Start your URI with imap:// or pop3://.
+                Start your URI with imap://, imap+ssl://,  pop3://, or pop3+ssl://.
                 <br />
                 <br />
                 Example: imap://myusername:mypassword@someserver
@@ -49,18 +49,27 @@ class Mailbox(models.Model):
 
     @property
     def type(self):
-        return self._protocol_info.scheme.lower()
+        scheme = self._protocol_info.scheme.lower()
+        if '+' in scheme:
+            return scheme.split('+')[0]
+        return scheme
+
+    @property
+    def use_ssl(self):
+        return '+ssl' in self._protocol_info.scheme.lower()
 
     def get_connection(self):
         if self.type == 'imap':
             conn = ImapMailEnumerator(
                         self.location,
-                        self.port if self.port else 143
+                        port=self.port if self.port else None,
+                        ssl=self.use_ssl
                     )
         elif self.type == 'pop3':
             conn = PopMailEnumerator(
                         self.location,
-                        self.port if self.port else 110
+                        port=self.port if self.port else None,
+                        ssl=self.use_ssl
                     )
         conn.connect(self.username, self.password)
         return conn

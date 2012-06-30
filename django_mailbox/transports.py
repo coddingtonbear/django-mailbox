@@ -1,14 +1,22 @@
 import email
-from imaplib import IMAP4
-from poplib import POP3
+from imaplib import IMAP4, IMAP4_SSL
+from poplib import POP3, POP3_SSL
 
 class PopMailEnumerator(object):
-    def __init__(self, hostname, port):
+    def __init__(self, hostname, port=None, ssl=False):
         self.hostname = hostname
         self.port = port
+        if ssl:
+            self.transport = POP3_SSL
+            if not self.port:
+                self.port = 995
+        else:
+            self.transport = POP3
+            if not self.port:
+                self.port = 110
 
     def connect(self, username, password):
-        self.server = POP3(self.hostname, self.port)
+        self.server = self.transport(self.hostname, self.port)
         self.server.user(username)
         self.server.pass_(password)
 
@@ -26,12 +34,20 @@ class PopMailEnumerator(object):
         return
 
 class ImapMailEnumerator(object):
-    def __init__(self, hostname, port):
+    def __init__(self, hostname, port=None, ssl=False):
         self.hostname = hostname
         self.port = port
+        if ssl:
+            self.transport = IMAP4_SSL
+            if not self.port:
+                self.port = 993
+        else:
+            self.transport = IMAP4
+            if not self.port:
+                self.port = 143
 
     def connect(self, username, password):
-        self.server = IMAP4(self.hostname, self.port)
+        self.server = self.transport(self.hostname, self.port)
         typ, msg = self.server.login(username, password)
         self.server.select()
 
