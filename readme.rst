@@ -12,11 +12,16 @@ URI Examples
 
 Mailbox URIs are in the normal URI format::
 
-    protocol://username:password@domain
+    protocol+ssl?://username:password@domain
 
-IMAP Example: ``imap://username:password@server``
+Basic IMAP Example: ``imap://username:password@server``
+Basic POP3 Example: ``pop3://username:password@server``
 
-POP3 Example: ``pop3://username:password@server``
+Most mailboxes these days are SSL-enabled; if yours is, add ``+ssl`` to your URI.  Also, if your username or password include any non-ascii characters,  they should be URL-encoded (for example, if your username includes an ``@``, it should be changed to ``%40`` in your URI).  Example:
+
+If you have an account named 'contemporanea' with a password of '1234' at 'google.com', you would enter the following as your URI::
+
+    pop3+ssl://contemporanea%40gmail.com:1234@pop.gmail.com
 
 Subscribing to the incoming mail signal
 =======================================
