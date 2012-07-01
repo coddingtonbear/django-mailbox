@@ -4,7 +4,9 @@ import urllib
 import urlparse
 
 from django.db import models
-from django_mailbox.transports import PopMailEnumerator, ImapMailEnumerator
+from django_mailbox.transports import Pop3Transport, ImapTransport,\
+        MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
+        MMDFTransport
 from django_mailbox.signals import message_received
 
 class Mailbox(models.Model):
@@ -12,10 +14,10 @@ class Mailbox(models.Model):
     uri = models.CharField(
             max_length=255,
             help_text="""
-                Start your URI with imap://, imap+ssl://,  pop3://, or pop3+ssl://.
+                Example: imap+ssl://myusername:mypassword@someserver
                 <br />
                 <br />
-                Example: imap://myusername:mypassword@someserver
+                Internet transports include 'imap' and 'pop3'; common local file transports include 'maildir', 'mbox', and less commonly 'babyl', 'mh', and 'mmdf'.
                 <br />
                 <br />
                 Be sure to urlencode your username and password should they 
@@ -60,18 +62,29 @@ class Mailbox(models.Model):
 
     def get_connection(self):
         if self.type == 'imap':
-            conn = ImapMailEnumerator(
+            conn = ImapTransport(
                         self.location,
                         port=self.port if self.port else None,
                         ssl=self.use_ssl
                     )
+            conn.connect(self.username, self.password)
         elif self.type == 'pop3':
-            conn = PopMailEnumerator(
+            conn = Pop3Transport(
                         self.location,
                         port=self.port if self.port else None,
                         ssl=self.use_ssl
                     )
-        conn.connect(self.username, self.password)
+            conn.connect(self.username, self.password)
+        elif self.type == 'maildir':
+            conn = MaildirTransport(self.location)
+        elif self.type == 'mbox':
+            conn = MboxTransport(self.location)
+        elif self.type == 'babyl':
+            conn = BabylTransport(self.location)
+        elif self.type == 'mh':
+            conn = MHTransport(self.location)
+        elif self.type == 'mmdf':
+            conn = MMDFTransport(self.location)
         return conn
 
     def get_new_mail(self):
@@ -79,10 +92,11 @@ class Mailbox(models.Model):
         new_mail = []
         for message in connection.get_message():
             msg = Message()
+            print msg
             msg.mailbox = self
-            msg.subject = message['subject']
-            msg.message_id = message['message-id']
-            msg.from_address = rfc822.parseaddr(message['from'])[1]
+            msg.subject = message['subject'][0:255]
+            msg.message_id = message['message-id'][0:255]
+            msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
             msg.body = message.as_string()
             msg.save()
             new_mail.append(msg)
