@@ -1,11 +1,11 @@
 Introduction
 ~~~~~~~~~~~~
 
-How many times have you had to consume some sort of POP3 or IMAP mailbox for incoming content?  One too many times for me.
+How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content?  One too many times for me.
 
-This small Django application will allow you to specify IMAP or POP3 mailboxes that you would like consumed for incoming content; the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
+This small Django application will allow you to specify mailboxes that you would like consumed for incoming content; the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
 
-WARNING!  This app will delete any messages it can find in the inbox you specify-- please make sure you don't have anything important in there.
+WARNING!  This will delete any messages it can find in the inbox you specify-- please make sure you don't have anything important in there.
 
 Setting up your mailbox
 =======================
@@ -49,8 +49,7 @@ If you happen to want to consume a file-based mailbox like an Maildir, Mbox, Bab
 
     maildir:///var/mail
 
-.. important::
-   Note that there are three slashes in the above URI.
+Note that there is an additional ``/`` in the above URI after the protocol; this is important.
 
 Subscribing to the incoming mail signal
 =======================================
