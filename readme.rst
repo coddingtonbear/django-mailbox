@@ -12,7 +12,7 @@ Setting up your mailbox
 
 Django Mailbox supports both common internet mailboxes like POP3 and IMAP as well as local file-based mailboxes.
 
-.. table:: Protocol Options
+.. table:: 'Protocol' Options
 
   ============ ============== =========================================
   Mailbox Type 'Protocol'://  Notes
@@ -39,14 +39,14 @@ Basic POP3 Example: ``pop3://username:password@server``
 
 Most mailboxes these days are SSL-enabled; if yours is, add ``+ssl`` to your URI.  Also, if your username or password include any non-ascii characters,  they should be URL-encoded (for example, if your username includes an ``@``, it should be changed to ``%40`` in your URI).
 
-If you have an account named 'youremailaddress@gmail.com' with a password of '1234' on GMail (which I happen to know uses the POP3 server of 'pop.gmail.com' and requires SSL), you would enter the following as your URI::
+If you have an account named ``youremailaddress@gmail.com`` with a password of ``1234`` on GMail (which I happen to know uses the POP3 server of 'pop.gmail.com' and requires SSL), you would enter the following as your URI::
 
     pop3+ssl://youremailaddress%40gmail.com:1234@pop.gmail.com
 
 Local File-based Mailboxes
 --------------------------
 
-If you happen to want to consume a file-based mailbox like an Maildir, Mbox, Babyl, MH, or MMDF mailbox, you can use this too by entering the appropriate 'protocol' in the URI.  If you had a maildir, for example, at @/var/mail/@, you would enter a URI like::
+If you happen to want to consume a file-based mailbox like an Maildir, Mbox, Babyl, MH, or MMDF mailbox, you can use this too by entering the appropriate 'protocol' in the URI.  If you had a maildir, for example, at ``/var/mail/``, you would enter a URI like::
 
     maildir:///var/mail
 
