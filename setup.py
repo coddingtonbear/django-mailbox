@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django_mailbox',
-    version='1.0.1',
+    version='1.0.2',
     url='http://bitbucket.org/latestrevision/django-mailbox/',
     description='Automatically import mail from POP3, IMAP, or a local mailbox into Django',
     author='Adam Coddington',
