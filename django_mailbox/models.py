@@ -92,7 +92,6 @@ class Mailbox(models.Model):
         new_mail = []
         for message in connection.get_message():
             msg = Message()
-            print msg
             msg.mailbox = self
             msg.subject = message['subject'][0:255]
             msg.message_id = message['message-id'][0:255]
