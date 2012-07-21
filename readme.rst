@@ -7,6 +7,25 @@ This small Django application will allow you to specify IMAP or POP3 mailboxes t
 
 WARNING!  This app will delete any messages it can find in the inbox you specify-- please make sure you don't have anything important in there.
 
+Installation
+============
+
+You can either install from pip:
+
+    pip install django-mailbox
+
+*or* checkout and install the source from the [bitbucket repository](https://bitbucket.org/latestrevision/django-mailbox):
+
+    hg clone https://bitbucket.org/latestrevision/django-mailbox
+    cd django-mailbox
+    python setup.py install
+
+*or* checkout and install the source from the [github repository](https://github.com/latestrevision/django-mailbox):
+
+    git clone https://github.com/latestrevision/django-mailbox.git
+    cd django-mailbox
+    python setup.py install
+
 Setting up your mailbox
 =======================
 
