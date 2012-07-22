@@ -14,13 +14,13 @@ You can either install from pip::
 
     pip install django-mailbox
 
-*or* checkout and install the source from the [bitbucket repository](https://bitbucket.org/latestrevision/django-mailbox)::
+*or* checkout and install the source from the `bitbucket repository <https://bitbucket.org/latestrevision/django-mailbox/>`_::
 
     hg clone https://bitbucket.org/latestrevision/django-mailbox
     cd django-mailbox
     python setup.py install
 
-*or* checkout and install the source from the [github repository](https://github.com/latestrevision/django-mailbox)::
+*or* checkout and install the source from the `github repository <https://github.com/latestrevision/django-mailbox/>`::
 
     git clone https://github.com/latestrevision/django-mailbox.git
     cd django-mailbox
