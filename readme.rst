@@ -20,7 +20,7 @@ You can either install from pip::
     cd django-mailbox
     python setup.py install
 
-*or* checkout and install the source from the `github repository <https://github.com/latestrevision/django-mailbox/>`::
+*or* checkout and install the source from the `github repository <https://github.com/latestrevision/django-mailbox/>`_::
 
     git clone https://github.com/latestrevision/django-mailbox.git
     cd django-mailbox
