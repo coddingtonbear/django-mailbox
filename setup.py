@@ -1,8 +1,8 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(
     name='django-mailbox',
-    version='1.0.4',
+    version='1.1.1',
     url='http://bitbucket.org/latestrevision/django-mailbox/',
     description='Automatically import mail from POP3, IMAP, or a local mailbox into Django',
     author='Adam Coddington',
@@ -14,5 +14,11 @@ setup(
         'Programming Language :: Python',
         'Topic :: Utilities',
     ],
-    packages=find_packages(),
+    packages=[
+        'django_mailbox',
+        'django_mailbox.management',
+        'django_mailbox.management.commands',
+        'django_mailbox.migrations',
+        'django_mailbox.transports',
+        ],
 )
