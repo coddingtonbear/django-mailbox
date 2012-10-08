@@ -64,7 +64,9 @@ class Mailbox(models.Model):
         return '+ssl' in self._protocol_info.scheme.lower()
 
     def get_connection(self):
-        if self.type == 'imap':
+        if not self.uri:
+            return None
+        elif self.type == 'imap':
             conn = ImapTransport(
                         self.location,
                         port=self.port if self.port else None,
@@ -102,8 +104,10 @@ class Mailbox(models.Model):
         return msg
 
     def get_new_mail(self):
-        connection = self.get_connection()
         new_mail = []
+        connection = self.get_connection()
+        if not connection:
+            return new_mail
         for message in connection.get_message():
             msg = self.process_incoming_message(message)
             new_mail.append(msg)

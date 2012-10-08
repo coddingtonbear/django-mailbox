@@ -8,8 +8,6 @@ class Command(BaseCommand):
         if args:
             mailboxes = mailboxes.filter(name = ' '.join(args))
         for mailbox in mailboxes:
-            if not mailbox.uri:
-                continue
             self.stdout.write('Gathering messages for %s\n' % mailbox.name)
             messages = mailbox.get_new_mail()
             for message in messages:
