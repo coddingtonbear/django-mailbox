@@ -1,7 +1,7 @@
 Introduction
 ~~~~~~~~~~~~
 
-How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content?  One too many times for me.
+How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content, or had to otherwise construct an application driven by e-mail?  One too many times, I'm sure.
 
 This small Django application will allow you to specify mailboxes that you would like consumed for incoming content; the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
 
@@ -29,13 +29,13 @@ You can either install from pip::
 Polling for mail in POP3/IMAP or a local mailbox
 ================================================
 
-Django Mailbox supports both common internet mailboxes like POP3 and IMAP as well as local file-based mailboxes.
+Django Mailbox supports both common internet mailboxes like POP3 and IMAP, local file-based mailboxes, as well as direct pipe-based delivery.
 
 .. table:: 'Protocol' Options
 
-  ============ ============== =========================================
+  ============ ============== ====================================================
   Mailbox Type 'Protocol'://  Notes
-  ============ ============== =========================================
+  ============ ============== ====================================================
   POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``
   Maildir      ``maildir://``
@@ -43,7 +43,8 @@ Django Mailbox supports both common internet mailboxes like POP3 and IMAP as wel
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  ============ ============== =========================================
+  Piped Mail   *empty*        For pipe-based mailboxes, no URI should be specified
+  ============ ============== ====================================================
 
 POP3 and IMAP Mailboxes
 -----------------------
@@ -138,7 +139,6 @@ To subscribe to the incoming mail signal, following this lead::
     @receiver(message_received)
     def dance_jig(sender, message, **args):
         print "I just recieved a message titled %s from a mailbox named %s" % (message.subject, message.mailbox.name, )
-
 
 Settings
 ========
