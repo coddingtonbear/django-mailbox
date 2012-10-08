@@ -89,19 +89,23 @@ class Mailbox(models.Model):
             conn = MMDFTransport(self.location)
         return conn
 
+    def process_incoming_message(self, message):
+        msg = Message()
+        msg.mailbox = self
+        msg.subject = message['subject'][0:255]
+        msg.message_id = message['message-id'][0:255]
+        msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
+        msg.body = message.as_string()
+        msg.save()
+        message_received.send(sender=self, message=msg)
+        return msg
+
     def get_new_mail(self):
         connection = self.get_connection()
         new_mail = []
         for message in connection.get_message():
-            msg = Message()
-            msg.mailbox = self
-            msg.subject = message['subject'][0:255]
-            msg.message_id = message['message-id'][0:255]
-            msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
-            msg.body = message.as_string()
-            msg.save()
+            msg = self.process_incoming_message(message)
             new_mail.append(msg)
-            message_received.send(sender=self, message=msg)
         return new_mail
 
     def __unicode__(self):
