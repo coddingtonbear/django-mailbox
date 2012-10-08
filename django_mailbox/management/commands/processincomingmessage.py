@@ -21,7 +21,7 @@ class Command(BaseCommand):
             logger.warning("Message not processable.")
 
     def get_mailbox_for_message(self, message):
-        email_address = rfc822.parseaddr(message['from'])[1][0:255]
+        email_address = rfc822.parseaddr(message['to'])[1][0:255]
         mailbox, created = Mailbox.objects.get_or_create(
                 name=email_address,
                 )
