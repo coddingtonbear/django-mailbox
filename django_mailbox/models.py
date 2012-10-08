@@ -22,7 +22,9 @@ class Mailbox(models.Model):
                 <br />
                 Be sure to urlencode your username and password should they 
                 contain illegal characters (like @, :, etc).
-                """
+                """,
+            blank=True,
+            default=None,
             )
 
     @property
