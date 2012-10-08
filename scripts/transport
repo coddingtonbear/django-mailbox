@@ -1,0 +1,8 @@
+
+send_to_django_mailbox:
+  driver = pipe
+  command = /path/to/python /path/to/manage.py processincomingmessage
+  user = www-data
+  group = www-data
+  return_path_add
+  delivery_date_add

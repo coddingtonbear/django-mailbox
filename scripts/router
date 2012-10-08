@@ -1,0 +1,6 @@
+django_mailbox:
+  debug_print = 'R: django_mailbox for $localpart@$domain"
+  driver = accept
+  domains = +local_domains
+  transport = send_to_django_mailbox
+  local_parts = emailaddressusername : anotheremailaddressusername

@@ -24,6 +24,7 @@ class Mailbox(models.Model):
                 contain illegal characters (like @, :, etc).
                 """,
             blank=True,
+            null=True,
             default=None,
             )
 
