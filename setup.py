@@ -4,7 +4,7 @@ setup(
     name='django-mailbox',
     version='1.2',
     url='http://bitbucket.org/latestrevision/django-mailbox/',
-    description='Automatically import mail from POP3, IMAP, or a local mailbox into Django',
+    description='Import mail from POP3, IMAP, local mailboxes or directly from Postfix or Exim4 into your Django application automatically.',
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     classifiers=[
