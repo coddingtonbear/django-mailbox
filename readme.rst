@@ -1,7 +1,7 @@
 Introduction
 ~~~~~~~~~~~~
 
-How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content?  One too many times for me.
+How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content, or had to otherwise construct an application driven by e-mail?  One too many times, I'm sure.
 
 This small Django application will allow you to specify mailboxes that you would like consumed for incoming content; the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
 
@@ -26,16 +26,16 @@ You can either install from pip::
     cd django-mailbox
     python setup.py install
 
-Setting up your mailbox
-=======================
+Polling for mail in POP3/IMAP or a local mailbox
+================================================
 
-Django Mailbox supports both common internet mailboxes like POP3 and IMAP as well as local file-based mailboxes.
+Django Mailbox supports both common internet mailboxes like POP3 and IMAP, local file-based mailboxes, as well as direct pipe-based delivery.
 
 .. table:: 'Protocol' Options
 
-  ============ ============== =========================================
+  ============ ============== ====================================================
   Mailbox Type 'Protocol'://  Notes
-  ============ ============== =========================================
+  ============ ============== ====================================================
   POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``
   Maildir      ``maildir://``
@@ -43,7 +43,8 @@ Django Mailbox supports both common internet mailboxes like POP3 and IMAP as wel
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  ============ ============== =========================================
+  Piped Mail   *empty*        For pipe-based mailboxes, no URI should be specified
+  ============ ============== ====================================================
 
 POP3 and IMAP Mailboxes
 -----------------------
@@ -71,6 +72,62 @@ If you happen to want to consume a file-based mailbox like an Maildir, Mbox, Bab
 
 Note that there is an additional ``/`` in the above URI after the protocol; this is important.
 
+Getting incoming mail
+---------------------
+
+In your code
+............
+
+Mailbox instances have a method named ``get_new_mail``; this method will gather new messages from the server.
+
+Using the Django Admin
+......................
+
+Check the box next to each of the mailboxes you'd like to fetch e-mail from, and select the 'Get new mail' option.
+
+Using a cron job
+................
+
+You can easily consume incoming mail by running the management command named ``getmail`` (optionally with an argument of the name of the mailbox you'd like to get the mail for).::
+
+    python manage.py getmail
+
+Receiving mail directly from EXIM4 or Postfix via a pipe
+========================================================
+
+Django Mailbox's ``processincomingmessage`` management command accespts, via ``stdin``, incoming messages.  You can configure Postfix or Exim4 to pipe incoming mail to this management command to import messages directly without polling.
+
+Receiving Mail from Exim4
+-------------------------
+
+You should add a new router configuration to your Exim4 configuration like::
+
+  django_mailbox:
+    debug_print = 'R: django_mailbox for $localpart@$domain'
+    driver = accept
+    domains = +local_domains
+    transport = send_to_django_mailbox
+    local_parts = emailusernameone : emailusernametwo
+
+You will want to make sure that the e-mail addresses you would like handled by Django Mailbox are not handled by another router, so you may need to disable some existing routers.  Also, be sure to change the contents of ``local_parts`` to match a colon-delimited list of usernames for which you would like to receive mail for.  For example, if one of the e-mail addresses targeted at this machine is ``jane@example.com``, the contents of ``local_parts`` would be, simply ``jane``.
+
+You should also add a new transport configuration to your Exim4 configuration::
+
+  send_to_django_mailbox:
+    driver = pipe
+    command = /path/to/your/environments/python /path/to/your/projects/manage.py processincomingmessage
+    user = www-data
+    group = www-data
+    return_path_add
+    delivery_date_add
+
+Like your router configuration, you will need to alter this transport configuration.  First, you will want to modify the ``command`` setting such that it points at the proper python binary (if you're using a virtual environment, you'll want to direct that at the python binary in your virtual environment) and project ``manage.py`` script.  Additionally, you'll need to set ``user`` and ``group`` such that they match a reasonable user and group (on Ubuntu, ``www-data`` suffices for both).
+
+Receiving mail from Postfix
+---------------------------
+
+Although I have not personally tried using Postfix for this, Postfix is capable of delivering new mail to a script using ``pipe``.  Please consult the `Postfix documentation for pipe here <http://www.postfix.org/pipe.8.html>`_.  You may want to consult the above Exim4 configuration for tips.
+
 Subscribing to the incoming mail signal
 =======================================
 
@@ -82,26 +139,6 @@ To subscribe to the incoming mail signal, following this lead::
     @receiver(message_received)
     def dance_jig(sender, message, **args):
         print "I just recieved a message titled %s from a mailbox named %s" % (message.subject, message.mailbox.name, )
-
-Getting incoming mail
-=======================
-
-In your code
-------------
-
-Mailbox instances have a method named ``get_new_mail``; this method will gather new messages from the server.
-
-Using the Django Admin
-----------------------
-
-Check the box next to each of the mailboxes you'd like to fetch e-mail from, and select the 'Get new mail' option.
-
-Using a cron job
-----------------
-
-You can easily consume incoming mail by running the management command named ``getmail`` (optionally with an argument of the name of the mailbox you'd like to get the mail for).::
-
-    python manage.py getmail
 
 Settings
 ========

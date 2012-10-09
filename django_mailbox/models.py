@@ -22,7 +22,10 @@ class Mailbox(models.Model):
                 <br />
                 Be sure to urlencode your username and password should they 
                 contain illegal characters (like @, :, etc).
-                """
+                """,
+            blank=True,
+            null=True,
+            default=None,
             )
 
     @property
@@ -61,7 +64,9 @@ class Mailbox(models.Model):
         return '+ssl' in self._protocol_info.scheme.lower()
 
     def get_connection(self):
-        if self.type == 'imap':
+        if not self.uri:
+            return None
+        elif self.type == 'imap':
             conn = ImapTransport(
                         self.location,
                         port=self.port if self.port else None,
@@ -87,19 +92,25 @@ class Mailbox(models.Model):
             conn = MMDFTransport(self.location)
         return conn
 
+    def process_incoming_message(self, message):
+        msg = Message()
+        msg.mailbox = self
+        msg.subject = message['subject'][0:255]
+        msg.message_id = message['message-id'][0:255]
+        msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
+        msg.body = message.as_string()
+        msg.save()
+        message_received.send(sender=self, message=msg)
+        return msg
+
     def get_new_mail(self):
-        connection = self.get_connection()
         new_mail = []
+        connection = self.get_connection()
+        if not connection:
+            return new_mail
         for message in connection.get_message():
-            msg = Message()
-            msg.mailbox = self
-            msg.subject = message['subject'][0:255]
-            msg.message_id = message['message-id'][0:255]
-            msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
-            msg.body = message.as_string()
-            msg.save()
+            msg = self.process_incoming_message(message)
             new_mail.append(msg)
-            message_received.send(sender=self, message=msg)
         return new_mail
 
     def __unicode__(self):
