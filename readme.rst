@@ -5,8 +5,6 @@ How many times have you had to consume some sort of POP3, IMAP, or local mailbox
 
 This small Django application will allow you to specify mailboxes that you would like consumed for incoming content; the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
 
-WARNING!  This will delete any messages it can find in the inbox you specify-- please make sure you don't have anything important in there.
-
 Installation
 ============
 
@@ -29,13 +27,13 @@ You can either install from pip::
 Polling for mail in POP3/IMAP or a local mailbox
 ================================================
 
-Django Mailbox supports both common internet mailboxes like POP3 and IMAP, local file-based mailboxes, as well as direct pipe-based delivery.
+Django Mailbox supports polling both common internet mailboxes like POP3 and IMAP as well as local file-based mailboxes.
 
 .. table:: 'Protocol' Options
 
-  ============ ============== ====================================================
+  ============ ============== ===============================================================
   Mailbox Type 'Protocol'://  Notes
-  ============ ============== ====================================================
+  ============ ============== ===============================================================
   POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``
   Maildir      ``maildir://``
@@ -43,8 +41,11 @@ Django Mailbox supports both common internet mailboxes like POP3 and IMAP, local
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  Piped Mail   *empty*        For pipe-based mailboxes, no URI should be specified
-  ============ ============== ====================================================
+  Piped Mail   *empty*        See `Receiving mail directly from Exim4 or Postfix via a pipe`_
+  ============ ============== ===============================================================
+
+.. WARNING::
+   This will delete any messages it can find in the inbox you specify; do not use an e-mail inbox that you would like to share between applications.
 
 POP3 and IMAP Mailboxes
 -----------------------
@@ -92,15 +93,15 @@ You can easily consume incoming mail by running the management command named ``g
 
     python manage.py getmail
 
-Receiving mail directly from EXIM4 or Postfix via a pipe
+Receiving mail directly from Exim4 or Postfix via a pipe
 ========================================================
 
-Django Mailbox's ``processincomingmessage`` management command accespts, via ``stdin``, incoming messages.  You can configure Postfix or Exim4 to pipe incoming mail to this management command to import messages directly without polling.
+Django Mailbox's ``processincomingmessage`` management command accepts, via ``stdin``, incoming messages.  You can configure Postfix or Exim4 to pipe incoming mail to this management command to import messages directly without polling.  You need not configure mailbox settings when piping-in messages, mailbox entries will be automatically created matching the e-mail address to which incoming messages are sent.
 
 Receiving Mail from Exim4
 -------------------------
 
-You should add a new router configuration to your Exim4 configuration like::
+To configure Exim4 to receive incoming mail, start by adding a new router configuration to your Exim4 configuration like::
 
   django_mailbox:
     debug_print = 'R: django_mailbox for $localpart@$domain'
@@ -109,9 +110,11 @@ You should add a new router configuration to your Exim4 configuration like::
     transport = send_to_django_mailbox
     local_parts = emailusernameone : emailusernametwo
 
-You will want to make sure that the e-mail addresses you would like handled by Django Mailbox are not handled by another router, so you may need to disable some existing routers.  Also, be sure to change the contents of ``local_parts`` to match a colon-delimited list of usernames for which you would like to receive mail for.  For example, if one of the e-mail addresses targeted at this machine is ``jane@example.com``, the contents of ``local_parts`` would be, simply ``jane``.
+Make sure that the e-mail addresses you would like handled by Django Mailbox are not handled by another router; you may need to disable some existing routers. 
 
-You should also add a new transport configuration to your Exim4 configuration::
+Change the contents of ``local_parts`` to match a colon-delimited list of usernames for which you would like to receive mail for.  For example, if one of the e-mail addresses targeted at this machine is ``jane@example.com``, the contents of ``local_parts`` would be, simply ``jane``.
+
+Next, a new transport configuration to your Exim4 configuration::
 
   send_to_django_mailbox:
     driver = pipe
@@ -121,7 +124,7 @@ You should also add a new transport configuration to your Exim4 configuration::
     return_path_add
     delivery_date_add
 
-Like your router configuration, you will need to alter this transport configuration.  First, you will want to modify the ``command`` setting such that it points at the proper python binary (if you're using a virtual environment, you'll want to direct that at the python binary in your virtual environment) and project ``manage.py`` script.  Additionally, you'll need to set ``user`` and ``group`` such that they match a reasonable user and group (on Ubuntu, ``www-data`` suffices for both).
+Like your router configuration, transport configuration should be altered to match your environment.  First, modify the ``command`` setting such that it points at the proper python executable (if you're using a virtual environment, you'll want to direct that at the python executable in your virtual environment) and project ``manage.py`` script.  Additionally, you'll need to set ``user`` and ``group`` such that they match a reasonable user and group (on Ubuntu, ``www-data`` suffices for both).
 
 Receiving mail from Postfix
 ---------------------------
