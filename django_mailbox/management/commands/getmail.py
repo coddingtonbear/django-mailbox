@@ -4,7 +4,7 @@ from django_mailbox.models import Mailbox
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        mailboxes = Mailbox.objects.all()
+        mailboxes = Mailbox.active_mailboxes.all()
         if args:
             mailboxes = mailboxes.filter(name = ' '.join(args))
         for mailbox in mailboxes:

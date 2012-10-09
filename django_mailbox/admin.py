@@ -12,17 +12,27 @@ class MailboxAdmin(admin.ModelAdmin):
     list_display = (
                 'name',
                 'uri',
+                'active',
             )
     actions = [get_new_mail]
 
 class MessageAdmin(admin.ModelAdmin):
     list_display = (
                 'subject',
-                'from_address',
-                'received',
+                'address',
+                'processed',
                 'mailbox',
+                'outgoing',
             )
-    ordering = ['-received']
+    ordering = ['-processed']
+    list_filter = (
+            'mailbox',
+            'outgoing',
+            )
+    raw_id_fields = (
+            'in_reply_to',
+            'references',
+            )
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
     admin.site.register(Message, MessageAdmin)

@@ -9,6 +9,12 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
         MMDFTransport
 from django_mailbox.signals import message_received
 
+class ActiveMailboxManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveMailboxManager, self).get_query_set().filter(
+            active=True,
+        )
+
 class Mailbox(models.Model):
     name = models.CharField(max_length=255)
     uri = models.CharField(
@@ -27,6 +33,13 @@ class Mailbox(models.Model):
             null=True,
             default=None,
             )
+    active = models.BooleanField(
+            blank=True,
+            default=True,
+            )
+
+    objects = models.Manager()
+    active_mailboxes = ActiveMailboxManager()
 
     @property
     def _protocol_info(self):
@@ -97,9 +110,23 @@ class Mailbox(models.Model):
         msg.mailbox = self
         msg.subject = message['subject'][0:255]
         msg.message_id = message['message-id'][0:255]
-        msg.from_address = rfc822.parseaddr(message['from'])[1][0:255]
+        msg.address = rfc822.parseaddr(message['from'])[1][0:255]
         msg.body = message.as_string()
+        if message['in-reply-to']:
+            try:
+                msg.in_reply_to = Message.objects.filter(message_id=message['in-reply-to'])[0]
+            except IndexError:
+                pass
         msg.save()
+        if message['references']:
+            references = message['references'].split('\n')
+            for reference in references:
+                try:
+                    msg.references.add(
+                        Message.objects.filter(message_id=reference.strip())[0]
+                    )
+                except IndexError:
+                    pass
         message_received.send(sender=self, message=msg)
         return msg
 
@@ -119,17 +146,57 @@ class Mailbox(models.Model):
     class Meta:
         verbose_name_plural = "Mailboxes"
 
+class IncomingMessageManager(models.Manager):
+    def get_query_set(self):
+        return super(IncomingMessageManager, self).get_query_set().filter(
+            outgoing=False,
+        )
+
+class OutgoingMessageManager(models.Manager):
+    def get_query_set(self):
+        return super(OutgoingMessageManager, self).get_query_set().filter(
+            outgoing=True,
+        )
+
 class Message(models.Model):
     mailbox = models.ForeignKey(Mailbox, related_name='messages')
     subject = models.CharField(max_length=255)
     message_id = models.CharField(max_length=255)
-    from_address = models.CharField(max_length=255)
+    in_reply_to = models.ForeignKey(
+        'django_mailbox.Message', 
+        related_name='replies',
+        blank=True,
+        null=True,
+    )
+    references = models.ManyToManyField(
+        'django_mailbox.Message', 
+        related_name='referenced_by',
+        blank=True,
+        null=True,
+    )
+    address = models.CharField(max_length=255)
+    outgoing = models.BooleanField(
+        default=False,
+        blank=True,
+    )
 
     body = models.TextField()
 
-    received = models.DateTimeField(
-            auto_now_add=True
-            )
+    processed = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    objects = models.Manager()
+    incoming_messages = IncomingMessageManager()
+    outgoing_messages = OutgoingMessageManager()
+
+    @property
+    def from_address(self):
+        return self.get_email_object(self)['from']
+
+    @property
+    def to_address(self):
+        return self.get_email_object(self)['to']
 
     def get_email_object(self):
         return email.message_from_string(self.body)
