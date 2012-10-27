@@ -76,6 +76,8 @@ Note that there is an additional ``/`` in the above URI after the protocol; this
 Getting incoming mail
 ---------------------
 
+If you are utilizing one of the polling methods above, you will need to periodically poll the mailbox for messages using one of the below methods.  If you are receiving mail directly from a mailserver via a pipe (using the ``processincomingmessage`` management command), you need not concern yourself with this section.
+
 In your code
 ............
 
@@ -96,7 +98,7 @@ You can easily consume incoming mail by running the management command named ``g
 Receiving mail directly from Exim4 or Postfix via a pipe
 ========================================================
 
-Django Mailbox's ``processincomingmessage`` management command accepts, via ``stdin``, incoming messages.  You can configure Postfix or Exim4 to pipe incoming mail to this management command to import messages directly without polling.  You need not configure mailbox settings when piping-in messages, mailbox entries will be automatically created matching the e-mail address to which incoming messages are sent.
+Django Mailbox's ``processincomingmessage`` management command accepts, via ``stdin``, incoming messages.  You can configure Postfix or Exim4 to pipe incoming mail to this management command to import messages directly without polling.  You need not configure mailbox settings when piping-in messages, mailbox entries will be automatically created matching the e-mail address to which incoming messages are sent, but if you would like to specify the mailbox name, you may provide a single argument to the ``processincmingmessage`` command specifying the name of the mailbox you would like it to use (and, if neccessary, create).
 
 Receiving Mail from Exim4
 -------------------------
