@@ -31,7 +31,6 @@ class MessageAdmin(admin.ModelAdmin):
             )
     raw_id_fields = (
             'in_reply_to',
-            'references',
             )
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
