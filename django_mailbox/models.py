@@ -134,15 +134,6 @@ class Mailbox(models.Model):
             except IndexError:
                 pass
         msg.save()
-        if message['references']:
-            references = message['references'].split('\n')
-            for reference in references:
-                try:
-                    msg.references.add(
-                        Message.objects.filter(message_id=reference.strip())[0]
-                    )
-                except IndexError:
-                    pass
         return msg
 
     def get_new_mail(self):
@@ -180,12 +171,6 @@ class Message(models.Model):
     in_reply_to = models.ForeignKey(
         'django_mailbox.Message', 
         related_name='replies',
-        blank=True,
-        null=True,
-    )
-    references = models.ManyToManyField(
-        'django_mailbox.Message', 
-        related_name='referenced_by',
         blank=True,
         null=True,
     )
@@ -251,12 +236,6 @@ class Message(models.Model):
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
-        references = [self.message_id]
-        for reference in self.references.all():
-            references.append(
-                    ' %s' % reference.message_id
-                )
-        message.extra_headers['References'] = '\n'.join(references)
         message.send()
         return self.mailbox.record_outgoing_message(
                 email.message_from_string(
