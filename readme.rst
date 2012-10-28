@@ -25,7 +25,7 @@ You can either install from pip::
     python setup.py install
 
 After you have installed the package, 
-you should add the `django_mailbox` to your `INSTALLED_APPS`.
+you should add ``django_mailbox`` to the ``INSTALLED_APPS`` setting in your project's ``settings.py`` file.
 
 Polling for mail in POP3/IMAP or a local mailbox
 ================================================
