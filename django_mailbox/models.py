@@ -106,13 +106,25 @@ class Mailbox(models.Model):
         return conn
 
     def process_incoming_message(self, message):
+        msg = self._process_message(self, message)
+        msg.outgoing = False
+        msg.save()
+        message_received.send(sender=self, message=msg)
+        return msg
+
+    def record_outgoing_message(self, message):
+        msg = self._process_message(self, message)
+        msg.outgoing = True
+        msg.save()
+        return msg
+
+    def _process_message(self, message):
         msg = Message()
         msg.mailbox = self
         msg.subject = message['subject'][0:255]
         msg.message_id = message['message-id'][0:255]
         msg.from_header = message['from']
         msg.to_header = message['to']
-        msg.outgoing = False
         msg.body = message.as_string()
         if message['in-reply-to']:
             try:
@@ -129,7 +141,6 @@ class Mailbox(models.Model):
                     )
                 except IndexError:
                     pass
-        message_received.send(sender=self, message=msg)
         return msg
 
     def get_new_mail(self):
@@ -225,6 +236,18 @@ class Message(models.Model):
                         )[1]
                 )
         return addresses
+
+    def reply(self, message):
+        message.extra_headers['In-Reply-To'] = self.message_id
+        message.extra_headers['References'] = self.message_id
+        for reference in self.references:
+            message.extra_headers['References'].append(
+                    ' %s' % reference.message_id
+                )
+        message.send()
+        return self.mailbox.record_outgoing_message(
+                message
+            )
 
     def get_email_object(self):
         return email.message_from_string(self.body)
