@@ -55,6 +55,13 @@ class Mailbox(models.Model):
             default=None,
             )
     active = models.BooleanField(
+            help_text="""
+                Check this e-mail inbox for new e-mail messages during polling
+                cycles.  This checkbox does not have an effect upon whether
+                mail is collected here when this mailbox receives mail from a
+                pipe, and does not affect whether e-mail messages can be
+                dispatched from this mailbox.
+            """,
             blank=True,
             default=True,
             )

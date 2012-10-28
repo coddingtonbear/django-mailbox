@@ -12,6 +12,7 @@ class MailboxAdmin(admin.ModelAdmin):
     list_display = (
                 'name',
                 'uri',
+                'from_email',
                 'active',
             )
     actions = [get_new_mail]
