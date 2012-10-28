@@ -1,5 +1,5 @@
 import email
-from email.utils import format_date
+from email.utils import formatdate
 import rfc822
 import urllib
 import urlparse
@@ -249,7 +249,7 @@ class Message(models.Model):
 
         """
         message.extra_headers['Message-ID'] = make_msg_id()
-        message.extra_headers['Date'] = format_date()
+        message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
         references = [self.message_id]
         for reference in self.references.all():
