@@ -248,7 +248,7 @@ class Message(models.Model):
         pre-set it.
 
         """
-        message.extra_headers['Message-ID'] = make_msg_id()
+        message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
         references = [self.message_id]
