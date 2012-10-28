@@ -39,7 +39,7 @@ class Mailbox(models.Model):
     from_email = models.CharField(
             max_length=255,
             help_text="""
-                Example: MailBot <mailbot@yourdomain.com>
+                Example: MailBot &lt;mailbot@yourdomain.com&gt;
                 <br />
                 'From' header to set for outgoing email.
                 <br />
