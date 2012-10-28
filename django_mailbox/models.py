@@ -1,8 +1,10 @@
 import email
+from email.utils import format_date
 import rfc822
 import urllib
 import urlparse
 
+from django.core.mail.message import make_msgid
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
         MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -238,13 +240,24 @@ class Message(models.Model):
         return addresses
 
     def reply(self, message):
+        """Sends a message as a reply to this message instance.
+        
+        Although Django's e-mail processing will set both Message-ID
+        and Date upon generating the e-mail message, we will not be able
+        to retrieve that information through normal channels, so we must
+        pre-set it.
+
+        """
+        message.extra_headers['Message-ID'] = make_msg_id()
+        message.extra_headers['Date'] = format_date()
         message.extra_headers['In-Reply-To'] = self.message_id
-        message.extra_headers['References'] = self.message_id
+        references = [self.message_id]
         for reference in self.references.all():
-            message.extra_headers['References'].append(
+            references.append(
                     ' %s' % reference.message_id
                 )
-        message.send()
+        message.extra_headers['References'] = '\n'.join(references)
+        message = message.send()
         return self.mailbox.record_outgoing_message(
                 email.message_from_string(
                     message.message().as_string()
