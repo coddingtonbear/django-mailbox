@@ -246,7 +246,7 @@ class Message(models.Model):
                 )
         message.send()
         return self.mailbox.record_outgoing_message(
-                message
+                message.message()
             )
 
     def get_email_object(self):
