@@ -106,14 +106,14 @@ class Mailbox(models.Model):
         return conn
 
     def process_incoming_message(self, message):
-        msg = self._process_message(self, message)
+        msg = self._process_message(message)
         msg.outgoing = False
         msg.save()
         message_received.send(sender=self, message=msg)
         return msg
 
     def record_outgoing_message(self, message):
-        msg = self._process_message(self, message)
+        msg = self._process_message(message)
         msg.outgoing = True
         msg.save()
         return msg
