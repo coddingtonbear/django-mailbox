@@ -246,7 +246,9 @@ class Message(models.Model):
                 )
         message.send()
         return self.mailbox.record_outgoing_message(
-                message.message()
+                email.message_from_string(
+                    message.message().as_string()
+                )
             )
 
     def get_email_object(self):
