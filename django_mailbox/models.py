@@ -4,6 +4,7 @@ import rfc822
 import urllib
 import urlparse
 
+from django.conf import settings
 from django.core.mail.message import make_msgid
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
@@ -31,6 +32,24 @@ class Mailbox(models.Model):
                 Be sure to urlencode your username and password should they 
                 contain illegal characters (like @, :, etc).
                 """,
+            blank=True,
+            null=True,
+            default=None,
+            )
+    from_email = models.CharField(
+            max_length=255,
+            help_text="""
+                Example: MailBot <mailbot@yourdomain.com>
+                <br />
+                'From' header to set for outgoing email.
+                <br />
+                <br />
+                If you do not use this e-mail inbox for outgoing mail, this 
+                setting is unnecessary.
+                <br />
+                If you send e-mail without setting this, your 'From' header will
+                be set to match the setting `DEFAULT_FROM_EMAIL`.
+            """,
             blank=True,
             null=True,
             default=None,
@@ -233,6 +252,10 @@ class Message(models.Model):
         pre-set it.
 
         """
+        if self.mailbox.from_email
+            message.from_email = self.mailbox.from_email
+        else:
+            message.from_email = settings.DEFAULT_FROM_EMAIL
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
