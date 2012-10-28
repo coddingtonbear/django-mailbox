@@ -240,7 +240,7 @@ class Message(models.Model):
     def reply(self, message):
         message.extra_headers['In-Reply-To'] = self.message_id
         message.extra_headers['References'] = self.message_id
-        for reference in self.references:
+        for reference in self.references.all():
             message.extra_headers['References'].append(
                     ' %s' % reference.message_id
                 )
