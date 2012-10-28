@@ -19,7 +19,6 @@ class MailboxAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = (
                 'subject',
-                'address',
                 'processed',
                 'mailbox',
                 'outgoing',
