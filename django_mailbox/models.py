@@ -257,7 +257,7 @@ class Message(models.Model):
                     ' %s' % reference.message_id
                 )
         message.extra_headers['References'] = '\n'.join(references)
-        message = message.send()
+        message.send()
         return self.mailbox.record_outgoing_message(
                 email.message_from_string(
                     message.message().as_string()
