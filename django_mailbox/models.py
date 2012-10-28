@@ -110,7 +110,9 @@ class Mailbox(models.Model):
         msg.mailbox = self
         msg.subject = message['subject'][0:255]
         msg.message_id = message['message-id'][0:255]
-        msg.address = rfc822.parseaddr(message['from'])[1][0:255]
+        msg.from_header = message['from']
+        msg.to_header = message['to']
+        msg.outgoing = False
         msg.body = message.as_string()
         if message['in-reply-to']:
             try:
@@ -174,7 +176,10 @@ class Message(models.Model):
         blank=True,
         null=True,
     )
-    address = models.CharField(max_length=255)
+    from_header = models.CharField(
+        max_length=255,
+    )
+    to_header = models.TextField()
     outgoing = models.BooleanField(
         default=False,
         blank=True,
@@ -191,12 +196,35 @@ class Message(models.Model):
     outgoing_messages = OutgoingMessageManager()
 
     @property
-    def from_address(self):
-        return self.get_email_object(self)['from']
+    def address(self):
+        """Property allowing one to get the relevant address(es).
+        
+        In earlier versions of this library, the model had an `address` field
+        storing the e-mail address from which a message was received.  During
+        later refactorings, it became clear that perhaps storing sent messages
+        would also be useful, so the address field was replaced with two
+        separate fields.
+        
+        """
+        if self.outgoing:
+            return self.to_addresses()
+        else:
+            return self.from_addresses()
 
     @property
-    def to_address(self):
-        return self.get_email_object(self)['to']
+    def from_address(self):
+        return rfc822.parseaddr(self.from_header)[1]
+
+    @property
+    def to_addresses(self):
+        addresses = []
+        for address in self.to_header.split(','):
+            addresses.append(
+                    rfc822.parseaddr(
+                            address
+                        )[1]
+                )
+        return addresses
 
     def get_email_object(self):
         return email.message_from_string(self.body)
