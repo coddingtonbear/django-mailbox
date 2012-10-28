@@ -252,7 +252,7 @@ class Message(models.Model):
         pre-set it.
 
         """
-        if self.mailbox.from_email
+        if self.mailbox.from_email:
             message.from_email = self.mailbox.from_email
         else:
             message.from_email = settings.DEFAULT_FROM_EMAIL
