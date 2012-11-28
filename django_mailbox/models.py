@@ -190,6 +190,12 @@ class OutgoingMessageManager(models.Manager):
             outgoing=True,
         )
 
+class UnreadMessageManager(models.Manager):
+    def get_query_set(self):
+        return super(UnreadMessageManager, self).get_query_set().filter(
+            read=None
+        )
+
 class Message(models.Model):
     mailbox = models.ForeignKey(Mailbox, related_name='messages')
     subject = models.CharField(max_length=255)
@@ -214,8 +220,14 @@ class Message(models.Model):
     processed = models.DateTimeField(
         auto_now_add=True
     )
+    read = models.DateTimeField(
+        default=None,
+        blank=True,
+        null=True,
+    )
 
     objects = models.Manager()
+    unread_messages = UnreadMessageManager()
     incoming_messages = IncomingMessageManager()
     outgoing_messages = OutgoingMessageManager()
 

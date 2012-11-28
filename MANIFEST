@@ -18,6 +18,7 @@ django_mailbox/migrations/0007_auto__del_field_message_address__add_field_messag
 django_mailbox/migrations/0008_populate_from_to_fields.py
 django_mailbox/migrations/0009_remove_references_table.py
 django_mailbox/migrations/0010_auto__add_field_mailbox_from_email.py
+django_mailbox/migrations/0011_auto__add_field_message_read.py
 django_mailbox/migrations/__init__.py
 django_mailbox/transports/__init__.py
 django_mailbox/transports/babyl.py
