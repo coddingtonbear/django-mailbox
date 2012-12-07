@@ -21,6 +21,7 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = (
                 'subject',
                 'processed',
+                'read',
                 'mailbox',
                 'outgoing',
             )
@@ -28,6 +29,8 @@ class MessageAdmin(admin.ModelAdmin):
     list_filter = (
             'mailbox',
             'outgoing',
+            'processed',
+            'read',
             )
     raw_id_fields = (
             'in_reply_to',
