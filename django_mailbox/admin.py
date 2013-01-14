@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from django_mailbox.models import Message, Mailbox
+from django_mailbox.models import MessageAttachment, Message, Mailbox
 
 def get_new_mail(mailbox_admin, request, queryset):
     for mailbox in queryset.all():
@@ -16,6 +16,9 @@ class MailboxAdmin(admin.ModelAdmin):
                 'active',
             )
     actions = [get_new_mail]
+
+class MessageAttachmentAdmin(admin.ModelAdmin):
+    list_display = ('document',)
 
 class MessageAdmin(admin.ModelAdmin):
     list_display = (
@@ -38,4 +41,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
     admin.site.register(Message, MessageAdmin)
+    admin.site.register(MessageAttachment, MessageAttachmentAdmin)
     admin.site.register(Mailbox, MailboxAdmin)
