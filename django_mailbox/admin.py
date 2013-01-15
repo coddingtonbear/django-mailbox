@@ -38,5 +38,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
     admin.site.register(Message, MessageAdmin)
-    admin.site.register(MessageAttachmentAdmin, MessageAttachment)
+    admin.site.register(MessageAttachment, MessageAttachmentAdmin)
     admin.site.register(Mailbox, MailboxAdmin)
