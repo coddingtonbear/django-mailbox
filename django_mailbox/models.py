@@ -170,6 +170,10 @@ class Mailbox(models.Model):
                 if part.get('Content-Disposition') is None:
                     continue
                 filename = part.get_filename()
+                # ignore SMIME extension
+                filename_basename, filename_extension = os.path.splitext(filename)
+                if filename_extension in ('.p7s',):
+                    continue
                 data = part.get_payload(decode=True)
                 if not data:
                     continue
