@@ -216,6 +216,9 @@ class UnreadMessageManager(models.Manager):
             read=None
         )
 
+class MessageAttachment(models.Model):
+    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
+
 class Message(models.Model):
     mailbox = models.ForeignKey(Mailbox, related_name='messages')
     subject = models.CharField(max_length=255)
@@ -312,6 +315,3 @@ class Message(models.Model):
 
     def __unicode__(self):
         return self.subject
-
-class MessageAttachment(models.Model):
-    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
