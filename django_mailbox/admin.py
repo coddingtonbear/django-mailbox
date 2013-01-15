@@ -18,7 +18,7 @@ class MailboxAdmin(admin.ModelAdmin):
     actions = [get_new_mail]
 
 class MessageAttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('document',)
 
 class MessageAdmin(admin.ModelAdmin):
     list_display = (
