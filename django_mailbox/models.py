@@ -3,9 +3,12 @@ from email.utils import formatdate
 import rfc822
 import urllib
 import urlparse
+import os
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
         MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -160,6 +163,23 @@ class Mailbox(models.Model):
             except IndexError:
                 pass
         msg.save()
+        if message.is_multipart():
+            for part in message.walk():
+                if part.get_content_maintype() == 'multipart':
+                    continue
+                if part.get('Content-Disposition') is None:
+                    continue
+                filename = part.get_filename()
+                data = part.get_payload(decode=True)
+                if not data:
+                    continue
+                temp_file = NamedTemporaryFile(delete=True)
+                temp_file.write(data)
+                temp_file.flush()
+                attachment = MessageAttachment()
+                attachment.document.save(filename, File(temp_file))
+                attachment.save()
+                msg.attachments.add(attachment)
         return msg
 
     def get_new_mail(self):
@@ -226,6 +246,8 @@ class Message(models.Model):
         null=True,
     )
 
+    attachments = models.ManyToManyField(MessageAttachment)
+
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
     incoming_messages = IncomingMessageManager()
@@ -290,3 +312,6 @@ class Message(models.Model):
 
     def __unicode__(self):
         return self.subject
+
+class MessageAttachment(models.Model):
+    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
