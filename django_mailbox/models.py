@@ -3,9 +3,12 @@ from email.utils import formatdate
 import rfc822
 import urllib
 import urlparse
+import os
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
         MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -160,6 +163,27 @@ class Mailbox(models.Model):
             except IndexError:
                 pass
         msg.save()
+        if message.is_multipart():
+            for part in message.walk():
+                if part.get_content_maintype() == 'multipart':
+                    continue
+                if part.get('Content-Disposition') is None:
+                    continue
+                filename = part.get_filename()
+                # ignore SMIME extension
+                filename_basename, filename_extension = os.path.splitext(filename)
+                if filename_extension in ('.p7s',):
+                    continue
+                data = part.get_payload(decode=True)
+                if not data:
+                    continue
+                temp_file = NamedTemporaryFile(delete=True)
+                temp_file.write(data)
+                temp_file.flush()
+                attachment = MessageAttachment()
+                attachment.document.save(filename, File(temp_file))
+                attachment.save()
+                msg.attachments.add(attachment)
         return msg
 
     def get_new_mail(self):
@@ -196,6 +220,12 @@ class UnreadMessageManager(models.Manager):
             read=None
         )
 
+class MessageAttachment(models.Model):
+    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
+
+    def __unicode__(self):
+        return self.document.url
+
 class Message(models.Model):
     mailbox = models.ForeignKey(Mailbox, related_name='messages')
     subject = models.CharField(max_length=255)
@@ -225,6 +255,8 @@ class Message(models.Model):
         blank=True,
         null=True,
     )
+
+    attachments = models.ManyToManyField(MessageAttachment)
 
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
