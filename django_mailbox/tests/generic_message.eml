@@ -1,0 +1,14 @@
+MIME-Version: 1.0
+Received: by 10.221.0.211 with HTTP; Sun, 20 Jan 2013 11:53:53 -0800 (PST)
+X-Originating-IP: [24.22.122.177]
+Date: Sun, 20 Jan 2013 11:53:53 -0800
+Delivered-To: test@adamcoddington.net
+Message-ID: <CAMdmm+hGH8Dgn-_0xnXJCd=PhyNAiouOYm5zFP0z-foqTO60zA@mail.gmail.com>
+Subject: Message Without Attachment
+From: Adam Coddington <test@adamcoddington.net>
+To: Adam Coddington <test@adamcoddington.net>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+
+Hello there.
