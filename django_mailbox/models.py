@@ -256,7 +256,10 @@ class Message(models.Model):
         null=True,
     )
 
-    attachments = models.ManyToManyField(MessageAttachment)
+    attachments = models.ManyToManyField(
+        MessageAttachment,
+        blank=True,
+    )
 
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
