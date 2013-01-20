@@ -30,5 +30,6 @@ setup(
         'django_mailbox.management.commands',
         'django_mailbox.migrations',
         'django_mailbox.transports',
+        'django_mailbox.tests',
         ],
 )
