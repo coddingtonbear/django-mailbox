@@ -320,6 +320,21 @@ class Message(models.Model):
                 )
             )
 
+    def get_text_body(self):
+        def get_body_from_message(message):
+            body = ''
+            if message.is_multipart():
+                for part in message.get_payload():
+                    if part.get('content-type', '').split(';')[0] == 'text/plain':
+                        body = body + get_body_from_message(part)
+            else:
+                body = body + message.get_payload()
+            return body
+
+        return get_body_from_message(
+            self.get_email_object()
+        )
+
     def get_email_object(self):
         return email.message_from_string(self.body)
 

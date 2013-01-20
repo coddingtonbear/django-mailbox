@@ -1,0 +1,28 @@
+Return-path: <test@adamcoddington.net>
+Delivery-date: Thu, 17 Jan 2013 19:26:25 +0000
+Received: by mail-vc0-f174.google.com with SMTP id n11so944457vch.33
+ for <ya@dumayju.net>; Thu, 17 Jan 2013 11:26:20 -0800 (PST)
+X-Received: by 10.220.226.68 with SMTP id iv4mr332182vcb.31.1358450780039;
+ Thu, 17 Jan 2013 11:26:20 -0800 (PST)
+MIME-Version: 1.0
+Received: by 10.221.0.211 with HTTP; Thu, 17 Jan 2013 11:25:59 -0800 (PST)
+X-Originating-IP: [67.131.102.78]
+From: Adam Coddington <test@adamcoddington.net>
+Date: Thu, 17 Jan 2013 11:25:59 -0800
+Message-ID: <CAMdmm+hK=swkM_SJ3EfoAO-AAE1Rr8Nyd5-OU3BHG6_1u5AdUw@mail.gmail.com>
+Subject: Test Multipart Text E-mail
+To: test@latestrevision.net
+Content-Type: multipart/alternative; boundary=14dae9cdc8cb30695204d380f8a2
+X-Gm-Message-State: ALoCoQm0/CGO1NxYZBBXjGN7748Ohv5P068bWQiELfbo+g19i80yvx1xi0th+N28ElGN1oS06SuR
+
+--14dae9cdc8cb30695204d380f8a2
+Content-Type: text/plain; charset=UTF-8
+
+Hello there!
+
+--14dae9cdc8cb30695204d380f8a2
+Content-Type: text/html; charset=UTF-8
+
+<div dir="ltr">Hello there!</div>
+
+--14dae9cdc8cb30695204d380f8a2--

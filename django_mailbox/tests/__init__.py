@@ -63,3 +63,17 @@ class TestProcessMessage(TestCase):
             os.path.basename(attachment.document.name),
             'heart.png',
         )
+
+    def test_message_get_text_body(self):
+        message = self._get_email_object('multipart_text.eml')
+
+        mailbox = Mailbox.objects.create()
+        msg = mailbox.process_incoming_message(message)
+
+        expected_results = 'Hello there!'
+        actual_results = msg.get_text_body().strip()
+
+        self.assertEquals(
+            expected_results,
+            actual_results,
+        )
