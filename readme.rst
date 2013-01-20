@@ -1,3 +1,5 @@
+.. image:: https://travis-ci.org/latestrevision/django-mailbox.png?branch=master
+
 How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content, 
 or had to otherwise construct an application driven by e-mail?
 One too many times, I'm sure.
