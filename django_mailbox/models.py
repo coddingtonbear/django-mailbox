@@ -178,10 +178,13 @@ class Mailbox(models.Model):
                 filename = part.get_filename()
                 # ignore SMIME extension
                 filename_basename, filename_extension = os.path.splitext(filename)
-                if len(filename) > 100:
+                buffer_space = 40
+                if len(filename) > 100 - buffer_space:
                     # Ensure that there're at least a few chars available afterward
-                    # for duplication things like _1, _2 ... _99
-                    filename = filename_basename[0:100-len(filename_extension)-3]
+                    # for duplication things like _1, _2 ... _99 and the FileField's
+                    # upload_to path.
+                    filename_basename = filename_basename[0:100-len(filename_extension)-buffer_space]
+                    filename = filename_basename + filename_extension
                 if filename_extension in SKIPPED_EXTENSIONS:
                     continue
                 data = part.get_payload(decode=True)
