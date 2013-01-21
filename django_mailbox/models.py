@@ -15,6 +15,12 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
         MMDFTransport
 from django_mailbox.signals import message_received
 
+SKIPPED_EXTENSIONS = getattr(
+    settings, 
+    'DJANGO_MAILBOX_SKIPPED_EXTENSIONS', 
+    ['.p7s']
+)
+
 class ActiveMailboxManager(models.Manager):
     def get_query_set(self):
         return super(ActiveMailboxManager, self).get_query_set().filter(
@@ -172,7 +178,11 @@ class Mailbox(models.Model):
                 filename = part.get_filename()
                 # ignore SMIME extension
                 filename_basename, filename_extension = os.path.splitext(filename)
-                if filename_extension in ('.p7s',):
+                if len(filename) > 100:
+                    # Ensure that there're at least a few chars available afterward
+                    # for duplication things like _1, _2 ... _99
+                    filename = filename_basename[0:100-len(filename_extension)-3]
+                if filename_extension in SKIPPED_EXTENSIONS:
                     continue
                 data = part.get_payload(decode=True)
                 if not data:

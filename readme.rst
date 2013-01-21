@@ -189,7 +189,12 @@ To subscribe to the incoming mail signal, following this lead::
 Settings
 ========
 
-You can disable mailbox information from being listed in the Django admin 
-by adding a setting named ``DJANGO_MAILBOX_ADMIN_ENABLED`` 
-indicating your preference toward whether or not the models appear in the admin 
-(defaulting to ``True``).
++---------------------------------------+--------------+-------------------------------------------------------------------------+
+| Setting                               | Default      | Notes                                                                   |
++=======================================+==============+=========================================================================+
+| ``DJANGO_MAILBOX_ADMIN_ENABLED``      | ``True``     | Controls whether mailboxes appear in the Django Admin.                  |
++---------------------------------------+--------------+-------------------------------------------------------------------------+
+| ``DJANGO_MAILBOX_SKIPPED_EXTENSIONS`` | ``['.p7s']`` | A list of extensions to skip when processing email message attachments. |
++---------------------------------------+--------------+-------------------------------------------------------------------------+
+
+
