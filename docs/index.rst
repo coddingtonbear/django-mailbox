@@ -18,7 +18,7 @@ the e-mail will be stored, and you can process it at will (or, if you're in a hu
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :glob:
 
    topics/*
