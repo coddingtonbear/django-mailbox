@@ -5,7 +5,7 @@ import shutil
 from django.db import models
 from django.test import TestCase
 
-from django_mailbox.models import Mailbox
+from django_mailbox.models import Mailbox, Message
 
 class TestProcessMessage(TestCase):
     def _get_email_object(self, name):
@@ -15,10 +15,8 @@ class TestProcessMessage(TestCase):
             )
 
     def tearDown(self):
-        try:
-            shutil.rmtree('mailbox_attachments')
-        except OSError:
-            pass
+        for message in Message.objects.all():
+            message.delete()
     
     def test_message_without_attachments(self):
         message = self._get_email_object('generic_message.eml')

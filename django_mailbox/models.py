@@ -236,6 +236,10 @@ class UnreadMessageManager(models.Manager):
 class MessageAttachment(models.Model):
     document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
 
+    def delete(self, *args, **kwargs):
+        self.document.delete()
+        return super(MessageAttachment, self).delete(*args, **kwargs)
+
     def __unicode__(self):
         return self.document.url
 
@@ -350,6 +354,13 @@ class Message(models.Model):
 
     def get_email_object(self):
         return email.message_from_string(self.body)
+
+    def delete(self, *args, **kwargs):
+        for attachment in self.attachments.all():
+            if attachment.message_set.count() == 1:
+                # This attachment is attached only to this message.
+                attachment.delete()
+        return super(Message, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.subject
