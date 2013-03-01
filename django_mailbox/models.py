@@ -162,7 +162,14 @@ class Mailbox(models.Model):
         msg.message_id = message['message-id'][0:255]
         msg.from_header = message['from']
         msg.to_header = message['to']
-        msg.body = message.as_string()
+        # if message is multipart want to only store the actual message body in database (not attachments)
+        if message.is_multipart():
+            for part in message.walk():
+                if part.get_content_type() == 'text/plain' or part.get_content_type() == 'text/html':
+                    msg.body = part.get_payload()
+        # else store the whole message in database
+        else:
+            msg.body = message.as_string()
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(message_id=message['in-reply-to'])[0]
