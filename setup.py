@@ -1,6 +1,9 @@
 from setuptools import setup
 
-tests_require=['django']
+tests_require=[
+    'django',
+    'mimic',
+]
 
 setup(
     name='django-mailbox',
