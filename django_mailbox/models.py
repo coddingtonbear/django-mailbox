@@ -393,7 +393,7 @@ class Message(models.Model):
 
         return get_body_from_message(
             self.get_email_object()
-        )
+        ).replace('=\n', '').rstrip('\n')
 
     def get_email_object(self):
         return email.message_from_string(self.body)

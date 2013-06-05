@@ -4,11 +4,16 @@ import shutil
 
 from django.db import models
 from django.test import TestCase
+import mimic
 
 import django_mailbox
 from django_mailbox.models import Mailbox, Message
 
 class EmailMessageTestCase(TestCase):
+    def setUp(self):
+        super(EmailMessageTestCase, self).setUp()
+        self.mimic = mimic.Mimic()
+
     def _get_email_object(self, name):
         with open(os.path.join(os.path.dirname(__file__), name), 'r') as f:
             return email.message_from_string(
@@ -18,6 +23,8 @@ class EmailMessageTestCase(TestCase):
     def tearDown(self):
         for message in Message.objects.all():
             message.delete()
+
+        self.mimic.verify_all()
 
 class TestProcessEmail(EmailMessageTestCase):
     def test_message_without_attachments(self):
@@ -122,4 +129,27 @@ class TestFilterMessageBody(EmailMessageTestCase):
         self.assertEquals(
             message_without_non_plaintext,
             mailbox._filter_message_body(message).as_string()
+        )
+
+class TestGetMessage(EmailMessageTestCase):
+    def test_get_text_body_properly_recomposes_line_continuations(self):
+        message = Message()
+        email_object = self._get_email_object(
+            'message_with_long_text_lines.eml'
+        )
+
+        self.mimic.stub_out_with_mock(message, 'get_email_object')
+        message.get_email_object().and_return(email_object)
+
+        self.mimic.replay_all()
+
+        actual_text = message.get_text_body()
+        expected_text = (
+            u'The one of us with a bike pump is far ahead, '
+            u'but a man stopped to help us and gave us his pump.'
+        )
+
+        self.assertEquals(
+            actual_text,
+            expected_text
         )
