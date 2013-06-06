@@ -1,4 +1,5 @@
 import email
+from email.message import Message as EmailMessage
 from email.utils import formatdate
 import rfc822
 import urllib
@@ -19,6 +20,24 @@ SKIPPED_EXTENSIONS = getattr(
     settings, 
     'DJANGO_MAILBOX_SKIPPED_EXTENSIONS', 
     ['.p7s']
+)
+STRIP_UNALLOWED_MIMETYPES = getattr(
+    settings,
+    'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
+    False
+)
+ALLOWED_MIMETYPES = getattr(
+    settings,
+    'DJANGO_MAILBOX_ALLOWED_MIMETYPES',
+    [
+        'text/plain',
+        'text/html'
+    ]
+)
+ALTERED_MESSAGE_HEADER = getattr(
+    settings,
+    'DJANGO_MAILBOX_ALTERED_MESSAGE_HEADER',
+    'X-Django-Mailbox-Altered-Message'
 )
 
 class ActiveMailboxManager(models.Manager):
@@ -155,6 +174,29 @@ class Mailbox(models.Model):
         msg.save()
         return msg
 
+    def _filter_message_body(self, message):
+        if not message.is_multipart() or not STRIP_UNALLOWED_MIMETYPES:
+            return message
+        stripped_content = {}
+        new = EmailMessage()
+        for header, value in message.items():
+            new[header] = value
+        for part in message.walk():
+            content_type = part.get_content_type()
+            print content_type
+            if not content_type in ALLOWED_MIMETYPES:
+                if content_type not in stripped_content:
+                    stripped_content[content_type] = 0
+                stripped_content[content_type] = (
+                    stripped_content[content_type] + 1
+                )
+                continue
+            new.attach(part)
+        new[ALTERED_MESSAGE_HEADER] = 'Stripped ' + ', '.join(
+            ['%s*%s' % (key, value) for key, value in stripped_content.items()]
+        )
+        return new
+
     def _process_message(self, message):
         msg = Message()
         msg.mailbox = self
@@ -162,6 +204,7 @@ class Mailbox(models.Model):
         msg.message_id = message['message-id'][0:255]
         msg.from_header = message['from']
         msg.to_header = message['to']
+        message = self._filter_message_body(message)
         msg.body = message.as_string()
         if message['in-reply-to']:
             try:
@@ -335,7 +378,7 @@ class Message(models.Model):
 
         return get_body_from_message(
             self.get_email_object()
-        )
+        ).replace('=\n', '').rstrip('\n')
 
     def get_email_object(self):
         return email.message_from_string(self.body)
