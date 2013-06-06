@@ -195,8 +195,8 @@ class Mailbox(models.Model):
                 temp_file.flush()
                 attachment = MessageAttachment()
                 attachment.document.save(filename, File(temp_file))
+                attachment.mesage = msg
                 attachment.save()
-                msg.attachments.add(attachment)
         return msg
 
     def get_new_mail(self):
@@ -233,16 +233,6 @@ class UnreadMessageManager(models.Manager):
             read=None
         )
 
-class MessageAttachment(models.Model):
-    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
-
-    def delete(self, *args, **kwargs):
-        self.document.delete()
-        return super(MessageAttachment, self).delete(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.document.url
-
 class Message(models.Model):
     mailbox = models.ForeignKey(Mailbox, related_name='messages')
     subject = models.CharField(max_length=255)
@@ -271,11 +261,6 @@ class Message(models.Model):
         default=None,
         blank=True,
         null=True,
-    )
-
-    attachments = models.ManyToManyField(
-        MessageAttachment,
-        blank=True,
     )
 
     objects = models.Manager()
@@ -357,10 +342,26 @@ class Message(models.Model):
 
     def delete(self, *args, **kwargs):
         for attachment in self.attachments.all():
-            if attachment.message_set.count() == 1:
-                # This attachment is attached only to this message.
-                attachment.delete()
+            # This attachment is attached only to this message.
+            attachment.delete()
         return super(Message, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.subject
+
+
+class MessageAttachment(models.Model):
+    message = models.ForeignKey(
+        Message,
+        related_name='attachments',
+        null=True,
+        blank=True,
+    )
+    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
+
+    def delete(self, *args, **kwargs):
+        self.document.delete()
+        return super(MessageAttachment, self).delete(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.document.url
