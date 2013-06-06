@@ -195,7 +195,7 @@ class Mailbox(models.Model):
                 temp_file.flush()
                 attachment = MessageAttachment()
                 attachment.document.save(filename, File(temp_file))
-                attachment.mesage = msg
+                attachment.message = msg
                 attachment.save()
         return msg
 
