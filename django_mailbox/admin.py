@@ -30,15 +30,27 @@ class MailboxAdmin(admin.ModelAdmin):
     actions = [get_new_mail]
 
 class MessageAttachmentAdmin(admin.ModelAdmin):
-    list_display = ('document',)
+    raw_id_fields = ('message', )
+    list_display = ('message', 'document',)
+
+class MessageAttachmentInline(admin.TabularInline):
+    model = MessageAttachment
+    extra = 0
 
 class MessageAdmin(admin.ModelAdmin):
+    def attachment_count(self, msg):
+        return msg.attachments.count()
+
+    inlines = [
+        MessageAttachmentInline,
+    ]
     list_display = (
                 'subject',
                 'processed',
                 'read',
                 'mailbox',
                 'outgoing',
+                'attachment_count',
             )
     ordering = ['-processed']
     list_filter = (
@@ -49,7 +61,6 @@ class MessageAdmin(admin.ModelAdmin):
             )
     raw_id_fields = (
             'in_reply_to',
-            'attachments', 
             )
     actions = [resend_message_received_signal]
 
