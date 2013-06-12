@@ -29,13 +29,16 @@ class MailboxAdmin(admin.ModelAdmin):
             )
     actions = [get_new_mail]
 
+
 class MessageAttachmentAdmin(admin.ModelAdmin):
     raw_id_fields = ('message', )
     list_display = ('message', 'document',)
 
+
 class MessageAttachmentInline(admin.TabularInline):
     model = MessageAttachment
     extra = 0
+
 
 class MessageAdmin(admin.ModelAdmin):
     def attachment_count(self, msg):
