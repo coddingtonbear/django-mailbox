@@ -8,17 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing M2M table for field attachments on 'Message'
-        db.delete_table('django_mailbox_message_attachments')
-
-        # Adding M2M table for field attachments_old on 'Message'
-        db.create_table(u'django_mailbox_message_attachments_old', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('message', models.ForeignKey(orm[u'django_mailbox.message'], null=False)),
-            ('messageattachment', models.ForeignKey(orm[u'django_mailbox.messageattachment'], null=False))
-        ))
-        db.create_unique(u'django_mailbox_message_attachments_old', ['message_id', 'messageattachment_id'])
-
         # Adding field 'MessageAttachment.message'
         db.add_column(u'django_mailbox_messageattachment', 'message',
                       self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='attachments', null=True, to=orm['django_mailbox.Message']),
@@ -26,17 +15,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Adding M2M table for field attachments on 'Message'
-        db.create_table(u'django_mailbox_message_attachments', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('message', models.ForeignKey(orm['django_mailbox.message'], null=False)),
-            ('messageattachment', models.ForeignKey(orm['django_mailbox.messageattachment'], null=False))
-        ))
-        db.create_unique(u'django_mailbox_message_attachments', ['message_id', 'messageattachment_id'])
-
-        # Removing M2M table for field attachments_old on 'Message'
-        db.delete_table('django_mailbox_message_attachments_old')
-
         # Deleting field 'MessageAttachment.message'
         db.delete_column(u'django_mailbox_messageattachment', 'message_id')
 
