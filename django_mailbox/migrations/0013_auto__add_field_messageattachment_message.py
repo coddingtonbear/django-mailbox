@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
         },
         u'django_mailbox.message': {
             'Meta': {'object_name': 'Message'},
-            'attachments_old': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'messages_old'", 'blank': 'True', 'to': u"orm['django_mailbox.MessageAttachment']"}),
+            'attachments': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'messages_old'", 'blank': 'True', 'to': u"orm['django_mailbox.MessageAttachment']"}),
             'body': ('django.db.models.fields.TextField', [], {}),
             'from_header': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -47,7 +47,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'MessageAttachment'},
             'document': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'attachments'", 'null': 'True', 'to': u"orm['django_mailbox.Message']"})
+            'message': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'attachments_new'", 'null': 'True', 'to': u"orm['django_mailbox.Message']"})
         }
     }
 
