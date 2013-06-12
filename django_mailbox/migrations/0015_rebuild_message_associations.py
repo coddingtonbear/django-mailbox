@@ -18,7 +18,7 @@ class Migration(SchemaMigration):
 
         attachments_without_messages = orm[
             'django_mailbox.messageattachment'
-        ].objects.filter(message=None)
+        ].objects.filter(message=None).order_by('id')
 
         if attachments_without_messages.count() < 1:
             return
@@ -29,7 +29,7 @@ class Migration(SchemaMigration):
                 md5.update(chunk)
             ATTACHMENT_HASH_MAP[md5.hexdigest()] = attachment.pk
 
-        for message_record in orm['django_mailbox.message'].objects.all():
+        for message_record in orm['django_mailbox.message'].objects.all().order_by('id'):
             message = email.message_from_string(message_record.body)
             if message.is_multipart():
                 for part in message.walk():
