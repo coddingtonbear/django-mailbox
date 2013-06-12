@@ -365,6 +365,10 @@ class Message(models.Model):
                 )
             )
 
+    @property
+    def text(self):
+        return self.get_text_body()
+
     def get_text_body(self):
         def get_body_from_message(message):
             body = ''

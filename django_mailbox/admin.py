@@ -65,6 +65,12 @@ class MessageAdmin(admin.ModelAdmin):
     raw_id_fields = (
             'in_reply_to',
             )
+    exclude = (
+        'body',
+    )
+    readonly_fields = (
+        'text',
+    )
     actions = [resend_message_received_signal]
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
