@@ -6,9 +6,9 @@ Django Mailbox supports polling both common internet mailboxes like POP3 and IMA
 
 .. table:: 'Protocol' Options
 
-  ============ ============== ===============================================================
+  ============ ============== ===============================================
   Mailbox Type 'Protocol'://  Notes
-  ============ ============== ===============================================================
+  ============ ============== ===============================================
   POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``
   Maildir      ``maildir://``
@@ -16,8 +16,8 @@ Django Mailbox supports polling both common internet mailboxes like POP3 and IMA
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  Piped Mail   *empty*        See `Receiving mail directly from Exim4 or Postfix via a pipe`_
-  ============ ============== ===============================================================
+  Piped Mail   *empty*        See :ref:`receiving-mail-from-exim4-or-postfix`
+  ============ ============== ===============================================
 
 .. WARNING::
    This will delete any messages it can find in the inbox you specify; 
