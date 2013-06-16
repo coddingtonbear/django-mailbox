@@ -29,6 +29,8 @@ You can easily consume incoming mail by running the management command named ``g
     python manage.py getmail
 
 
+.. _receiving-mail-from-exim4-or-postfix:
+
 Receiving mail directly from Exim4 or Postfix via a pipe
 --------------------------------------------------------
 
