@@ -183,7 +183,6 @@ class Mailbox(models.Model):
             new[header] = value
         for part in message.walk():
             content_type = part.get_content_type()
-            print content_type
             if not content_type in ALLOWED_MIMETYPES:
                 if content_type not in stripped_content:
                     stripped_content[content_type] = 0
