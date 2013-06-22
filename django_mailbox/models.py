@@ -394,7 +394,21 @@ class Message(models.Model):
         ).replace('=\n', '').rstrip('\n')
 
     def get_email_object(self):
-        return email.message_from_string(self.body)
+        """ Returns an `email.message.Message` instance for this message.
+
+        Note: Python 2.6's version of email.message_from_string requires
+        bytes and will incorrectly create an e-mail object if a unicode
+        object is passed-in.
+
+        Note that in reality 7-bit ascii *should* be an acceptable encoding
+        here per RFC-2822 (2.1), but given that `message_from_string` really
+        only cares that bytes are incoming rather than a unicode object, and
+        django will dutifully, if you were to edit the message in code or
+        via the admin, allow you to store unicode characters, returning UTF-8
+        encoded bytes is probably the safest answer.
+
+        """
+        return email.message_from_string(self.body.encode('utf-8'))
 
     def delete(self, *args, **kwargs):
         for attachment in self.attachments.all():

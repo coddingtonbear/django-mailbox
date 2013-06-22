@@ -155,3 +155,25 @@ class TestGetMessage(EmailMessageTestCase):
             actual_text,
             expected_text
         )
+
+
+class TestMessageGetEmailObject(TestCase):
+    def test_get_body_properly_handles_unicode_body(self):
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'generic_message.eml'
+            )
+        ) as f:
+            unicode_body = unicode(f.read())
+
+        message = Message()
+        message.body = unicode_body
+
+        expected_body = unicode_body
+        actual_body = message.get_email_object().as_string()
+
+        self.assertEquals(
+            expected_body,
+            actual_body
+        )
