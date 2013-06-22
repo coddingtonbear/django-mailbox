@@ -1,6 +1,7 @@
 import email
 from poplib import POP3, POP3_SSL
 
+
 class Pop3Transport(object):
     def __init__(self, hostname, port=None, ssl=False):
         self.hostname = hostname

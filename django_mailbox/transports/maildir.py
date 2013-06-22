@@ -1,6 +1,7 @@
 from mailbox import Maildir
 from django_mailbox.transports.generic import GenericFileMailbox
 
+
 class MaildirTransport(GenericFileMailbox):
     _variant = Maildir
 

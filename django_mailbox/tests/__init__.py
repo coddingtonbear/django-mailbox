@@ -1,13 +1,12 @@
 import email
 import os.path
-import shutil
 
-from django.db import models
 from django.test import TestCase
 import mimic
 
 import django_mailbox
 from django_mailbox.models import Mailbox, Message
+
 
 class EmailMessageTestCase(TestCase):
     def setUp(self):
@@ -26,6 +25,7 @@ class EmailMessageTestCase(TestCase):
 
         self.mimic.verify_all()
 
+
 class TestProcessEmail(EmailMessageTestCase):
     def test_message_without_attachments(self):
         message = self._get_email_object('generic_message.eml')
@@ -39,7 +39,7 @@ class TestProcessEmail(EmailMessageTestCase):
         )
         self.assertEqual(msg.subject, 'Message Without Attachment')
         self.assertEqual(
-            msg.message_id, 
+            msg.message_id,
             '<CAMdmm+hGH8Dgn-_0xnXJCd=PhyNAiouOYm5zFP0z-foqTO60zA@mail.gmail.com>'
         )
         self.assertEqual(
@@ -84,6 +84,7 @@ class TestProcessEmail(EmailMessageTestCase):
             expected_results,
             actual_results,
         )
+
 
 class TestFilterMessageBody(EmailMessageTestCase):
     def setUp(self):
@@ -130,6 +131,7 @@ class TestFilterMessageBody(EmailMessageTestCase):
             message_without_non_plaintext,
             mailbox._filter_message_body(message).as_string()
         )
+
 
 class TestGetMessage(EmailMessageTestCase):
     def test_get_text_body_properly_recomposes_line_continuations(self):

@@ -1,6 +1,7 @@
 import email
 from imaplib import IMAP4, IMAP4_SSL
 
+
 class ImapTransport(object):
     def __init__(self, hostname, port=None, ssl=False):
         self.hostname = hostname
@@ -28,6 +29,6 @@ class ImapTransport(object):
                 yield message
             except email.Errors.MessageParseError:
                 continue
-            self.server.store(key, "+FLAGS", "\\Deleted");
+            self.server.store(key, "+FLAGS", "\\Deleted")
         self.server.expunge()
         return
