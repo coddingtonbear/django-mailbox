@@ -2,7 +2,6 @@ from setuptools import setup
 
 tests_require=[
     'django',
-    'mimic',
 ]
 
 setup(
@@ -34,5 +33,8 @@ setup(
         'django_mailbox.migrations',
         'django_mailbox.transports',
         'django_mailbox.tests',
-        ],
+    ],
+    install_requires=[
+        'six'
+    ]
 )

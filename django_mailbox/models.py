@@ -1,10 +1,14 @@
 import email
 from email.message import Message as EmailMessage
-from email.utils import formatdate
-import rfc822
+from email.utils import formatdate, parseaddr
 import urllib
-import urlparse
 import os
+import sys
+
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
@@ -337,14 +341,14 @@ class Message(models.Model):
 
     @property
     def from_address(self):
-        return rfc822.parseaddr(self.from_header)[1]
+        return parseaddr(self.from_header)[1]
 
     @property
     def to_addresses(self):
         addresses = []
         for address in self.to_header.split(','):
             addresses.append(
-                rfc822.parseaddr(
+                parseaddr(
                     address
                 )[1]
             )
@@ -408,7 +412,9 @@ class Message(models.Model):
         encoded bytes is probably the safest answer.
 
         """
-        return email.message_from_string(self.body.encode('utf-8'))
+        if sys.version_info < (2, 7):
+            return email.message_from_string(self.body.encode('utf-8'))
+        return email.message_from_string(self.body)
 
     def delete(self, *args, **kwargs):
         for attachment in self.attachments.all():

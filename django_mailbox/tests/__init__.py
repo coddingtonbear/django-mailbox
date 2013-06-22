@@ -2,17 +2,27 @@ import email
 import os.path
 
 from django.test import TestCase
-import mimic
+import six
 
 import django_mailbox
 from django_mailbox.models import Mailbox, Message
 
 
-class EmailMessageTestCase(TestCase):
-    def setUp(self):
-        super(EmailMessageTestCase, self).setUp()
-        self.mimic = mimic.Mimic()
+class TestMailbox(TestCase):
+    def test_protocol_info(self):
+        mailbox = Mailbox()
+        mailbox.uri = 'alpha://test.com'
 
+        expected_protocol = 'alpha'
+        actual_protocol = mailbox._protocol_info.scheme
+
+        self.assertEquals(
+            expected_protocol,
+            actual_protocol,
+        )
+
+
+class EmailMessageTestCase(TestCase):
     def _get_email_object(self, name):
         with open(os.path.join(os.path.dirname(__file__), name), 'r') as f:
             return email.message_from_string(
@@ -22,8 +32,6 @@ class EmailMessageTestCase(TestCase):
     def tearDown(self):
         for message in Message.objects.all():
             message.delete()
-
-        self.mimic.verify_all()
 
 
 class TestProcessEmail(EmailMessageTestCase):
@@ -140,15 +148,12 @@ class TestGetMessage(EmailMessageTestCase):
             'message_with_long_text_lines.eml'
         )
 
-        self.mimic.stub_out_with_mock(message, 'get_email_object')
-        message.get_email_object().and_return(email_object)
-
-        self.mimic.replay_all()
+        message.get_email_object = lambda: email_object
 
         actual_text = message.get_text_body()
         expected_text = (
-            u'The one of us with a bike pump is far ahead, '
-            u'but a man stopped to help us and gave us his pump.'
+            'The one of us with a bike pump is far ahead, '
+            'but a man stopped to help us and gave us his pump.'
         )
 
         self.assertEquals(
@@ -165,7 +170,7 @@ class TestMessageGetEmailObject(TestCase):
                 'generic_message.eml'
             )
         ) as f:
-            unicode_body = unicode(f.read())
+            unicode_body = six.u(f.read())
 
         message = Message()
         message.body = unicode_body
