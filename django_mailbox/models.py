@@ -223,7 +223,8 @@ class Mailbox(models.Model):
                 if part.get('Content-Disposition') is None:
                     continue
                 filename = part.get_filename()
-                # ignore SMIME extension
+                if not filename:
+                    continue
                 filename_basename, filename_extension = os.path.splitext(
                     filename
                 )
