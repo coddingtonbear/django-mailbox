@@ -24,11 +24,6 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
 from django_mailbox.signals import message_received
 import six
 
-SKIPPED_EXTENSIONS = getattr(
-    settings,
-    'DJANGO_MAILBOX_SKIPPED_EXTENSIONS',
-    ['.p7s']
-)
 STRIP_UNALLOWED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
