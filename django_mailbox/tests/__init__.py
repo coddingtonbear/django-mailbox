@@ -37,12 +37,28 @@ class EmailMessageTestCase(TestCase):
                 f.read()
             )
 
+    def _headers_identical(self, left, right):
+        """ Check if headers are identical.
+
+        This is particularly tricky because Python 2.6, Python 2.7 and Python 3
+        each handle this slightly differently.  This should mash away all
+        of the differences, though.
+
+        """
+        left = left.replace('\n\t', ' ').replace('\n ', ' ')
+        right = right.replace('\n\t', ' ').replace('\n ', ' ')
+        if right != left:
+            print(repr(left))
+            print(repr(right))
+            return False
+        return True
+
     def compare_email_objects(self, left, right):
         # Compare headers
         for key, value in left.items():
             if not right[key]:
                 raise AssertionError("Extra header '%s'" % key)
-            if right[key].replace('\n\t', ' ') != value.replace('\n\t', ' '):
+            if not self._headers_identical(right[key], value):
                 raise AssertionError(
                     "Header '%s' unequal:\n%s\n%s" % (
                         key,
@@ -53,7 +69,7 @@ class EmailMessageTestCase(TestCase):
         for key, value in right.items():
             if not left[key]:
                 raise AssertionError("Extra header '%s'" % key)
-            if left[key].replace('\n\t', ' ') != value.replace('\n\t', ' '):
+            if not self._headers_identical(left[key], value):
                 raise AssertionError(
                     "Header '%s' unequal:\n%s\n%s" % (
                         key,
