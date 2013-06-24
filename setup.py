@@ -1,14 +1,17 @@
 from setuptools import setup
 
-tests_require=[
+tests_require = [
     'django',
 ]
 
 setup(
     name='django-mailbox',
-    version='2.0',
+    version='2.1',
     url='http://bitbucket.org/latestrevision/django-mailbox/',
-    description='Import mail from POP3, IMAP, local mailboxes or directly from Postfix or Exim4 into your Django application automatically.',
+    description=(
+        'Import mail from POP3, IMAP, local mailboxes or directly from '
+        'Postfix or Exim4 into your Django application automatically.'
+    ),
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     tests_require=tests_require,

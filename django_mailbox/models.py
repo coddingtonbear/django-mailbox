@@ -1,9 +1,13 @@
 import email
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
+from email.encoders import encode_base64
 import urllib
-import os
+import mimetypes
+import os.path
+from quopri import encode as encode_quopri
 import sys
+import uuid
 
 try:
     import urllib.parse as urlparse
@@ -13,12 +17,12 @@ except ImportError:
 from django.conf import settings
 from django.core.mail.message import make_msgid
 from django.core.files import File
-from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport
 from django_mailbox.signals import message_received
+import six
 
 SKIPPED_EXTENSIONS = getattr(
     settings,
@@ -38,10 +42,23 @@ ALLOWED_MIMETYPES = getattr(
         'text/html'
     ]
 )
+TEXT_STORED_MIMETYPES = getattr(
+    settings,
+    'DJANGO_MAILBOX_TEXT_STORED_MIMETYPES',
+    [
+        'text/plain',
+        'text/html'
+    ]
+)
 ALTERED_MESSAGE_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ALTERED_MESSAGE_HEADER',
     'X-Django-Mailbox-Altered-Message'
+)
+ATTACHMENT_INTERPOLATION_HEADER = getattr(
+    settings,
+    'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
+    'X-Django-Mailbox-Interpolate-Attachment'
 )
 
 
@@ -177,26 +194,57 @@ class Mailbox(models.Model):
         msg.save()
         return msg
 
-    def _filter_message_body(self, message):
-        if not message.is_multipart() or not STRIP_UNALLOWED_MIMETYPES:
-            return message
-        stripped_content = {}
+    def _get_dehydrated_message(self, msg, record):
         new = EmailMessage()
-        for header, value in message.items():
-            new[header] = value
-        for part in message.walk():
-            content_type = part.get_content_type()
-            if not content_type in ALLOWED_MIMETYPES:
-                if content_type not in stripped_content:
-                    stripped_content[content_type] = 0
-                stripped_content[content_type] = (
-                    stripped_content[content_type] + 1
+        if msg.is_multipart():
+            for header, value in msg.items():
+                new[header] = value
+            for part in msg.get_payload():
+                new.attach(
+                    self._get_dehydrated_message(part, record)
                 )
-                continue
-            new.attach(part)
-        new[ALTERED_MESSAGE_HEADER] = 'Stripped ' + ', '.join(
-            ['%s*%s' % (key, value) for key, value in stripped_content.items()]
-        )
+        elif (
+            STRIP_UNALLOWED_MIMETYPES
+            and not msg.get_content_type() in ALLOWED_MIMETYPES
+        ):
+            for header, value in msg.items():
+                new[header] = value
+            # Delete header, otherwise when attempting to  deserialize the
+            # payload, it will be expecting a body for this.
+            del new['Content-Transfer-Encoding']
+            new[ALTERED_MESSAGE_HEADER] = (
+                'Stripped; Content type %s not allowed' % (
+                    msg.get_content_type()
+                )
+            )
+            new.set_payload('')
+        elif msg.get_content_type() not in TEXT_STORED_MIMETYPES:
+            filename = msg.get_filename()
+            extension = '.bin'
+            if not filename:
+                extension = mimetypes.guess_extension(msg.get_content_type())
+            else:
+                _, extension = os.path.splitext(filename)
+
+            attachment = MessageAttachment()
+            attachment.document.save(
+                uuid.uuid4().hex + extension,
+                File(six.BytesIO(msg.get_payload(decode=True)))
+            )
+            attachment.message = record
+            for key, value in msg.items():
+                attachment[key] = value
+            attachment.save()
+
+            placeholder = EmailMessage()
+            placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
+            new = placeholder
+        else:
+            for header, value in msg.items():
+                new[header] = value
+            new.set_payload(
+                msg.get_payload()
+            )
         return new
 
     def _process_message(self, message):
@@ -206,7 +254,8 @@ class Mailbox(models.Model):
         msg.message_id = message['message-id'][0:255]
         msg.from_header = message['from']
         msg.to_header = message['to']
-        message = self._filter_message_body(message)
+        msg.save()
+        message = self._get_dehydrated_message(message, msg)
         msg.body = message.as_string()
         if message['in-reply-to']:
             try:
@@ -216,39 +265,6 @@ class Mailbox(models.Model):
             except IndexError:
                 pass
         msg.save()
-        if message.is_multipart():
-            for part in message.walk():
-                if part.get_content_maintype() == 'multipart':
-                    continue
-                if part.get('Content-Disposition') is None:
-                    continue
-                filename = part.get_filename()
-                if not filename:
-                    continue
-                filename_basename, filename_extension = os.path.splitext(
-                    filename
-                )
-                buffer_space = 40
-                if len(filename) > 100 - buffer_space:
-                    # Ensure that there're at least a few chars available
-                    # afterward for duplication things like _1, _2 ... _99 and
-                    # the FileField's upload_to path.
-                    filename_basename = filename_basename[
-                        0:100-len(filename_extension)-buffer_space
-                    ]
-                    filename = filename_basename + filename_extension
-                if filename_extension in SKIPPED_EXTENSIONS:
-                    continue
-                data = part.get_payload(decode=True)
-                if not data:
-                    continue
-                temp_file = NamedTemporaryFile(delete=True)
-                temp_file.write(data)
-                temp_file.flush()
-                attachment = MessageAttachment()
-                attachment.document.save(filename, File(temp_file))
-                attachment.message = msg
-                attachment.save()
         return msg
 
     def get_new_mail(self):
@@ -385,18 +401,72 @@ class Message(models.Model):
     def get_text_body(self):
         def get_body_from_message(message):
             body = ''
-            if message.is_multipart():
-                for part in message.get_payload():
-                    mime_type = part.get('content-type', '').split(';')[0]
-                    if mime_type == 'text/plain':
-                        body = body + get_body_from_message(part)
-            else:
-                body = body + message.get_payload()
+            for part in message.walk():
+                if (
+                    part.get_content_maintype() == 'text'
+                    and part.get_content_subtype() == 'plain'
+                ):
+                    body = body + part.get_payload()
             return body
 
         return get_body_from_message(
             self.get_email_object()
-        ).replace('=\n', '').rstrip('\n')
+        ).replace('=\n', '').strip()
+
+    def _rehydrate(self, msg):
+        new = EmailMessage()
+        if msg.is_multipart():
+            for header, value in msg.items():
+                new[header] = value
+            for part in msg.get_payload():
+                new.attach(
+                    self._rehydrate(part)
+                )
+        elif ATTACHMENT_INTERPOLATION_HEADER in msg.keys():
+            try:
+                attachment = MessageAttachment.objects.get(
+                    pk=msg[ATTACHMENT_INTERPOLATION_HEADER]
+                )
+                for header, value in attachment.items():
+                    new[header] = value
+                encoding = new['Content-Transfer-Encoding']
+                if encoding and encoding.lower() == 'quoted-printable':
+                    # Cannot use `email.encoders.encode_quopri due to
+                    # bug 14360: http://bugs.python.org/issue14360
+                    output = six.BytesIO()
+                    encode_quopri(
+                        six.BytesIO(
+                            attachment.document.read()
+                        ),
+                        output,
+                        quotetabs=True,
+                        header=False,
+                    )
+                    new.set_payload(
+                        output.getvalue().decode().replace(' ', '=20')
+                    )
+                    del new['Content-Transfer-Encoding']
+                    new['Content-Transfer-Encoding'] = 'quoted-printable'
+                else:
+                    new.set_payload(
+                        attachment.document.read()
+                    )
+                    del new['Content-Transfer-Encoding']
+                    encode_base64(new)
+            except MessageAttachment.DoesNotExist:
+                new[ALTERED_MESSAGE_HEADER] = (
+                    'Missing; Attachment %s not found' % (
+                        msg[ATTACHMENT_INTERPOLATION_HEADER]
+                    )
+                )
+                new.set_payload('')
+        else:
+            for header, value in msg.items():
+                new[header] = value
+            new.set_payload(
+                msg.get_payload()
+            )
+        return new
 
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message.
@@ -413,9 +483,12 @@ class Message(models.Model):
         encoded bytes is probably the safest answer.
 
         """
+        body = self.body
         if sys.version_info < (2, 7):
-            return email.message_from_string(self.body.encode('utf-8'))
-        return email.message_from_string(self.body)
+            body = body.encode('utf-8')
+        return self._rehydrate(
+            email.message_from_string(body)
+        )
 
     def delete(self, *args, **kwargs):
         for attachment in self.attachments.all():
@@ -434,11 +507,42 @@ class MessageAttachment(models.Model):
         null=True,
         blank=True,
     )
+    headers = models.TextField(null=True, blank=True)
     document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
 
     def delete(self, *args, **kwargs):
         self.document.delete()
         return super(MessageAttachment, self).delete(*args, **kwargs)
+
+    def _get_rehydrated_headers(self):
+        headers = self.headers
+        if headers is None:
+            return EmailMessage()
+        if sys.version_info < (2, 7):
+            headers = headers.encode('utf-8')
+        return email.message_from_string(headers)
+
+    def _set_dehydrated_headers(self, email_object):
+        self.headers = email_object.as_string()
+
+    def __delitem__(self, name):
+        rehydrated = self._get_rehydrated_headers()
+        del rehydrated[name]
+        self._set_dehydrated_headers(rehydrated)
+
+    def __setitem__(self, name, value):
+        rehydrated = self._get_rehydrated_headers()
+        rehydrated[name] = value
+        self._set_dehydrated_headers(rehydrated)
+
+    def get_filename(self):
+        return self._get_rehydrated_headers().get_filename()
+
+    def items(self):
+        return self._get_rehydrated_headers().items()
+
+    def __getitem__(self, name):
+        return self._get_rehydrated_headers()[name]
 
     def __unicode__(self):
         return self.document.url

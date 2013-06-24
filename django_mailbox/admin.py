@@ -70,9 +70,6 @@ class MessageAdmin(admin.ModelAdmin):
     raw_id_fields = (
         'in_reply_to',
     )
-    exclude = (
-        'body',
-    )
     readonly_fields = (
         'text',
     )

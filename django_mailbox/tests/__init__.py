@@ -4,7 +4,7 @@ import os.path
 from django.test import TestCase
 import six
 
-import django_mailbox
+from django_mailbox import models
 from django_mailbox.models import Mailbox, Message
 
 
@@ -16,22 +16,96 @@ class TestMailbox(TestCase):
         expected_protocol = 'alpha'
         actual_protocol = mailbox._protocol_info.scheme
 
-        self.assertEquals(
+        self.assertEqual(
             expected_protocol,
             actual_protocol,
         )
 
 
 class EmailMessageTestCase(TestCase):
+    def setUp(self):
+        self._ALLOWED_MIMETYPES = models.ALLOWED_MIMETYPES
+        self._STRIP_UNALLOWED_MIMETYPES = models.STRIP_UNALLOWED_MIMETYPES
+        self._TEXT_STORED_MIMETYPES = models.TEXT_STORED_MIMETYPES
+
+        self.mailbox = Mailbox.objects.create()
+        super(EmailMessageTestCase, self).setUp()
+
     def _get_email_object(self, name):
         with open(os.path.join(os.path.dirname(__file__), name), 'r') as f:
             return email.message_from_string(
                 f.read()
             )
 
+    def compare_email_objects(self, left, right):
+        # Compare headers
+        for key, value in left.items():
+            if not right[key]:
+                raise AssertionError("Extra header '%s'" % key)
+            if right[key].replace('\n\t', ' ') != value.replace('\n\t', ' '):
+                raise AssertionError(
+                    "Header '%s' unequal:\n%s\n%s" % (
+                        key,
+                        repr(value),
+                        repr(right[key]),
+                    )
+                )
+        for key, value in right.items():
+            if not left[key]:
+                raise AssertionError("Extra header '%s'" % key)
+            if left[key].replace('\n\t', ' ') != value.replace('\n\t', ' '):
+                raise AssertionError(
+                    "Header '%s' unequal:\n%s\n%s" % (
+                        key,
+                        repr(value),
+                        repr(right[key]),
+                    )
+                )
+        if left.is_multipart() != right.is_multipart():
+            self._raise_mismatched(left, right)
+        if left.is_multipart():
+            left_payloads = left.get_payload()
+            right_payloads = right.get_payload()
+            if len(left_payloads) != len(right_payloads):
+                self._raise_mismatched(left, right)
+            for n in range(len(left_payloads)):
+                self.compare_email_objects(
+                    left_payloads[n],
+                    right_payloads[n]
+                )
+        else:
+            if left.get_payload() is None or right.get_payload() is None:
+                if left.get_payload() is None:
+                    if right.get_payload is not None:
+                        self._raise_mismatched(left, right)
+                if right.get_payload() is None:
+                    if left.get_payload is not None:
+                        self._raise_mismatched(left, right)
+            elif left.get_payload().strip() != right.get_payload().strip():
+                self._raise_mismatched(left, right)
+
+    def _raise_mismatched(self, left, right):
+        raise AssertionError(
+            "Message payloads do not match:\n%s\n%s" % (
+                left.as_string(),
+                right.as_string()
+            )
+        )
+
+    def assertEqual(self, left, right):
+        if not isinstance(left, email.message.Message):
+            return super(EmailMessageTestCase, self).assertEqual(left, right)
+        return self.compare_email_objects(left, right)
+
     def tearDown(self):
         for message in Message.objects.all():
             message.delete()
+        models.ALLOWED_MIMETYPES = self._ALLOWED_MIMETYPES
+        models.STRIP_UNALLOWED_MIMETYPES = self._STRIP_UNALLOWED_MIMETYPES
+        models.TEXT_STORED_MIMETYPES = self._TEXT_STORED_MIMETYPES
+
+        self.mailbox.delete()
+        super(EmailMessageTestCase, self).tearDown()
 
 
 class TestProcessEmail(EmailMessageTestCase):
@@ -48,7 +122,10 @@ class TestProcessEmail(EmailMessageTestCase):
         self.assertEqual(msg.subject, 'Message Without Attachment')
         self.assertEqual(
             msg.message_id,
-            '<CAMdmm+hGH8Dgn-_0xnXJCd=PhyNAiouOYm5zFP0z-foqTO60zA@mail.gmail.com>'
+            (
+                '<CAMdmm+hGH8Dgn-_0xnXJCd=PhyNAiouOYm5zFP0z'
+                '-foqTO60zA@mail.gmail.com>'
+            )
         )
         self.assertEqual(
             msg.from_header,
@@ -68,14 +145,14 @@ class TestProcessEmail(EmailMessageTestCase):
         expected_count = 1
         actual_count = msg.attachments.count()
 
-        self.assertEquals(
+        self.assertEqual(
             expected_count,
             actual_count,
         )
 
         attachment = msg.attachments.all()[0]
-        self.assertEquals(
-            os.path.basename(attachment.document.name),
+        self.assertEqual(
+            attachment.get_filename(),
             'heart.png',
         )
 
@@ -88,56 +165,9 @@ class TestProcessEmail(EmailMessageTestCase):
         expected_results = 'Hello there!'
         actual_results = msg.get_text_body().strip()
 
-        self.assertEquals(
+        self.assertEqual(
             expected_results,
             actual_results,
-        )
-
-
-class TestFilterMessageBody(EmailMessageTestCase):
-    def setUp(self):
-        django_mailbox.models.STRIP_UNALLOWED_MIMETYPES = True
-        super(TestFilterMessageBody, self).setUp()
-
-    def tearDown(self):
-        django_mailbox.models.STRIP_UNALLOWED_MIMETYPES = False
-        super(TestFilterMessageBody, self).tearDown()
-
-    def test_filter_message_does_not_filter_message_if_disabled(self):
-        django_mailbox.models.STRIP_UNALLOWED_MIMETYPES = False
-        message = self._get_email_object('message_with_attachment.eml')
-        mailbox = Mailbox.objects.create()
-
-        self.assertEquals(
-            message.as_string(),
-            mailbox._filter_message_body(message).as_string()
-        )
-
-    def test_filter_message_removes_unknown_content_if_disabled(self):
-        # The below is the _same_ as message_with_attachment.eml, but missing
-        # its attached png image, and adding the expected message altered header.
-        message_without_non_plaintext = (
-            "MIME-Version: 1.0\n"
-            "Received: by 10.221.0.211 with HTTP; Sun, 20 Jan 2013 12:07:07 -0800 (PST)\n"
-            "X-Originating-IP: [24.22.122.177]\n"
-            "Date: Sun, 20 Jan 2013 12:07:07 -0800\n"
-            "Delivered-To: test@adamcoddington.net\n"
-            "Message-ID: <CAMdmm+jYCgrxrekAxszmDnBjAytcBym-Ec+uM-+HEtzuKy=M_g@mail.gmail.com>\n"
-            "Subject: Message With Attachment\n"
-            "From: Adam Coddington <test@adamcoddington.net>\n"
-            "To: Adam Coddington <test@adamcoddington.net>\n"
-            "Content-Type: multipart/mixed; boundary=047d7b33dd729737fe04d3bde348\n"
-            "X-Django-Mailbox-Altered-Message: Stripped image/png*1, multipart/mixed*1\n"
-            "\n--047d7b33dd729737fe04d3bde348\n"
-            "Content-Type: text/plain; charset=UTF-8\n\n"
-            "This message has an attachment.\n\n--047d7b33dd729737fe04d3bde348--"
-        )
-        message = self._get_email_object('message_with_attachment.eml')
-        mailbox = Mailbox.objects.create()
-
-        self.assertEquals(
-            message_without_non_plaintext,
-            mailbox._filter_message_body(message).as_string()
         )
 
 
@@ -156,9 +186,90 @@ class TestGetMessage(EmailMessageTestCase):
             'but a man stopped to help us and gave us his pump.'
         )
 
-        self.assertEquals(
+        self.assertEqual(
             actual_text,
             expected_text
+        )
+
+
+class TestMessageFlattening(EmailMessageTestCase):
+    def test_quopri_message_is_properly_rehydrated(self):
+        incoming_email_object = self._get_email_object(
+            'message_with_many_multiparts.eml',
+        )
+        # Note: this is identical to the above, but it appears that
+        # while reading-in an e-mail message, we do alter it slightly
+        expected_email_object = self._get_email_object(
+            'message_with_many_multiparts.eml',
+        )
+        models.TEXT_STORED_MIMETYPES = ['text/plain']
+
+        msg = self.mailbox.process_incoming_message(incoming_email_object)
+
+        actual_email_object = msg.get_email_object()
+
+        self.assertEqual(
+            actual_email_object,
+            expected_email_object,
+        )
+
+    def test_base64_message_is_properly_rehydrated(self):
+        incoming_email_object = self._get_email_object(
+            'message_with_attachment.eml',
+        )
+        # Note: this is identical to the above, but it appears that
+        # while reading-in an e-mail message, we do alter it slightly
+        expected_email_object = self._get_email_object(
+            'message_with_attachment.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(incoming_email_object)
+
+        actual_email_object = msg.get_email_object()
+
+        self.assertEqual(
+            actual_email_object,
+            expected_email_object,
+        )
+
+    def test_message_handles_rehydration_problems(self):
+        incoming_email_object = self._get_email_object(
+            'message_with_defective_attachment_association.eml',
+        )
+        expected_email_object = self._get_email_object(
+            'message_with_defective_attachment_association_result.eml',
+        )
+        # Note: this is identical to the above, but it appears that
+        # while reading-in an e-mail message, we do alter it slightly
+        message = Message()
+        message.body = incoming_email_object.as_string()
+
+        msg = self.mailbox.process_incoming_message(incoming_email_object)
+
+        actual_email_object = msg.get_email_object()
+
+        self.assertEqual(
+            actual_email_object,
+            expected_email_object,
+        )
+
+    def test_message_content_type_stripping(self):
+        incoming_email_object = self._get_email_object(
+            'message_with_many_multiparts.eml',
+        )
+        expected_email_object = self._get_email_object(
+            'message_with_many_multiparts_stripped_html.eml',
+        )
+        models.STRIP_UNALLOWED_MIMETYPES = True
+        models.ALLOWED_MIMETYPES = ['text/plain']
+
+        msg = self.mailbox.process_incoming_message(incoming_email_object)
+
+        actual_email_object = msg.get_email_object()
+
+        self.assertEqual(
+            actual_email_object,
+            expected_email_object,
         )
 
 
@@ -178,7 +289,7 @@ class TestMessageGetEmailObject(TestCase):
         expected_body = unicode_body
         actual_body = message.get_email_object().as_string()
 
-        self.assertEquals(
+        self.assertEqual(
             expected_body,
             actual_body
         )
