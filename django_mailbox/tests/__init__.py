@@ -48,8 +48,6 @@ class EmailMessageTestCase(TestCase):
         left = left.replace('\n\t', ' ').replace('\n ', ' ')
         right = right.replace('\n\t', ' ').replace('\n ', ' ')
         if right != left:
-            print(repr(left))
-            print(repr(right))
             return False
         return True
 
