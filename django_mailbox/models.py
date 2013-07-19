@@ -6,6 +6,7 @@ import urllib
 import mimetypes
 import os.path
 from quopri import encode as encode_quopri
+from quopri import decodestring as decodestring_quopri
 import sys
 import uuid
 
@@ -24,6 +25,12 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
 from django_mailbox.signals import message_received
 import six
 
+from dateutil import parser
+from django.db import IntegrityError, DatabaseError
+from django.utils.encoding import smart_unicode, smart_str
+from tickets.models import Ticket
+import re
+import traceback
 STRIP_UNALLOWED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
@@ -243,23 +250,35 @@ class Mailbox(models.Model):
         return new
 
     def _process_message(self, message):
-        msg = Message()
-        msg.mailbox = self
-        msg.subject = message['subject'][0:255]
-        msg.message_id = message['message-id'][0:255]
-        msg.from_header = message['from']
-        msg.to_header = message['to']
-        msg.save()
-        message = self._get_dehydrated_message(message, msg)
-        msg.body = message.as_string()
-        if message['in-reply-to']:
-            try:
-                msg.in_reply_to = Message.objects.filter(
-                    message_id=message['in-reply-to']
-                )[0]
-            except IndexError:
-                pass
-        msg.save()
+        try:
+            msg = Message()
+            msg.mailbox = self
+            if 'subject' in message:
+                msg.subject = message['subject'][0:255]
+            if 'message-id' in message:
+                msg.message_id = message['message-id'][0:255]
+            if 'from' in message:
+                msg.from_header = message['from']
+            if 'to' in message:
+                msg.to_header = message['to']
+            msg.save()
+            message = self._get_dehydrated_message(message, msg)
+                msg.body = unicode(e_message.as_string(),errors='ignore')
+            if message['in-reply-to']:
+                try:
+                    msg.in_reply_to = Message.objects.filter(
+                        message_id=message['in-reply-to']
+                    )[0]
+                except IndexError:
+                    pass
+            msg.save()
+        except IntegrityError,e:
+            traceback.print_exc()
+            pass
+        except DatabaseError, e:
+            traceback.print_exc()
+            pass
+
         return msg
 
     def get_new_mail(self):
@@ -346,24 +365,27 @@ class Message(models.Model):
         separate fields.
 
         """
-        if self.outgoing:
-            return self.to_addresses()
-        else:
-            return self.from_addresses()
+        addresses = []
+        addresses = self.to_addresses +  self.from_address
+        return addresses
 
     @property
     def from_address(self):
-        return parseaddr(self.from_header)[1]
+        if self.from_header:
+            return [parseaddr(self.from_header)[1].lower()]
+        else:
+            return []
 
     @property
     def to_addresses(self):
         addresses = []
         for address in self.to_header.split(','):
-            addresses.append(
-                parseaddr(
-                    address
-                )[1]
-            )
+            if address:
+                addresses.append(
+                    parseaddr(
+                        address
+                    )[1].lower()
+                )
         return addresses
 
     def reply(self, message):
@@ -396,12 +418,21 @@ class Message(models.Model):
     def get_text_body(self):
         def get_body_from_message(message):
             body = ''
+            charset = 'ascii'
             for part in message.walk():
                 if (
                     part.get_content_maintype() == 'text'
                     and part.get_content_subtype() == 'plain'
                 ):
-                    body = body + part.get_payload()
+                    # body = body + part.get_payload()
+                    if part.get_content_charset():
+                        charset = part.get_content_charset()
+                    encoding = part['Content-Transfer-Encoding']
+                    # print encoding
+                    if encoding and encoding.lower() == 'base64':
+                        body = body + unicode(part.get_payload().decode('base64'), charset)
+                    else:
+                        body = body + unicode(decodestring_quopri(part.get_payload()), charset)
             return body
 
         return get_body_from_message(
@@ -531,13 +562,25 @@ class MessageAttachment(models.Model):
         self._set_dehydrated_headers(rehydrated)
 
     def get_filename(self):
-        return self._get_rehydrated_headers().get_filename()
+        file_name = self._get_rehydrated_headers().get_filename()
+        if file_name:
+            try:
+                d_subject = email.Header.decode_header(file_name)
+            except UnicodeEncodeError, e:
+                print e
+                return file_name
+            if d_subject[0][1]:
+                return unicode(d_subject[0][0], d_subject[0][1])
+            else:
+                return d_subject[0][0]
+        else:
+            return ''
 
     def items(self):
         return self._get_rehydrated_headers().items()
 
-    def __getitem__(self, name):
-        return self._get_rehydrated_headers()[name]
+    # def __getitem__(self, name):
+    #     return self._get_rehydrated_headers()[name]
 
     def __unicode__(self):
         return self.document.url
