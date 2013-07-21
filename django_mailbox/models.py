@@ -263,7 +263,7 @@ class Mailbox(models.Model):
                 msg.to_header = message['to']
             msg.save()
             message = self._get_dehydrated_message(message, msg)
-                msg.body = unicode(e_message.as_string(),errors='ignore')
+            msg.body = unicode(e_message.as_string(),errors='ignore')
             if message['in-reply-to']:
                 try:
                     msg.in_reply_to = Message.objects.filter(
