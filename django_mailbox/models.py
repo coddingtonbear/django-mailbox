@@ -16,7 +16,7 @@ except ImportError:
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
-from django.core.files import File
+from django.core.files.base import File, ContentFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -222,9 +222,10 @@ class Mailbox(models.Model):
                 _, extension = os.path.splitext(filename)
 
             attachment = MessageAttachment()
+            
             attachment.document.save(
                 uuid.uuid4().hex + extension,
-                File(six.BytesIO(msg.get_payload(decode=True)))
+                ContentFile(six.BytesIO(msg.get_payload(decode=True)).getvalue())
             )
             attachment.message = record
             for key, value in msg.items():
