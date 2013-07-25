@@ -44,16 +44,23 @@ class MessageAttachmentInline(admin.TabularInline):
     model = MessageAttachment
     extra = 0
 
+default_charset = 'ASCII'
+import email.header
+def decode(m):
+    return ''.join([ unicode(t[0], t[1] or default_charset) for t in email.header.decode_header(m) ])
 
 class MessageAdmin(admin.ModelAdmin):
     def attachment_count(self, msg):
         return msg.attachments.count()
 
+    def Subject(self, msg):
+        return decode(msg.subject)
+
     inlines = [
         MessageAttachmentInline,
     ]
     list_display = (
-        'subject',
+        'Subject',
         'processed',
         'read',
         'mailbox',
