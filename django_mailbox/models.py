@@ -246,7 +246,10 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         msg.mailbox = self
-        msg.subject = message['subject'][0:255]
+        if message.get('subject', None):
+            msg.subject = message['subject'][0:255]
+        else:
+            msg.subject = '---'
         msg.message_id = message['message-id'][0:255]
         msg.from_header = message['from']
         msg.to_header = message['to']
