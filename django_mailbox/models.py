@@ -467,9 +467,9 @@ class Message(models.Model):
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message.
 
-        Note: Python 2.6's version of email.message_from_string requires
-        bytes and will incorrectly create an e-mail object if a unicode
-        object is passed-in.
+        Note: Python 2's version of email.message.fromstring on some platforms
+        requires bytes and will incorrectly create an e-mail object if a
+        unicode object is passed-in.
 
         Note that in reality 7-bit ascii *should* be an acceptable encoding
         here per RFC-2822 (2.1), but given that `message_from_string` really
@@ -480,7 +480,7 @@ class Message(models.Model):
 
         """
         body = self.body
-        if sys.version_info < (2, 7):
+        if sys.version_info < (3, 0):
             body = body.encode('utf-8')
         return self._rehydrate(
             email.message_from_string(body)
@@ -514,7 +514,7 @@ class MessageAttachment(models.Model):
         headers = self.headers
         if headers is None:
             return EmailMessage()
-        if sys.version_info < (2, 7):
+        if sys.version_info < (3, 0):
             headers = headers.encode('utf-8')
         return email.message_from_string(headers)
 
