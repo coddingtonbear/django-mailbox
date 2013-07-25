@@ -25,12 +25,7 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
 from django_mailbox.signals import message_received
 import six
 
-from dateutil import parser
-from django.db import IntegrityError, DatabaseError
-from django.utils.encoding import smart_unicode, smart_str
-from tickets.models import Ticket
-import re
-import traceback
+
 STRIP_UNALLOWED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
@@ -251,35 +246,27 @@ class Mailbox(models.Model):
         return new
 
     def _process_message(self, message):
-        try:
-            msg = Message()
-            msg.mailbox = self
-            if 'subject' in message:
-                msg.subject = message['subject'][0:255]
-            if 'message-id' in message:
-                msg.message_id = message['message-id'][0:255]
-            if 'from' in message:
-                msg.from_header = message['from']
-            if 'to' in message:
-                msg.to_header = message['to']
-            msg.save()
-            message = self._get_dehydrated_message(message, msg)
-            msg.body = unicode(e_message.as_string(),errors='ignore')
-            if message['in-reply-to']:
-                try:
-                    msg.in_reply_to = Message.objects.filter(
-                        message_id=message['in-reply-to']
-                    )[0]
-                except IndexError:
-                    pass
-            msg.save()
-        except IntegrityError,e:
-            traceback.print_exc()
-            pass
-        except DatabaseError, e:
-            traceback.print_exc()
-            pass
-
+        msg = Message()
+        msg.mailbox = self
+        if 'subject' in message:
+            msg.subject = message['subject'][0:255]
+        if 'message-id' in message:
+            msg.message_id = message['message-id'][0:255]
+        if 'from' in message:
+            msg.from_header = message['from']
+        if 'to' in message:
+            msg.to_header = message['to']
+        msg.save()
+        message = self._get_dehydrated_message(message, msg)
+        msg.body = unicode(message.as_string(),errors='ignore')
+        if message['in-reply-to']:
+            try:
+                msg.in_reply_to = Message.objects.filter(
+                    message_id=message['in-reply-to']
+                )[0]
+            except IndexError:
+                pass
+        msg.save()
         return msg
 
     def get_new_mail(self):
