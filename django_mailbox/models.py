@@ -57,6 +57,11 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
     'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
     'X-Django-Mailbox-Interpolate-Attachment'
 )
+ORIGINAL_CHARSET_HEADER = getattr(
+    settings,
+    'DJANGO_MAILBOX_ORIGINAL_CHARSET_HEADER',
+    'X-Django-Mailbox-Original-Charset'
+)
 
 
 class ActiveMailboxManager(models.Manager):
@@ -241,8 +246,15 @@ class Mailbox(models.Model):
         else:
             for header, value in msg.items():
                 new[header] = value
+            charset = msg.get_content_charset()
+            if charset:
+                new[ORIGINAL_CHARSET_HEADER] = str(charset)
+                new.set_charset('utf-8')
+            payload = msg.get_payload()
             new.set_payload(
-                msg.get_payload()
+                # Remove any characters that are invalid in the
+                # encoding that this part is supposed to be in.
+                payload.decode(charset, 'replace').encode('utf-8')
             )
         return new
 
@@ -259,7 +271,7 @@ class Mailbox(models.Model):
             msg.to_header = message['to']
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        msg.body = unicode(message.as_string(),'utf8','ignore')
+        msg.body = message.as_string().decode('utf-8')
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
@@ -414,8 +426,12 @@ class Message(models.Model):
                 ):
                     charset = part.get_content_charset()
                     this_part = part.get_payload(decode=True)
+                    # For some unknown reason, get_payload() has returned
+                    # to us a unicode object -- it should be bytes :-\
+                    this_part = this_part.encode('unicode-escape')
+                    this_part = this_part.decode('string-escape')
                     if charset:
-                        this_part = this_part.decode(charset)
+                        this_part = this_part.decode(charset, 'replace')
                     body += this_part
             return body
 
@@ -471,11 +487,15 @@ class Message(models.Model):
                 )
                 new.set_payload('')
         else:
+            payload = msg.get_payload().decode('utf-8')
             for header, value in msg.items():
+                if header == ORIGINAL_CHARSET_HEADER:
+                    payload.encode(value)
+                    new.set_charset(value)
+                    # We do not want to preserve this header
+                    continue
                 new[header] = value
-            new.set_payload(
-                msg.get_payload()
-            )
+            new.set_payload(payload)
         return new
 
     def get_email_object(self):
