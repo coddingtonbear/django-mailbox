@@ -1,4 +1,5 @@
 import email
+from email.header import decode_header
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
@@ -546,7 +547,7 @@ class MessageAttachment(models.Model):
     def get_filename(self):
         file_name = self._get_rehydrated_headers().get_filename()
         if file_name:
-            encoded_subject, encoding = email.Header.decode_header(file_name)[0]
+            encoded_subject, encoding = decode_header(file_name)[0]
             if encoding:
                 encoded_subject = encoded_subject.decode(encoding)
             return encoded_subject
