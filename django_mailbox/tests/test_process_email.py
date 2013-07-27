@@ -122,9 +122,9 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.process_incoming_message(email_object)
 
         actual_text = msg.get_text_body()
-        expected_text = (
-            u'This message contains funny UTF16 characters like this one: '
-            u'"\xc2\xa0" and this one "\xe2\x9c\xbf".'
+        expected_text = six.u(
+            'This message contains funny UTF16 characters like this one: '
+            '"\xc2\xa0" and this one "\xe2\x9c\xbf".'
         )
 
         self.assertEqual(
@@ -150,15 +150,15 @@ class TestProcessEmail(EmailMessageTestCase):
 
         actual_body = msg.get_text_body()
 
-        expected_body = (
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd.'
+        expected_body = six.u(
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd.'
         )
 
         self.assertEqual(
