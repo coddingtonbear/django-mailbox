@@ -6,7 +6,6 @@ import urllib
 import mimetypes
 import os.path
 from quopri import encode as encode_quopri
-from quopri import decodestring as decodestring_quopri
 import sys
 import uuid
 
@@ -258,7 +257,7 @@ class Mailbox(models.Model):
             msg.to_header = message['to']
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        msg.body = unicode(message.as_string(),errors='ignore')
+        msg.body = message.as_string()
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
@@ -406,21 +405,16 @@ class Message(models.Model):
     def get_text_body(self):
         def get_body_from_message(message):
             body = ''
-            charset = 'ascii'
             for part in message.walk():
                 if (
                     part.get_content_maintype() == 'text'
                     and part.get_content_subtype() == 'plain'
                 ):
-                    # body = body + part.get_payload()
-                    if part.get_content_charset():
-                        charset = part.get_content_charset()
-                    encoding = part['Content-Transfer-Encoding']
-                    # print encoding
-                    if encoding and encoding.lower() == 'base64':
-                        body = body + unicode(part.get_payload().decode('base64'), charset)
-                    else:
-                        body = body + unicode(decodestring_quopri(part.get_payload()), charset)
+                    charset = part.get_content_charset()
+                    this_part = part.get_payload(decode=True)
+                    if charset:
+                        this_part = this_part.decode(charset)
+                    body += this_part
             return body
 
         return get_body_from_message(
@@ -552,23 +546,21 @@ class MessageAttachment(models.Model):
     def get_filename(self):
         file_name = self._get_rehydrated_headers().get_filename()
         if file_name:
-            try:
-                d_subject = email.Header.decode_header(file_name)
-            except UnicodeEncodeError, e:
-                print e
-                return file_name
-            if d_subject[0][1]:
-                return unicode(d_subject[0][0], d_subject[0][1])
-            else:
-                return d_subject[0][0]
+            encoded_subject, encoding = email.Header.decode_header(file_name)[0]
+            if encoding:
+                encoded_subject = encoded_subject.decode(encoding)
+            return encoded_subject
         else:
-            return ''
+            return None
 
     def items(self):
         return self._get_rehydrated_headers().items()
 
-    # def __getitem__(self, name):
-    #     return self._get_rehydrated_headers()[name]
+    def __getitem__(self, name):
+        value = self._get_rehydrated_headers()[name]
+        if value is None:
+            raise KeyError('Header %s does not exist' % name)
+        return value
 
     def __unicode__(self):
         return self.document.url
