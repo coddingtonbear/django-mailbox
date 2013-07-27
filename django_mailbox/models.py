@@ -488,13 +488,20 @@ class Message(models.Model):
                 new.set_payload('')
         else:
             payload = msg.get_payload().decode('utf-8')
+            charset = None
             for header, value in msg.items():
                 if header == ORIGINAL_CHARSET_HEADER:
                     payload.encode(value)
-                    new.set_charset(value)
-                    # We do not want to preserve this header
+                    charset = value
+                    # We do not want to preserve this header.
                     continue
                 new[header] = value
+            if charset:
+                # If we process ORIGINAL_CHARSET_HEADER before other headers
+                # (in the above), due to some idiosyncrasies of python's email
+                # module, we'll end up with duplicated headers -- set_charset
+                # sets a handful of headers if they do not already exist.
+                new.set_charset(charset)
             new.set_payload(payload)
         return new
 
