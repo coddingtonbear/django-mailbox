@@ -94,7 +94,7 @@ class TestProcessEmail(EmailMessageTestCase):
         with open(
             os.path.join(
                 os.path.dirname(__file__),
-                'generic_message.eml'
+                'messages/generic_message.eml'
             )
         ) as f:
             unicode_body = six.u(f.read())

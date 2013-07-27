@@ -250,6 +250,8 @@ class Mailbox(models.Model):
             if charset:
                 new[ORIGINAL_CHARSET_HEADER] = str(charset)
                 new.set_charset('utf-8')
+            else:
+                charset = 'ascii'
             payload = msg.get_payload()
             new.set_payload(
                 # Remove any characters that are invalid in the

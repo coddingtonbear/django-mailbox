@@ -8,6 +8,11 @@ from django_mailbox.models import Mailbox, Message
 
 
 class EmailMessageTestCase(TestCase):
+    ALLOWED_EXTRA_HEADERS = [
+        'MIME-Version',
+        'Content-Transfer-Encoding',
+    ]
+
     def setUp(self):
         self._ALLOWED_MIMETYPES = models.ALLOWED_MIMETYPES
         self._STRIP_UNALLOWED_MIMETYPES = models.STRIP_UNALLOWED_MIMETYPES
@@ -17,19 +22,37 @@ class EmailMessageTestCase(TestCase):
         super(EmailMessageTestCase, self).setUp()
 
     def _get_email_object(self, name):
-        with open(os.path.join(os.path.dirname(__file__), name), 'r') as f:
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'messages',
+                name,
+            ),
+            'r'
+        ) as f:
             return email.message_from_string(
                 f.read()
             )
 
-    def _headers_identical(self, left, right):
-        """ Check if headers are identical.
+    def _headers_identical(self, left, right, header=None):
+        """ Check if headers are (close enough to) identical.
 
-        This is particularly tricky because Python 2.6, Python 2.7 and Python 3
-        each handle this slightly differently.  This should mash away all
-        of the differences, though.
+         * This is particularly tricky because Python 2.6, Python 2.7 and
+           Python 3 each handle header strings slightly differently.  This
+           should mash away all of the differences, though.
+         * This also has a small loophole in that when re-writing e-mail
+           payload encodings, we re-build the Content-Type header, so if the
+           header was originally unquoted, it will be quoted when rehydrating
+           the e-mail message.
 
         """
+        if header.lower() == 'content-type':
+            # Special case; given that we re-write the header, we'll be quoting
+            # the new content type; we need to make sure that doesn't cause
+            # this comparison to fail.  Also, the case of the encoding could
+            # be changed, etc. etc. etc.
+            left = left.replace('"', '').upper()
+            right = right.replace('"', '').upper()
         left = left.replace('\n\t', ' ').replace('\n ', ' ')
         right = right.replace('\n\t', ' ').replace('\n ', ' ')
         if right != left:
@@ -39,9 +62,11 @@ class EmailMessageTestCase(TestCase):
     def compare_email_objects(self, left, right):
         # Compare headers
         for key, value in left.items():
+            if not right[key] and key in self.ALLOWED_EXTRA_HEADERS:
+                continue
             if not right[key]:
                 raise AssertionError("Extra header '%s'" % key)
-            if not self._headers_identical(right[key], value):
+            if not self._headers_identical(right[key], value, header=key):
                 raise AssertionError(
                     "Header '%s' unequal:\n%s\n%s" % (
                         key,
@@ -50,9 +75,11 @@ class EmailMessageTestCase(TestCase):
                     )
                 )
         for key, value in right.items():
+            if not left[key] and key in self.ALLOWED_EXTRA_HEADERS:
+                continue
             if not left[key]:
                 raise AssertionError("Extra header '%s'" % key)
-            if not self._headers_identical(left[key], value):
+            if not self._headers_identical(left[key], value, header=key):
                 raise AssertionError(
                     "Header '%s' unequal:\n%s\n%s" % (
                         key,
