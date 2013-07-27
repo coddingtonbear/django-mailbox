@@ -7,8 +7,7 @@ Message-ID: <CAMdmm+hGH8Dgn-_0xnXJCd=PhyNAiouOYm5zFP0z-foqTO60zA@mail.gmail.com>
 Subject: Message Without Attachment
 From: Adam Coddington <test@adamcoddington.net>
 To: Adam Coddington <test@adamcoddington.net>
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 
 Hello there.

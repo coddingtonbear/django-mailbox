@@ -244,20 +244,26 @@ class Mailbox(models.Model):
             placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
             new = placeholder
         else:
+            payload = msg.get_payload()
             for header, value in msg.items():
                 new[header] = value
             charset = msg.get_content_charset()
             if charset:
-                new[ORIGINAL_CHARSET_HEADER] = str(charset)
-                new.set_charset('utf-8')
-            else:
-                charset = 'ascii'
-            payload = msg.get_payload()
-            new.set_payload(
-                # Remove any characters that are invalid in the
-                # encoding that this part is supposed to be in.
-                payload.decode(charset, 'replace').encode('utf-8')
-            )
+                try:
+                    payload = payload.decode(charset, 'replace')
+                    new[ORIGINAL_CHARSET_HEADER] = charset
+                    new.set_charset('utf-8')
+                except LookupError:
+                    payload = payload.decode('ascii', 'replace')
+                    new.set_charset('utf-8')
+                    new[ALTERED_MESSAGE_HEADER] = (
+                        'Message declared unknown charset \'%s\'' % (
+                            charset
+                        )
+                    )
+            # Remove any characters that are invalid in the
+            # encoding that this part is supposed to be in.
+            new.set_payload(payload.encode('utf-8'))
         return new
 
     def _process_message(self, message):
@@ -428,10 +434,11 @@ class Message(models.Model):
                 ):
                     charset = part.get_content_charset()
                     this_part = part.get_payload(decode=True)
-                    # For some unknown reason, get_payload() has returned
-                    # to us a unicode object -- it should be bytes :-\
-                    this_part = this_part.encode('unicode-escape')
-                    this_part = this_part.decode('string-escape')
+                    if isinstance(this_part, six.text_type):
+                        # For some unknown reason, get_payload() sometimes
+                        # returns a unicode object -- it should always be bytes
+                        this_part = this_part.encode('unicode-escape')
+                        this_part = this_part.decode('string-escape')
                     if charset:
                         this_part = this_part.decode(charset, 'replace')
                     body += this_part
@@ -490,20 +497,23 @@ class Message(models.Model):
                 new.set_payload('')
         else:
             payload = msg.get_payload().decode('utf-8')
-            charset = None
+            charset = msg.get_content_charset()
+            if not charset:
+                charset = 'utf-8'
             for header, value in msg.items():
                 if header == ORIGINAL_CHARSET_HEADER:
-                    payload.encode(value)
+                    # If we process ORIGINAL_CHARSET_HEADER before other
+                    # headers, due to some idiosyncrasies of python's email
+                    # module, we'll end up with duplicated headers --
+                    # set_charset sets a handful of headers if they do not
+                    # already exist. We'll store this value and re-encode
+                    # the payload afterward.
                     charset = value
                     # We do not want to preserve this header.
                     continue
                 new[header] = value
-            if charset:
-                # If we process ORIGINAL_CHARSET_HEADER before other headers
-                # (in the above), due to some idiosyncrasies of python's email
-                # module, we'll end up with duplicated headers -- set_charset
-                # sets a handful of headers if they do not already exist.
-                new.set_charset(charset)
+            payload = payload.encode(charset, 'replace')
+            new.set_charset(charset)
             new.set_payload(payload)
         return new
 

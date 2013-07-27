@@ -131,3 +131,61 @@ class TestProcessEmail(EmailMessageTestCase):
             expected_text,
             actual_text,
         )
+
+    def test_message_with_unknown_charset(self):
+        """ Ensure that we gracefully fail at handling unknown encodings.
+
+        Should an unknown encoding be used, we should:
+
+        - Add a X-Django-Mailbox-Altered-Message header
+        - Use UTF-8 (with replacement) as the de-facto (and probably incorrect)
+          encoding for this payload part.
+
+        """
+        email_object = self._get_email_object(
+            'message_with_invalid_payload_encoding.eml'
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        actual_body = msg.get_text_body()
+
+        expected_body = (
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
+            u'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd.'
+        )
+
+        self.assertEqual(
+            expected_body,
+            actual_body,
+        )
+
+    def test_message_with_invalid_content_for_declared_encoding(self):
+        """ Ensure that we gracefully handle mis-encoded bodies.
+
+        Should a payload body be misencoded, we should:
+
+        - Decode the message (with replacement) using the declared encoding.
+        - Always return a payload body in the declared encoding, using python's
+          usual replacement mechanisms.
+
+        """
+        email_object = self._get_email_object(
+            'message_with_invalid_content_for_declared_encoding.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        actual_body = msg.get_text_body()
+        expected_body = '??? ????????? ????? ???????????? ?????????.'
+
+        self.assertEqual(
+            actual_body,
+            expected_body,
+        )
