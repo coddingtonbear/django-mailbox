@@ -4,7 +4,6 @@ from email.header import decode_header
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
-import logging
 import urllib
 import mimetypes
 import os.path
@@ -26,9 +25,6 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MMDFTransport
 from django_mailbox.signals import message_received
 import six
-
-
-logger = logging.getLogger(__name__)
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
