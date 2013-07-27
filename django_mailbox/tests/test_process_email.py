@@ -132,48 +132,16 @@ class TestProcessEmail(EmailMessageTestCase):
             actual_text,
         )
 
-    def test_message_with_unknown_charset(self):
-        """ Ensure that we gracefully fail at handling unknown encodings.
-
-        Should an unknown encoding be used, we should:
-
-        - Add a X-Django-Mailbox-Altered-Message header
-        - Use UTF-8 (with replacement) as the de-facto (and probably incorrect)
-          encoding for this payload part.
-
-        """
-        email_object = self._get_email_object(
-            'message_with_invalid_payload_encoding.eml'
-        )
-
-        msg = self.mailbox.process_incoming_message(email_object)
-
-        actual_body = msg.get_text_body()
-
-        expected_body = six.u(
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd '
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'
-            '\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd.'
-        )
-
-        self.assertEqual(
-            expected_body,
-            actual_body,
-        )
-
     def test_message_with_invalid_content_for_declared_encoding(self):
         """ Ensure that we gracefully handle mis-encoded bodies.
 
         Should a payload body be misencoded, we should:
 
-        - Decode the message (with replacement) using the declared encoding.
-        - Always return a payload body in the declared encoding, using python's
-          usual replacement mechanisms.
+        - Not explode
+
+        Note: there is (intentionally) no assertion below; the only guarantee
+        we make via this library is that processing this e-mail message will
+        not cause an exception to be raised.
 
         """
         email_object = self._get_email_object(
@@ -182,8 +150,25 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
+        msg.get_text_body()
+
+    def test_message_with_valid_content_in_single_byte_encoding(self):
+        email_object = self._get_email_object(
+            'message_with_single_byte_encoding.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
         actual_body = msg.get_text_body()
-        expected_body = '??? ????????? ????? ???????????? ?????????.'
+
+        expected_body = six.u(
+            '\u042d\u0442\u043e '
+            '\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 '
+            '\u0438\u043c\u0435\u0435\u0442 '
+            '\u043d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d'
+            '\u0443\u044e '
+            '\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u043a\u0430.'
+        )
 
         self.assertEqual(
             actual_body,

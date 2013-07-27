@@ -2,6 +2,7 @@ import email
 import os.path
 
 from django.test import TestCase
+import sys
 
 from django_mailbox import models
 from django_mailbox.models import Mailbox, Message
@@ -28,11 +29,12 @@ class EmailMessageTestCase(TestCase):
                 'messages',
                 name,
             ),
-            'r'
+            'rb'
         ) as f:
-            return email.message_from_string(
-                f.read()
-            )
+            if sys.version_info < (3, 0):
+                return email.message_from_string(f.read())
+            else:
+                return email.message_from_bytes(f.read())
 
     def _headers_identical(self, left, right, header=None):
         """ Check if headers are (close enough to) identical.

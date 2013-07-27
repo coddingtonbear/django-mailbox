@@ -1,8 +1,10 @@
+import base64
 import email
 from email.header import decode_header
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
+import logging
 import urllib
 import mimetypes
 import os.path
@@ -17,13 +19,16 @@ except ImportError:
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
-from django.core.files.base import File, ContentFile
+from django.core.files.base import ContentFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport
 from django_mailbox.signals import message_received
 import six
+
+
+logger = logging.getLogger(__name__)
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
@@ -56,11 +61,6 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
     'X-Django-Mailbox-Interpolate-Attachment'
-)
-ORIGINAL_CHARSET_HEADER = getattr(
-    settings,
-    'DJANGO_MAILBOX_ORIGINAL_CHARSET_HEADER',
-    'X-Django-Mailbox-Original-Charset'
 )
 
 
@@ -230,10 +230,14 @@ class Mailbox(models.Model):
                 extension = '.bin'
 
             attachment = MessageAttachment()
-            
+
             attachment.document.save(
                 uuid.uuid4().hex + extension,
-                ContentFile(six.BytesIO(msg.get_payload(decode=True)).getvalue())
+                ContentFile(
+                    six.BytesIO(
+                        msg.get_payload(decode=True)
+                    ).getvalue()
+                )
             )
             attachment.message = record
             for key, value in msg.items():
@@ -244,26 +248,7 @@ class Mailbox(models.Model):
             placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
             new = placeholder
         else:
-            payload = msg.get_payload()
-            for header, value in msg.items():
-                new[header] = value
-            charset = msg.get_content_charset()
-            if charset:
-                try:
-                    payload = payload.decode(charset, 'replace')
-                    new[ORIGINAL_CHARSET_HEADER] = charset
-                    new.set_charset('utf-8')
-                except LookupError:
-                    payload = payload.decode('ascii', 'replace')
-                    new.set_charset('utf-8')
-                    new[ALTERED_MESSAGE_HEADER] = (
-                        'Message declared unknown charset \'%s\'' % (
-                            charset
-                        )
-                    )
-            # Remove any characters that are invalid in the
-            # encoding that this part is supposed to be in.
-            new.set_payload(payload.encode('utf-8'))
+            new = msg
         return new
 
     def _process_message(self, message):
@@ -279,7 +264,7 @@ class Mailbox(models.Model):
             msg.to_header = message['to']
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        msg.body = message.as_string().decode('utf-8')
+        msg.set_body(message.as_string())
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
@@ -348,6 +333,10 @@ class Message(models.Model):
     )
 
     body = models.TextField()
+    encoded = models.BooleanField(
+        default=False,
+        help_text='True if the e-mail body is Base64 encoded'
+    )
 
     processed = models.DateTimeField(
         auto_now_add=True
@@ -375,7 +364,7 @@ class Message(models.Model):
 
         """
         addresses = []
-        addresses = self.to_addresses +  self.from_address
+        addresses = self.to_addresses + self.from_address
         return addresses
 
     @property
@@ -434,13 +423,9 @@ class Message(models.Model):
                 ):
                     charset = part.get_content_charset()
                     this_part = part.get_payload(decode=True)
-                    if isinstance(this_part, six.text_type):
-                        # For some unknown reason, get_payload() sometimes
-                        # returns a unicode object -- it should always be bytes
-                        this_part = this_part.encode('unicode-escape')
-                        this_part = this_part.decode('string-escape')
                     if charset:
                         this_part = this_part.decode(charset, 'replace')
+
                     body += this_part
             return body
 
@@ -496,48 +481,32 @@ class Message(models.Model):
                 )
                 new.set_payload('')
         else:
-            payload = msg.get_payload().decode('utf-8')
-            charset = msg.get_content_charset()
-            if not charset:
-                charset = 'utf-8'
             for header, value in msg.items():
-                if header == ORIGINAL_CHARSET_HEADER:
-                    # If we process ORIGINAL_CHARSET_HEADER before other
-                    # headers, due to some idiosyncrasies of python's email
-                    # module, we'll end up with duplicated headers --
-                    # set_charset sets a handful of headers if they do not
-                    # already exist. We'll store this value and re-encode
-                    # the payload afterward.
-                    charset = value
-                    # We do not want to preserve this header.
-                    continue
                 new[header] = value
-            payload = payload.encode(charset, 'replace')
-            new.set_charset(charset)
-            new.set_payload(payload)
+            new.set_payload(
+                msg.get_payload()
+            )
         return new
 
-    def get_email_object(self):
-        """ Returns an `email.message.Message` instance for this message.
+    def get_body(self):
+        if self.encoded:
+            return base64.b64decode(self.body.encode('ascii'))
+        return self.body.encode('utf-8')
 
-        Note: Python 2's version of email.message.fromstring on some platforms
-        requires bytes and will incorrectly create an e-mail object if a
-        unicode object is passed-in.
-
-        Note that in reality 7-bit ascii *should* be an acceptable encoding
-        here per RFC-2822 (2.1), but given that `message_from_string` really
-        only cares that bytes are incoming rather than a unicode object, and
-        django will dutifully, if you were to edit the message in code or
-        via the admin, allow you to store unicode characters, returning UTF-8
-        encoded bytes is probably the safest answer.
-
-        """
-        body = self.body
-        if sys.version_info < (3, 0):
+    def set_body(self, body):
+        if sys.version_info >= (3, 0):
             body = body.encode('utf-8')
-        return self._rehydrate(
-            email.message_from_string(body)
-        )
+        self.encoded = True
+        self.body = base64.b64encode(body).decode('ascii')
+
+    def get_email_object(self):
+        """ Returns an `email.message.Message` instance for this message."""
+        body = self.get_body()
+        if sys.version_info < (3, 0):
+            flat = email.message_from_string(body)
+        else:
+            flat = email.message_from_bytes(body)
+        return self._rehydrate(flat)
 
     def delete(self, *args, **kwargs):
         for attachment in self.attachments.all():
