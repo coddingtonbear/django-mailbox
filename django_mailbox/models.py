@@ -217,11 +217,12 @@ class Mailbox(models.Model):
             new.set_payload('')
         elif msg.get_content_type() not in TEXT_STORED_MIMETYPES:
             filename = msg.get_filename()
-            extension = '.bin'
             if not filename:
                 extension = mimetypes.guess_extension(msg.get_content_type())
             else:
                 _, extension = os.path.splitext(filename)
+            if not extension:
+                extension = '.bin'
 
             attachment = MessageAttachment()
             
@@ -258,7 +259,7 @@ class Mailbox(models.Model):
             msg.to_header = message['to']
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        msg.body = message.as_string()
+        msg.body = unicode(message.as_string(),'utf8','ignore')
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
