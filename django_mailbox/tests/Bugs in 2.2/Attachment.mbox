@@ -1,0 +1,108 @@
+From - Sat Aug  3 13:25:07 2013
+                                                                                                                                                                                                                                                               
+Delivered-To: person3@example.com
+Received: by 10.76.18.165 with SMTP id x5csp92235oad;
+        Thu, 31 Jan 2013 10:00:48 -0800 (PST)
+X-Received: by 10.66.81.231 with SMTP id d7mr22593565pay.27.1359655248387;
+        Thu, 31 Jan 2013 10:00:48 -0800 (PST)
+Return-Path: <SRS0=RahL=LY=example.net=person2@bounce.secureserver.net>
+Received: from p3plsmtp21-02.prod.phx3.secureserver.net (p3plsmtp21-02.prod.phx3.secureserver.net. [123.123.123.123])
+        by mx.google.com with ESMTP id wk7si5300126pbc.79.2013.01.31.10.00.47;
+        Thu, 31 Jan 2013 10:00:48 -0800 (PST)
+Received-SPF: pass (google.com: domain of SRS0=RahL=LY=example.net=person2@bounce.secureserver.net designates 123.123.123.123 as permitted sender) client-ip=123.123.123.123;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of SRS0=RahL=LY=example.net=person2@bounce.secureserver.net designates 123.123.123.123 as permitted sender) smtp.mail=SRS0=RahL=LY=example.net=person2@bounce.secureserver.net
+Received: (qmail 23678 invoked from network); 31 Jan 2013 18:00:47 -0000
+Delivered-To: person4@example.com
+Precedence: bulk
+Received: (qmail 23676 invoked by uid 30297); 31 Jan 2013 18:00:47 -0000
+Received: from unknown (HELO p3pismtp01-017.prod.phx3.secureserver.net) ([123.123.123.123])
+          (envelope-sender <person1@example.com>)
+          by p3plsmtp21-02.prod.phx3.secureserver.net (qmail-1.03) with SMTP
+          for <person4@example.com>; 31 Jan 2013 18:00:47 -0000
+X-IronPort-Anti-Spam-Result: AjsDACKwClFIFIAKnGdsb2JhbABCA4JJg3+BJKR7iSQBiCaBCA4BAQEBAQgLCQkUJ4IeAQEEAR4FQSUFBhEDAQIGAQEBIgICAhUIBykIFQMBAYgKBgyvRyuSOI0RED2CG4ETA4hkgnKBaYJxhWKBHIVAjQqBRwIDBBc
+Received: from mail.example.net (HELO example.com) ([72.20.128.10])
+  by p3pismtp01-017.prod.phx3.secureserver.net with ESMTP; 31 Jan 2013 11:00:28 -0700
+Received: from DOM-ADM-MTA by aa03.example.net
+	with Novell_GroupWise; Thu, 31 Jan 2013 12:00:24 -0600
+Mime-Version: 1.0
+Date: Thu, 31 Jan 2013 12:00:08 -0600
+References: <1359492484.4590710694371947@mf102>
+In-Reply-To: <1359492484.4590710694371947@mf102>
+Message-ID: <510A5CC8.6E86.00A9.1@example.net>
+X-Priority: 1
+X-Mailer: Groupwise 7.0.3
+From: "Person" <person1@example.com>
+Subject: Re: Fwd: Stuff
+To: person4@example.com
+Content-Type: multipart/alternative; boundary="____SRNGMVRNJTDKENWSQEFF____"
+
+
+--____SRNGMVRNJTDKENWSQEFF____
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; modification-date="Fri, 31 Jan 2013 06:00:09
+	-0600"
+
+SGVsbG8sIFdvcmxk
+--____SRNGMVRNJTDKENWSQEFF____
+Content-Type: multipart/related; boundary="____AVETMQDQOMFFURFTDWUU____"
+
+
+--____AVETMQDQOMFFURFTDWUU____
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; modification-date="Fri, 31 Jan 2013 06:00:09
+	-0600"
+
+PCFET0NUWVBFIGh0bWwgUFVCTElDICItLy9XM0MvL0RURCBYSFRNTCAxLjAgU3RyaWN0Ly9FTiIN
+CiAgICAgICAgImh0dHA6Ly93d3cudzMub3JnL1RSL3hodG1sMS9EVEQveGh0bWwxLXN0cmljdC5k
+dGQiPg0KPGh0bWwgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiPg0KDQo8aGVh
+ZD4NCgk8dGl0bGU+QW4gWEhUTUwgMS4wIFN0cmljdCBzdGFuZGFyZCB0ZW1wbGF0ZTwvdGl0bGU+
+DQoJPG1ldGEgaHR0cC1lcXVpdj0iY29udGVudC10eXBlIiANCgkJY29udGVudD0idGV4dC9odG1s
+O2NoYXJzZXQ9dXRmLTgiIC8+DQo8L2hlYWQ+DQoNCjxib2R5Pg0KDQogICAgIDxpbWcgc3JjPSJj
+aWQ6Uk1YUExSSUhXUlFLLjMuanBnIj4NCiAgICAgPHA+SGVsbG8sIHdvcmxkPC9wPg0KICAgICA8
+aW1nIHNyYz0iY2lkOk9FT1lLRUpFTkxJSy4yLmpwZyI+DQoNCjwvYm9keT4NCjwvaHRtbD4=
+--____AVETMQDQOMFFURFTDWUU____
+Content-ID: <OEOYKEJENLIK.2.jpg>
+Content-Type: image/jpg
+Content-Transfer-Encoding: base64
+
+/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAd
+Hx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5Ojf/2wBDAQoKCg0MDRoPDxo3JR8lNzc3Nzc3
+Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzf/wAARCAApABYDASIA
+AhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAYHCAT/xAAvEAABAwMDAwEFCQAAAAAAAAABAgME
+AAURBhIhBzFBswgTFSRSGCIyNlF1o9Hx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAA
+AAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AH7qnb9V3GwIa0dKLMgOgvIad9064nxscJATg8nkZHnw
+ZMjSvWXen5q8Dnub0kj1a0ZRQKuhtVwr2y5bVXWPPu8BIRLcYRsQ6cDK0fUnJxkcZHYAiio37OP5
+4nftbnqtUUFO6namvcSKuBolTUm7slK5bTKQ6+y0rsUt4O7J79yAQccgiZo1X1l3p+VvB57GypA9
+KjRqlfaGk/ePNzuAPPja9/VaMoFHQWj4NgaXcza2IN2noBlNsub0MnglDf0pyM4GeeMkAUU3UUEZ
+6gWVnp9entdWWC7MmSHlHa9ksRHF53uKwQo7txAHYEnn8IpZR151UVpHw6zqyewZdyf5K0ZRQcVl
+mPXG0xJkqE7BeeaC1xniCpsnwcf7+oB4ortooP/Z
+--____AVETMQDQOMFFURFTDWUU____
+Content-ID: <RMXPLRIHWRQK.3.jpg>
+Content-Type: image/jpg
+Content-Transfer-Encoding: base64
+
+/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkTBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAd
+Hx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD8uQzQ5OjcBCgoKBQUFDgUFDisZExkrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIACkAFgMBIgACEQED
+EQH/xAAYAAEBAQEBAAAAAAAAAAAAAAAHAAgGAf/EACoQAAECBAYABQUAAAAAAAAAAAECAwAEBREG
+BxIhMUEIEyRSsyU2UXWj/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAA
+AAD/2gAMAwEAAhEDEQA/AO+zTp+K6jQEJwdNFmYDoLyG3fKdcT1pcJGmx3O4uO+iTIwrnLrT6qsD
+fk1pJHyxoyKA5XA2K5KtsuS6qrLz9WkEhE2thGhDp2utHuTfa47HABEUDfhx+9579W58rUewC1mn
+UMV06gIVg6VL0wXQHltNea62nrS2QdVzsdjYddgmRirOTWn0tYO/BoqQPijRkUBwmWlFoMi5PuSU
+vJsV1RSipMSz3mJlVkAltHtTfewuLgi507UF3hyUo43n7qJvTHCbnk+a1HkAtZp4tqWD6Ah6l00T
+a1uhCnXAS0wPyoAg78DgX74BJkZ84qK0/TqOq54DLtz/AEjRkUAf5Y4Fp2H1OzrEtNys1UGQEycy
+oEyjZsot7c7gG53sACAb3oQIoD//2Q==
+--____AVETMQDQOMFFURFTDWUU____
+Content-ID: <OSSFDHZYGOQM.transparent.gif>
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+
+R0lGODlhAQABAPAAAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAICTAEAOw==
+--____AVETMQDQOMFFURFTDWUU____--
+
+--____SRNGMVRNJTDKENWSQEFF____--
+
+
