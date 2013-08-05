@@ -71,6 +71,9 @@ class MessageAdmin(admin.ModelAdmin):
         'processed',
         'read',
     )
+    exclude = (
+        'body',
+    )
     raw_id_fields = (
         'in_reply_to',
     )
