@@ -81,6 +81,10 @@ Although in this constructed example, this reduces the message's size only
 marginally, in most instances, attached files are much larger than the
 attachment shown here.
 
+.. note::
+
+   Email message bodies are ``base-64`` encoded when stored in the database.
+
 Although the attachment is no longer preserved in the message body above,
 and only the ``X-Django-Mailbox-Interpolate-Attachment: 1308`` header remains
 in the place of the original attachment, the attachment was stored in a
