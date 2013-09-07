@@ -22,6 +22,10 @@ class ImapTransport(object):
 
     def get_message(self):
         typ, inbox = self.server.search(None, 'ALL')
+
+        if not inbox[0]:
+            return
+
         for key in inbox[0].split():
             try:
                 typ, msg_contents = self.server.fetch(key, '(RFC822)')
