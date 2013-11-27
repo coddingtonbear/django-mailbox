@@ -6,7 +6,7 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-
+    no_dry_run = True
     def forwards(self, orm):
         for message in orm['django_mailbox.Message'].objects.all():
             for attachment in message.attachments.all():
