@@ -15,3 +15,9 @@ the e-mail will be stored, and you can process it at will (or, if you're in a hu
 - Test status available on
   `Travis-CI <https://travis-ci.org/latestrevision/django-mailbox>`_.
 
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/latestrevision/django-mailbox/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
