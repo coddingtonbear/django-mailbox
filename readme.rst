@@ -11,7 +11,7 @@ the e-mail will be stored, and you can process it at will (or, if you're in a hu
 - Documentation for django-mailbox is available on
   `ReadTheDocs <http://django-mailbox.readthedocs.org/>`_.
 - Please post issues on
-  `BitBucket <http://bitbucket.org/latestrevision/django-mailbox/issues?status=new&status=open>`_.
+  `Github <http://github.com/latestrevision/django-mailbox/issues>`_.
 - Test status available on
   `Travis-CI <https://travis-ci.org/latestrevision/django-mailbox>`_.
 
