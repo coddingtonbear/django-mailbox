@@ -6,7 +6,7 @@ tests_require = [
 
 setup(
     name='django-mailbox',
-    version='3.0.3',
+    version='3.1',
     url='http://github.com/latestrevision/django-mailbox/',
     description=(
         'Import mail from POP3, IMAP, local mailboxes or directly from '
