@@ -182,10 +182,11 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        expected_subject = (
-            u'\xd3\xe7\xed\xe0\xe9 \xea\xe0\xea \xe7\xe0\xf0'
-            u'\xe0\xe1\xe0\xf2\xfb\xe2\xe0\xf2\xfc \xee\xf2 1000$ '
-            u'\xe2 \xed\xe5\xe4\xe5\xeb\xfe!'
+        expected_subject = six.u(
+            '\u00D3\u00E7\u00ED\u00E0\u00E9 \u00EA\u00E0\u00EA '
+            '\u00E7\u00E0\u00F0\u00E0\u00E1\u00E0\u00F2\u00FB\u00E2'
+            '\u00E0\u00F2\u00FC \u00EE\u00F2 1000$ \u00E2 '
+            '\u00ED\u00E5\u00E4\u00E5\u00EB\u00FE!'
         )
         actual_subject = msg.subject
         self.assertEqual(actual_subject, expected_subject)
