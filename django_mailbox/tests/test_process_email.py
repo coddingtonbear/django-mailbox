@@ -174,3 +174,23 @@ class TestProcessEmail(EmailMessageTestCase):
             actual_body,
             expected_body,
         )
+
+    def test_message_with_single_byte_subject_encoding(self):
+        email_object = self._get_email_object(
+            'message_with_single_byte_extended_subject_encoding.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        expected_subject = (
+            u'\xd3\xe7\xed\xe0\xe9 \xea\xe0\xea \xe7\xe0\xf0'
+            u'\xe0\xe1\xe0\xf2\xfb\xe2\xe0\xf2\xfc \xee\xf2 1000$ '
+            u'\xe2 \xed\xe5\xe4\xe5\xeb\xfe!'
+        )
+        actual_subject = msg.subject
+        self.assertEqual(actual_subject, expected_subject)
+
+        expected_from = u'test test<mr.test32@mail.ru>'
+        actual_from = msg.from_header
+
+        self.assertEqual(expected_from, actual_from)

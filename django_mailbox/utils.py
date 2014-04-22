@@ -10,16 +10,19 @@ logger = logging.getLogger(__name__)
 DEFAULT_CHARSET = getattr(
     settings,
     'DJANGO_MAILBOX_DEFAULT_CHARSET',
-    'ascii',
+    'iso8859-1',
 )
 
 
-def decode_header(header):
+def convert_header_to_unicode(header):
     try:
         return ''.join(
             [
-                unicode(t[0], t[1] or DEFAULT_CHARSET)
-                for t in email.header.decode_header(header)
+                (
+                    bytestr.decode(encoding, 'REPLACE')
+                    if encoding
+                    else bytestr.decode(DEFAULT_CHARSET, 'REPLACE')
+                ) for bytestr, encoding in email.header.decode_header(header)
             ]
         )
     except UnicodeDecodeError:

@@ -1,6 +1,5 @@
 import base64
 import email
-from email.header import decode_header
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
@@ -25,6 +24,8 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MMDFTransport
 from django_mailbox.signals import message_received
 import six
+
+from .utils import convert_header_to_unicode
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
@@ -256,13 +257,13 @@ class Mailbox(models.Model):
         msg = Message()
         msg.mailbox = self
         if 'subject' in message:
-            msg.subject = message['subject'][0:255]
+            msg.subject = convert_header_to_unicode(message['subject'][0:255])
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255]
         if 'from' in message:
-            msg.from_header = message['from']
+            msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
-            msg.to_header = message['to']
+            msg.to_header = convert_header_to_unicode(message['to'])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
@@ -557,10 +558,7 @@ class MessageAttachment(models.Model):
     def get_filename(self):
         file_name = self._get_rehydrated_headers().get_filename()
         if file_name:
-            encoded_subject, encoding = decode_header(file_name)[0]
-            if encoding:
-                encoded_subject = encoded_subject.decode(encoding)
-            return encoded_subject
+            return convert_header_to_unicode(file_name)
         else:
             return None
 

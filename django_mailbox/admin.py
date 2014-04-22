@@ -5,7 +5,7 @@ from django.contrib import admin
 
 from django_mailbox.models import MessageAttachment, Message, Mailbox
 from django_mailbox.signals import message_received
-from django_mailbox.utils import decode_header
+from django_mailbox.utils import convert_header_to_unicode
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class MessageAdmin(admin.ModelAdmin):
         return msg.attachments.count()
 
     def subject(self, msg):
-        return decode_header(msg.subject)
+        return convert_header_to_unicode(msg.subject)
 
     inlines = [
         MessageAttachmentInline,
