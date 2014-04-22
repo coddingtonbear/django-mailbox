@@ -191,7 +191,7 @@ class TestProcessEmail(EmailMessageTestCase):
         actual_subject = msg.subject
         self.assertEqual(actual_subject, expected_subject)
 
-        expected_from = u'test test<mr.test32@mail.ru>'
+        expected_from = six.u('test test<mr.test32@mail.ru>')
         actual_from = msg.from_header
 
         self.assertEqual(expected_from, actual_from)
