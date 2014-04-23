@@ -191,7 +191,12 @@ class TestProcessEmail(EmailMessageTestCase):
         actual_subject = msg.subject
         self.assertEqual(actual_subject, expected_subject)
 
-        expected_from = six.u('test test<mr.test32@mail.ru>')
+        if six.PY3:
+            # There were various bugfixes in Py3k's email module,
+            # this is apparently one of them.
+            expected_from = six.u('test test <mr.test32@mail.ru>')
+        else:
+            expected_from = six.u('test test<mr.test32@mail.ru>')
         actual_from = msg.from_header
 
         self.assertEqual(expected_from, actual_from)

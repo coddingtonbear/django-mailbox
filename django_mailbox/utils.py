@@ -1,6 +1,8 @@
 import email.header
 import logging
 
+import six
+
 from django.conf import settings
 
 
@@ -15,13 +17,18 @@ DEFAULT_CHARSET = getattr(
 
 
 def convert_header_to_unicode(header):
+    def _decode(value, encoding):
+        if isinstance(value, six.text_type):
+            return value
+        if not encoding or encoding == 'unknown-8bit':
+            encoding = DEFAULT_CHARSET
+        return value.decode(encoding, 'REPLACE')
+
     try:
         return ''.join(
             [
                 (
-                    bytestr.decode(encoding, 'REPLACE')
-                    if encoding
-                    else bytestr.decode(DEFAULT_CHARSET, 'REPLACE')
+                    _decode(bytestr, encoding)
                 ) for bytestr, encoding in email.header.decode_header(header)
             ]
         )
