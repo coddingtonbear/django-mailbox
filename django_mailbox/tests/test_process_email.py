@@ -1,4 +1,5 @@
 import os.path
+import sys
 
 import six
 
@@ -191,7 +192,7 @@ class TestProcessEmail(EmailMessageTestCase):
         actual_subject = msg.subject
         self.assertEqual(actual_subject, expected_subject)
 
-        if six.PY3:
+        if sys.version_info >= (3, 3):
             # There were various bugfixes in Py3k's email module,
             # this is apparently one of them.
             expected_from = six.u('test test <mr.test32@mail.ru>')
