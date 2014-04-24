@@ -12,7 +12,9 @@ import uuid
 
 try:
     import urllib.parse as urlparse
+    from urllib.parse import unquote
 except ImportError:
+    from urllib import unquote
     import urlparse
 
 from django.conf import settings
@@ -130,11 +132,11 @@ class Mailbox(models.Model):
 
     @property
     def username(self):
-        return urllib.unquote(self._protocol_info.username)
+        return unquote(self._protocol_info.username)
 
     @property
     def password(self):
-        return urllib.unquote(self._protocol_info.password)
+        return unquote(self._protocol_info.password)
 
     @property
     def location(self):

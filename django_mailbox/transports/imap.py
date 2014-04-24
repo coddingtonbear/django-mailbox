@@ -29,9 +29,9 @@ class ImapTransport(object):
         for key in inbox[0].split():
             try:
                 typ, msg_contents = self.server.fetch(key, '(RFC822)')
-                message = email.message_from_string(msg_contents[0][1])
+                message = email.message_from_bytes(msg_contents[0][1])
                 yield message
-            except email.Errors.MessageParseError:
+            except email.errors.MessageParseError:
                 continue
             self.server.store(key, "+FLAGS", "\\Deleted")
         self.server.expunge()
