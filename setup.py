@@ -41,6 +41,6 @@ setup(
         'django_mailbox.tests',
     ],
     install_requires=[
-        'six'
+        'six>=1.6.1'
     ]
 )

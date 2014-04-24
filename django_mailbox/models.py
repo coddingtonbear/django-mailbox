@@ -4,17 +4,11 @@ from email.header import decode_header
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
-import urllib
 import mimetypes
 import os.path
 from quopri import encode as encode_quopri
 import sys
 import uuid
-
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urlparse
 
 from django.conf import settings
 from django.core.mail.message import make_msgid
@@ -25,6 +19,7 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MMDFTransport
 from django_mailbox.signals import message_received
 import six
+from six.moves.urllib.parse import unquote, urlparse
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
@@ -117,7 +112,7 @@ class Mailbox(models.Model):
 
     @property
     def _protocol_info(self):
-        return urlparse.urlparse(self.uri)
+        return urlparse(self.uri)
 
     @property
     def _domain(self):
@@ -129,11 +124,11 @@ class Mailbox(models.Model):
 
     @property
     def username(self):
-        return urllib.unquote(self._protocol_info.username)
+        return unquote(self._protocol_info.username)
 
     @property
     def password(self):
-        return urllib.unquote(self._protocol_info.password)
+        return unquote(self._protocol_info.password)
 
     @property
     def location(self):
@@ -249,6 +244,21 @@ class Mailbox(models.Model):
             placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
             new = placeholder
         else:
+            content_charset = msg.get_content_charset()
+            if not content_charset:
+                content_charset = 'ascii'
+            try:
+                # Make sure that the payload can be properly decoded in the
+                # defined charset, if it can't, let's mash some things
+                # inside the payload :-\
+                msg.get_payload(decode=True).decode(content_charset)
+            except UnicodeDecodeError:
+                msg.set_payload(
+                    msg.get_payload(decode=True).decode(
+                        content_charset,
+                        'ignore'
+                    )
+                )
             new = msg
         return new
 
@@ -495,7 +505,7 @@ class Message(models.Model):
         return self.body.encode('utf-8')
 
     def set_body(self, body):
-        if sys.version_info >= (3, 0):
+        if six.PY3:
             body = body.encode('utf-8')
         self.encoded = True
         self.body = base64.b64encode(body).decode('ascii')
@@ -503,10 +513,10 @@ class Message(models.Model):
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message."""
         body = self.get_body()
-        if sys.version_info < (3, 0):
-            flat = email.message_from_string(body)
-        else:
+        if six.PY3:
             flat = email.message_from_bytes(body)
+        else:
+            flat = email.message_from_string(body)
         return self._rehydrate(flat)
 
     def delete(self, *args, **kwargs):
