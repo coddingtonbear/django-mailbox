@@ -1,4 +1,5 @@
 import os.path
+import sys
 
 import six
 
@@ -174,3 +175,29 @@ class TestProcessEmail(EmailMessageTestCase):
             actual_body,
             expected_body,
         )
+
+    def test_message_with_single_byte_subject_encoding(self):
+        email_object = self._get_email_object(
+            'message_with_single_byte_extended_subject_encoding.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        expected_subject = six.u(
+            '\u00D3\u00E7\u00ED\u00E0\u00E9 \u00EA\u00E0\u00EA '
+            '\u00E7\u00E0\u00F0\u00E0\u00E1\u00E0\u00F2\u00FB\u00E2'
+            '\u00E0\u00F2\u00FC \u00EE\u00F2 1000$ \u00E2 '
+            '\u00ED\u00E5\u00E4\u00E5\u00EB\u00FE!'
+        )
+        actual_subject = msg.subject
+        self.assertEqual(actual_subject, expected_subject)
+
+        if sys.version_info >= (3, 3):
+            # There were various bugfixes in Py3k's email module,
+            # this is apparently one of them.
+            expected_from = six.u('test test <mr.test32@mail.ru>')
+        else:
+            expected_from = six.u('test test<mr.test32@mail.ru>')
+        actual_from = msg.from_header
+
+        self.assertEqual(expected_from, actual_from)
