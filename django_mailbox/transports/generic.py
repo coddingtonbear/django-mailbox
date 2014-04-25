@@ -1,4 +1,7 @@
-class GenericFileMailbox(object):
+from .base import EmailTransport
+
+
+class GenericFileMailbox(EmailTransport):
     _variant = None
     _path = None
 
