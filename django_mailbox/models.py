@@ -350,8 +350,8 @@ class Message(models.Model):
         max_length=255,
     )
     to_header = models.TextField()
-    cc_header = models.TextField()
-    bcc_header = models.TextField()
+    cc_header = models.TextField(default='')
+    bcc_header = models.TextField(default='')
     outgoing = models.BooleanField(
         default=False,
         blank=True,
