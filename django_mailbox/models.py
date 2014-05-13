@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport
+    MMDFTransport, GmailTransport
 from django_mailbox.signals import message_received
 import six
 from six.moves.urllib.parse import unquote, urlparse
@@ -163,6 +163,13 @@ class Mailbox(models.Model):
                 ssl=self.use_ssl
             )
             conn.connect(self.username, self.password)
+        elif self.type == "gmail":
+            conn = GmailTransport(
+                self.location,
+                port=self.port if self.port else None,
+                ssl=self.use_ssl
+            )
+            conn.connect(self.username, self.password)
         elif self.type == 'maildir':
             conn = MaildirTransport(self.location)
         elif self.type == 'mbox':
@@ -274,6 +281,10 @@ class Mailbox(models.Model):
             msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
             msg.to_header = convert_header_to_unicode(message['to'])
+        if 'cc' in message:
+            msg.cc_header = convert_header_to_unicode(message['cc'])
+        if 'bcc' in message:
+            msg.bcc_header = convert_header_to_unicode(message['bcc'])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
@@ -339,6 +350,8 @@ class Message(models.Model):
         max_length=255,
     )
     to_header = models.TextField()
+    cc_header = models.TextField()
+    bcc_header = models.TextField()
     outgoing = models.BooleanField(
         default=False,
         blank=True,
@@ -385,6 +398,30 @@ class Message(models.Model):
             return [parseaddr(self.from_header)[1].lower()]
         else:
             return []
+
+    @property
+    def cc_addresses(self):
+        addresses = []
+        for address in self.cc_header.split(','):
+            if address:
+                addresses.append(
+                    parseaddr(
+                        address
+                    )[1].lower()
+                )
+        return addresses
+
+    @property
+    def bcc_addresses(self):
+        addresses = []
+        for address in self.bcc_header.split(','):
+            if address:
+                addresses.append(
+                    parseaddr(
+                        address
+                    )[1].lower()
+                )
+        return addresses
 
     @property
     def to_addresses(self):
