@@ -19,27 +19,42 @@ class GmailTransport(EmailTransport):
                 self.port = 143
 
     def connect(self, username, password):
-        self.server = self.transport(self.hostname, self.port)
-        typ, msg = self.server.login(username, password)
-        self.server.select()
+        # Try to use oauth2 first.  It's much safer
+        try:
+            self._connect_oauth(username)
+        except (TypeError, ValueError), e:
+            print " Couldn't do oauth2", e
+            self.server = self.transport(self.hostname, self.port)
+            typ, msg = self.server.login(username, password)
+            self.server.select()
 
-    def _connect_oauth(self, username, refresh_token):
-        import oauth2
-        client_id = "REDACTED"
-        client_secret = "REDACTED"
-        response = oauth2.RefreshToken(client_id, client_secret, refresh_token)
-        access_token = response['access_token']
-        print "New Access Token :", access_token
-        print "Expires in :", response['expires_in']
-        # before passing into IMAPLib access token needs to be converted
-        # into a string
-        oauth2String = oauth2.GenerateOAuth2String(
-            username,
-            access_token,
-            base64_encode=False
+    def _connect_oauth(self, username):
+        # username should be an email address that has already been authorized
+        # for gmail access
+        try:
+            from google_api import (
+                get_google_access_token,
+                fetch_user_info)
+
+        except ImportError:
+            raise ValueError(
+                "Install python-social-auth to use oauth2 auth for gmail"
+            )
+
+        try:
+            access_token = get_google_access_token(username)
+            google_email_address = fetch_user_info(username)[u'email']
+        except TypeError:
+            # Sometimes we have to try again
+            access_token = get_google_access_token(username)
+            google_email_address = fetch_user_info(username)[u'email']
+
+        auth_string = 'user=%s\1auth=Bearer %s\1\1' % (
+            google_email_address,
+            access_token
         )
         self.server = self.transport(self.hostname, self.port)
-        self.server.authenticate('XOAUTH2', lambda x: oauth2String)
+        self.server.authenticate('XOAUTH2', lambda x: auth_string)
         self.server.select()
 
     def _get_all_message_ids(self):
