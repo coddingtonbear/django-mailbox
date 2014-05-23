@@ -4,9 +4,10 @@ from .base import EmailTransport, MessageParseError
 
 
 class ImapTransport(EmailTransport):
-    def __init__(self, hostname, port=None, ssl=False):
+    def __init__(self, hostname, port=None, ssl=False, archive=''):
         self.hostname = hostname
         self.port = port
+        self.archive = archive
         if ssl:
             self.transport = IMAP4_SSL
             if not self.port:
@@ -27,6 +28,11 @@ class ImapTransport(EmailTransport):
         if not inbox[0]:
             return
 
+        if self.archive:
+            typ, folders = self.server.list(pattern=self.archive)
+            if folders[0] == None:
+                self.archive = False  
+
         for key in inbox[0].split():
             try:
                 typ, msg_contents = self.server.fetch(key, '(RFC822)')
@@ -34,6 +40,10 @@ class ImapTransport(EmailTransport):
                 yield message
             except MessageParseError:
                 continue
+
+            if self.archive:
+                self.server.copy(key, self.archive)
+
             self.server.store(key, "+FLAGS", "\\Deleted")
         self.server.expunge()
         return

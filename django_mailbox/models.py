@@ -146,6 +146,10 @@ class Mailbox(models.Model):
     def use_ssl(self):
         return '+ssl' in self._protocol_info.scheme.lower()
 
+    @property
+    def archive(self):
+        return self._protocol_info.query
+
     def get_connection(self):
         if not self.uri:
             return None
@@ -153,7 +157,8 @@ class Mailbox(models.Model):
             conn = ImapTransport(
                 self.location,
                 port=self.port if self.port else None,
-                ssl=self.use_ssl
+                ssl=self.use_ssl,
+                archive=self.archive
             )
             conn.connect(self.username, self.password)
         elif self.type == 'pop3':

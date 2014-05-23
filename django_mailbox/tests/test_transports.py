@@ -10,10 +10,12 @@ class TestImapTransport(EmailMessageTestCase):
         self.arbitrary_hostname = 'one.two.three'
         self.arbitrary_port = 100
         self.ssl = False
+        self.archive = 'Archive'
         self.transport = ImapTransport(
             self.arbitrary_hostname,
             self.arbitrary_port,
-            self.ssl
+            self.ssl,
+            self.archive
         )
         self.transport.server = None
         super(TestImapTransport, self).setUp()
@@ -36,7 +38,18 @@ class TestImapTransport(EmailMessageTestCase):
                     ')',
                 ]
             )
-
+            server.list.return_value = (
+                'OK',
+                [
+                    '(\\HasNoChildren) "/" "Archive"'
+                ]
+            )
+            server.copy.return_value = (
+                'OK',
+                [
+                    '[COPYUID 1 2 2] (Success)'
+                ]
+            )
             actual_messages = list(self.transport.get_message())
 
         self.assertEqual(len(actual_messages), 1)
