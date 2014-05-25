@@ -18,7 +18,7 @@ from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MMDFTransport
 from django_mailbox.signals import message_received
 import six
-from six.moves.urllib.parse import unquote, urlparse
+from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
 from .utils import convert_header_to_unicode
 
@@ -116,6 +116,10 @@ class Mailbox(models.Model):
         return urlparse(self.uri)
 
     @property
+    def _query_string(self):
+        return parse_qs(self._protocol_info.query)
+
+    @property
     def _domain(self):
         return self._protocol_info.hostname
 
@@ -148,7 +152,10 @@ class Mailbox(models.Model):
 
     @property
     def archive(self):
-        return self._protocol_info.query
+        archive_folder = self._query_string.get('archive', None)
+        if not archive_folder:
+            return None
+        return archive_folder[0]
 
     def get_connection(self):
         if not self.uri:
