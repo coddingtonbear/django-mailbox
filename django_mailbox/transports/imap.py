@@ -30,8 +30,9 @@ class ImapTransport(EmailTransport):
 
         if self.archive:
             typ, folders = self.server.list(pattern=self.archive)
-            if folders[0] == None:
-                self.archive = False  
+            if folders[0] is None:
+                # If the archive folder does not exist, create it
+                self.server.create(self.archive)
 
         for key in inbox[0].split():
             try:
