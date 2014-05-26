@@ -59,7 +59,7 @@ SSL) and you would like to archive all processed emails
 into a folder named ``Archived``, you
 would enter the following as your URI::
 
-    pop3+ssl://youremailaddress%40gmail.com:1234@pop.gmail.com?archive=Archived
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
 
 
 Local File-based Mailboxes
