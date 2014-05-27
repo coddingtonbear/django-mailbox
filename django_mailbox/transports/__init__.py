@@ -1,4 +1,5 @@
 from django_mailbox.transports.imap import ImapTransport
+from django_mailbox.transports.gmail import GmailTransport
 from django_mailbox.transports.pop3 import Pop3Transport
 from django_mailbox.transports.maildir import MaildirTransport
 from django_mailbox.transports.mbox import MboxTransport
