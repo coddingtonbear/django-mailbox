@@ -94,7 +94,7 @@ class GmailTransport(EmailTransport):
                     size = metadata.split('(')[1].split(' ')[3]
                     if int(size) <= int(self.MAX_MSG_SIZE):
                         safe_message_ids.append(uid)
-                except ValueError, e:
+                except ValueError as e:
                     # print "ValueError: %s working on %s" % (e, each_msg[0])
                     # print each_msg
                     pass
