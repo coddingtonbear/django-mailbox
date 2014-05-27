@@ -23,7 +23,7 @@ class GmailTransport(EmailTransport):
         try:
             self._connect_oauth(username)
         except (TypeError, ValueError) as e:
-            print " Couldn't do oauth2", e
+            #print " Couldn't do oauth2", e
             self.server = self.transport(self.hostname, self.port)
             typ, msg = self.server.login(username, password)
             self.server.select()
@@ -95,8 +95,8 @@ class GmailTransport(EmailTransport):
                     if int(size) <= int(self.MAX_MSG_SIZE):
                         safe_message_ids.append(uid)
                 except ValueError, e:
-                    print "ValueError: %s working on %s" % (e, each_msg[0])
-                    print each_msg
+                    # print "ValueError: %s working on %s" % (e, each_msg[0])
+                    # print each_msg
                     pass
         return safe_message_ids
 
@@ -106,7 +106,7 @@ class GmailTransport(EmailTransport):
             message_ids = self._get_all_message_ids()
         else:
             message_ids = self._get_unread_message_ids()
-        print "There are %s messages: %s" % (len(message_ids), message_ids)
+        # print "There are %s messages: %s" % (len(message_ids), message_ids)
         if self.MAX_MSG_SIZE:
             message_ids = self._get_small_message_ids(message_ids)
 
