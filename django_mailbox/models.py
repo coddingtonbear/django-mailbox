@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django_mailbox.transports import Pop3Transport, ImapTransport,\
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport
+    MMDFTransport, GmailImapTransport
 from django_mailbox.signals import message_received
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -165,6 +165,14 @@ class Mailbox(models.Model):
                 self.location,
                 port=self.port if self.port else None,
                 ssl=self.use_ssl,
+                archive=self.archive
+            )
+            conn.connect(self.username, self.password)
+        elif self.type == 'gmail':
+            conn = GmailImapTransport(
+                self.location,
+                port=self.port if self.port else None,
+                ssl=True,
                 archive=self.archive
             )
             conn.connect(self.username, self.password)

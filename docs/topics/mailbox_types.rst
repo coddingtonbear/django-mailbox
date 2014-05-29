@@ -61,6 +61,20 @@ would enter the following as your URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
 
+Gmail IMAP with Oauth2 authentication
+-------------------------------------
+
+Gmail supports using oauth2 for authentication_ which is more secure.
+To handle the handshake and storing the credentials, use python-social-auth_.
+
+.. _authentication: https://developers.google.com/gmail/xoauth2_protocol
+.. _python-social-auth: http://psa.matiasaguirre.net/
+
+The Gmail Mailbox is also a regular IMAP mailbox, but the password will be ignored if oauth2 succeeds.  It can fall back to password as needed.
+Build your URI accordingly::
+
+    gmail+ssl://youremailaddress%40gmail.com:oauth2@imap.gmail.com?archive=Archived
+
 
 Local File-based Mailboxes
 --------------------------
