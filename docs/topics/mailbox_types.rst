@@ -7,19 +7,19 @@ POP3 and IMAP as well as local file-based mailboxes.
 
 .. table:: 'Protocol' Options
 
-  ============ ============== =================================================================================================================================================================
-  Mailbox Type 'Protocol'://  Notes
-  ============ ============== =================================================================================================================================================================
-  POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``, or specify a folder to save processed messages into by appending ``?archive=my_archive_folder`` to the end of the URI.
+  ============ ================ =================================================================================================================================================================
+  Mailbox Type 'Protocol'://    Notes
+  ============ ================ =================================================================================================================================================================
+  POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
+  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, or specify a folder to save processed messages into by appending ``?archive=my_archive_folder`` to the end of the URI.
   Gmail IMAP   ``gmail+ssl://`` Password is ignored if oauth2 succeeds, but can be used as a fallback
   Maildir      ``maildir://``
   Mbox         ``mbox://``
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  Piped Mail   *empty*        See :ref:`receiving-mail-from-exim4-or-postfix`
-  ============ ============== =================================================================================================================================================================
+  Piped Mail   *empty*          See :ref:`receiving-mail-from-exim4-or-postfix`
+  ============ ================ =================================================================================================================================================================
 
 
 .. warning::
