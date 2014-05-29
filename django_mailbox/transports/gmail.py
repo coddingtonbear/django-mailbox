@@ -6,8 +6,8 @@ class GmailImapTransport(ImapTransport):
         # Try to use oauth2 first.  It's much safer
         try:
             self._connect_oauth(username)
-        except (TypeError, ValueError), e:
-            print " Couldn't do oauth2", e
+        except (TypeError, ValueError) as e:
+            print " Couldn't do oauth2 because %s" % e
             self.server = self.transport(self.hostname, self.port)
             typ, msg = self.server.login(username, password)
             self.server.select()
