@@ -60,6 +60,7 @@ Settings
     instance currently storing this payload component's contents.
 
 * ``DJANGO_MAILBOX_MAX_MESSAGE_SIZE``
+
   * Default: ``False``
   * Type: ``integer``
   * If this is set, it will be read as a number of
