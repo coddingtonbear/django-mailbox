@@ -1,4 +1,10 @@
+import logging
+
 from django_mailbox.transports.imap import ImapTransport
+
+
+logger = logging.getLogger(__name__)
+
 
 class GmailImapTransport(ImapTransport):
 
@@ -7,7 +13,7 @@ class GmailImapTransport(ImapTransport):
         try:
             self._connect_oauth(username)
         except (TypeError, ValueError) as e:
-            print " Couldn't do oauth2 because %s" % e
+            logger.warning("Couldn't do oauth2 because %s" % e)
             self.server = self.transport(self.hostname, self.port)
             typ, msg = self.server.login(username, password)
             self.server.select()
@@ -37,7 +43,9 @@ class GmailImapTransport(ImapTransport):
                 pass
             except AccessTokenNotFound:
                 raise ValueError(
-                    "No Token available in python-social-auth for %s" % username
+                    "No Token available in python-social-auth for %s" % (
+                        username
+                    )
                 )
 
         auth_string = 'user=%s\1auth=Bearer %s\1\1' % (

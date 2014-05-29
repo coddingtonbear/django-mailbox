@@ -111,10 +111,14 @@ def fetch_user_info(email):
 def fetch_google_contacts(email, limit=10000):
     result = google_api_get(
         email,
-        "https://www.google.com/m8/feeds/contacts/default/full?v=3.0&alt=json&max-results=%s" % limit
+        "https://www.google.com/m8/feeds/contacts/default/full"
+        "?v=3.0&alt=json&max-results=%s" % limit
     )
     entries = result['feed']['entry']
-    valid_entries = [x for x in entries if u'gd$email' in x.keys() and u'gd$name' in x.keys()]
+    valid_entries = [
+        x for x in entries
+        if u'gd$email' in x.keys() and u'gd$name' in x.keys()
+    ]
     contacts = []
     for each in valid_entries:
         try:
