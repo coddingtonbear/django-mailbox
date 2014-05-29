@@ -58,3 +58,10 @@ Settings
     a message instance's ``get_email_object`` method being called.  Value of
     this field is the primary key of the ``django_mailbox.MessageAttachment``
     instance currently storing this payload component's contents.
+
+* ``DJANGO_MAILBOX_MAX_MESSAGE_SIZE``
+  * Default: ``False``
+  * Type: ``integer``
+  * If this is set, it will be read as a number of
+    bytes.  Any messages above that size will not be
+    downloaded.  ``2000000`` is 2 Megabytes.
