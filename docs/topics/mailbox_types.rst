@@ -7,18 +7,19 @@ POP3 and IMAP as well as local file-based mailboxes.
 
 .. table:: 'Protocol' Options
 
-  ============ ============== =================================================================================================================================================================
-  Mailbox Type 'Protocol'://  Notes
-  ============ ============== =================================================================================================================================================================
-  POP3         ``pop3://``    Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``    Can also specify SSL with ``imap+ssl://``, or specify a folder to save processed messages into by appending ``?archive=my_archive_folder`` to the end of the URI.
+  ============ ================ =================================================================================================================================================================
+  Mailbox Type 'Protocol'://    Notes
+  ============ ================ =================================================================================================================================================================
+  POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
+  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, or specify a folder to save processed messages into by appending ``?archive=my_archive_folder`` to the end of the URI.
+  Gmail IMAP   ``gmail+ssl://`` Password is only used as a fallback if oauth2 fails
   Maildir      ``maildir://``
   Mbox         ``mbox://``
   Babyl        ``babyl://``
   MH           ``mh://``
   MMDF         ``mmdf://``
-  Piped Mail   *empty*        See :ref:`receiving-mail-from-exim4-or-postfix`
-  ============ ============== =================================================================================================================================================================
+  Piped Mail   *empty*          See :ref:`receiving-mail-from-exim4-or-postfix`
+  ============ ================ =================================================================================================================================================================
 
 
 .. warning::
@@ -60,6 +61,20 @@ into a folder named ``Archived``, you
 would enter the following as your URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
+
+Gmail IMAP with Oauth2 authentication
+-------------------------------------
+
+Gmail supports using oauth2 for authentication_ which is more secure.
+To handle the handshake and storing the credentials, use python-social-auth_.
+
+.. _authentication: https://developers.google.com/gmail/xoauth2_protocol
+.. _python-social-auth: http://psa.matiasaguirre.net/
+
+The Gmail Mailbox is also a regular IMAP mailbox, but the password will be ignored if oauth2 succeeds.  It can fall back to password as needed.
+Build your URI accordingly::
+
+    gmail+ssl://youremailaddress%40gmail.com:oauth2@imap.gmail.com?archive=Archived
 
 
 Local File-based Mailboxes
