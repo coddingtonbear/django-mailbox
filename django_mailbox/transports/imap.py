@@ -11,7 +11,7 @@ from django.conf import settings
 
 class ImapTransport(EmailTransport):
     def __init__(self, hostname, port=None, ssl=False, archive=''):
-        MAX_MESSAGE_SIZE = getattr(
+        self.max_message_size = getattr(
             settings,
             'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
             False
@@ -19,7 +19,6 @@ class ImapTransport(EmailTransport):
         self.hostname = hostname
         self.port = port
         self.archive = archive
-        self.MAX_MSG_SIZE = MAX_MESSAGE_SIZE
         if ssl:
             self.transport = IMAP4_SSL
             if not self.port:
@@ -55,10 +54,12 @@ class ImapTransport(EmailTransport):
             try:
                 uid = each_msg.split(' ')[2]
                 size = each_msg.split(' ')[4].rstrip(')')
-                if int(size) <= int(self.MAX_MSG_SIZE):
+                if int(size) <= int(self.max_message_size):
                     safe_message_ids.append(uid)
             except ValueError as e:
-                logger.warning("ValueError: %s working on %s" % (e, each_msg[0]))
+                logger.warning(
+                    "ValueError: %s working on %s" % (e, each_msg[0])
+                )
                 pass
         return safe_message_ids
 
@@ -66,7 +67,7 @@ class ImapTransport(EmailTransport):
         message_ids = self._get_all_message_ids()
 
         # Limit the uids to the small ones if we care about that
-        if self.MAX_MSG_SIZE:
+        if self.max_message_size:
             message_ids = self._get_small_message_ids(message_ids)
 
         if not message_ids:
