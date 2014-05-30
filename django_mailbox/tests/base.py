@@ -8,6 +8,16 @@ from django.test import TestCase
 from django_mailbox import models
 from django_mailbox.models import Mailbox, Message
 
+def get_email_as_text(name):
+    with open(
+        os.path.join(
+            os.path.dirname(__file__),
+            'messages',
+            name,
+        ),
+        'rb'
+    ) as f:
+        return f.read()
 
 class EmailMessageTestCase(TestCase):
     ALLOWED_EXTRA_HEADERS = [
