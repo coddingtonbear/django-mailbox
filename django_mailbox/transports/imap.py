@@ -1,13 +1,25 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from imaplib import IMAP4, IMAP4_SSL
 
 from .base import EmailTransport, MessageParseError
 
+from django.conf import settings
+
 
 class ImapTransport(EmailTransport):
     def __init__(self, hostname, port=None, ssl=False, archive=''):
+        MAX_MESSAGE_SIZE = getattr(
+            settings,
+            'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
+            False
+        )
         self.hostname = hostname
         self.port = port
         self.archive = archive
+        self.MAX_MSG_SIZE = MAX_MESSAGE_SIZE
         if ssl:
             self.transport = IMAP4_SSL
             if not self.port:
@@ -22,10 +34,42 @@ class ImapTransport(EmailTransport):
         typ, msg = self.server.login(username, password)
         self.server.select()
 
-    def get_message(self):
-        typ, inbox = self.server.search(None, 'ALL')
+    def _get_all_message_ids(self):
+        # Fetch all the message uids
+        response, message_ids = self.server.uid('search', None, 'ALL')
+        return message_ids[0].split(' ')
 
-        if not inbox[0]:
+    def _get_small_message_ids(self, message_ids):
+        # Using existing message uids, get the sizes and
+        # return only those that are under the size
+        # limit
+        safe_message_ids = []
+
+        status, data = self.server.uid(
+            'fetch',
+            ','.join(message_ids),
+            '(RFC822.SIZE)'
+        )
+
+        for each_msg in data:
+            try:
+                uid = each_msg.split(' ')[2]
+                size = each_msg.split(' ')[4].rstrip(')')
+                if int(size) <= int(self.MAX_MSG_SIZE):
+                    safe_message_ids.append(uid)
+            except ValueError as e:
+                logger.warning("ValueError: %s working on %s" % (e, each_msg[0]))
+                pass
+        return safe_message_ids
+
+    def get_message(self):
+        message_ids = self._get_all_message_ids()
+
+        # Limit the uids to the small ones if we care about that
+        if self.MAX_MSG_SIZE:
+            message_ids = self._get_small_message_ids(message_ids)
+
+        if not message_ids:
             return
 
         if self.archive:
@@ -34,17 +78,17 @@ class ImapTransport(EmailTransport):
                 # If the archive folder does not exist, create it
                 self.server.create(self.archive)
 
-        for key in inbox[0].split():
+        for uid in message_ids:
             try:
-                typ, msg_contents = self.server.fetch(key, '(RFC822)')
+                typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
                 message = self.get_email_from_bytes(msg_contents[0][1])
                 yield message
             except MessageParseError:
                 continue
 
             if self.archive:
-                self.server.copy(key, self.archive)
+                self.server.uid('copy', uid, self.archive)
 
-            self.server.store(key, "+FLAGS", "\\Deleted")
+            self.server.uid('store', uid, "+FLAGS", "\\Deleted")
         self.server.expunge()
         return
