@@ -1,6 +1,11 @@
-from social.apps.django_app.default.models import UserSocialAuth
-import requests
+import logging
+
 from django.conf import settings
+import requests
+from social.apps.django_app.default.models import UserSocialAuth
+
+
+logger = logging.getLogger(__name__)
 
 
 class AccessTokenNotFound(Exception):
@@ -50,17 +55,16 @@ def google_api_get(email, url):
         Authorization="Bearer %s" % get_google_access_token(email),
     )
     r = requests.get(url, headers=headers)
-    print "I got a %s" % r.status_code
+    logger.info("I got a %s", r.status_code)
     if r.status_code == 401:
         # Go use the refresh token
         refresh_authorization(email)
         r = requests.get(url, headers=headers)
-        print "I got a %s" % r.status_code
+        logger.info("I got a %s", r.status_code)
     if r.status_code == 200:
         try:
             return r.json()
         except ValueError:
-            print "returning text"
             return r.text
 
 
@@ -79,7 +83,6 @@ def google_api_post(email, url, post_data, authorized=True):
         try:
             return r.json()
         except ValueError:
-            print "returning text"
             return r.text
 
 
