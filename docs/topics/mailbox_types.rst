@@ -12,7 +12,7 @@ POP3 and IMAP as well as local file-based mailboxes.
   ============ ================ =================================================================================================================================================================
   POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, or specify a folder to save processed messages into by appending ``?archive=my_archive_folder`` to the end of the URI.
-  Gmail IMAP   ``gmail+ssl://`` Password is only used as a fallback if oauth2 fails
+  Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
   Maildir      ``maildir://``
   Mbox         ``mbox://``
   Babyl        ``babyl://``
@@ -62,16 +62,21 @@ would enter the following as your URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
 
+.. _gmail-oauth:
+
 Gmail IMAP with Oauth2 authentication
 -------------------------------------
 
-Gmail supports using oauth2 for authentication_ which is more secure.
+For added security, Gmail supports using OAuth2 for authentication_.
 To handle the handshake and storing the credentials, use python-social-auth_.
 
 .. _authentication: https://developers.google.com/gmail/xoauth2_protocol
 .. _python-social-auth: http://psa.matiasaguirre.net/
 
-The Gmail Mailbox is also a regular IMAP mailbox, but the password will be ignored if oauth2 succeeds.  It can fall back to password as needed.
+The Gmail Mailbox is also a regular IMAP mailbox,
+but the password you specify will be ignored if OAuth2 authentication succeeds.
+It will fall back to use your specified password as needed.
+
 Build your URI accordingly::
 
     gmail+ssl://youremailaddress%40gmail.com:oauth2@imap.gmail.com?archive=Archived
