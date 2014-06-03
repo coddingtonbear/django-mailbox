@@ -1,7 +1,7 @@
 .. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
    :target: https://travis-ci.org/coddingtonbear/django-mailbox
 
-Easily consume POP3, IMAP, or a local mailbox for incoming content.
+Easily pull messages from POP3, IMAP, or local mailboxes into Django models.
 
 This Django application will allow you to specify mailboxes that you would like consumed for incoming content; 
 the e-mail will be stored in the database, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
