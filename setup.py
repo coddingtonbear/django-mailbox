@@ -12,7 +12,7 @@ gmail_oauth2_require = [
 setup(
     name='django-mailbox',
     version='3.4',
-    url='http://github.com/latestrevision/django-mailbox/',
+    url='http://github.com/coddingtonbear/django-mailbox/',
     description=(
         'Import mail from POP3, IMAP, local mailboxes or directly from '
         'Postfix or Exim4 into your Django application automatically.'
