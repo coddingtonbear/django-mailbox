@@ -15,3 +15,8 @@ You can either install from pip::
 After you have installed the package, 
 you should add ``django_mailbox`` to the ``INSTALLED_APPS`` setting in your project's ``settings.py`` file.
 
+Run ``python manage.py migrate django_mailbox`` to create the required database tables.
+
+Head to your admin and create a mailbox to consume (see next docs page).
+
+Test your setup by selecting 'Get new mail' from the action dropdown in the Mailbox change list.
