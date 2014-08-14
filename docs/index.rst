@@ -20,9 +20,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 3
-   :glob:
 
-   topics/*
+   topics/installation
+   topics/mailbox_types
+   topics/polling
+   topics/signal
+   topics/settings
+   topics/message-storage
 
 
 Indices and tables
