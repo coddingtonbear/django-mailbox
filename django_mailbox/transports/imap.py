@@ -36,7 +36,13 @@ class ImapTransport(EmailTransport):
     def _get_all_message_ids(self):
         # Fetch all the message uids
         response, message_ids = self.server.uid('search', None, 'ALL')
-        return message_ids[0].split(' ')
+        message_id_string = message_ids[0].strip()
+        # Usually `message_id_string` will be a list of space-separated
+        # ids; we must make sure that it isn't an empty string before
+        # splitting into individual UIDs.
+        if message_id_string:
+            return message_id_string.split(' ')
+        return []
 
     def _get_small_message_ids(self, message_ids):
         # Using existing message uids, get the sizes and
