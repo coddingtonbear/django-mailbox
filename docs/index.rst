@@ -26,7 +26,7 @@ Contents:
    topics/polling
    topics/signal
    topics/settings
-   topics/message-storage
+   topics/appendix
 
 
 Indices and tables
