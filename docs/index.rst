@@ -25,7 +25,6 @@ Contents:
    topics/mailbox_types
    topics/polling
    topics/signal
-   topics/settings
    topics/appendix
 
 
