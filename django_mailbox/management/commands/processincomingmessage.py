@@ -7,8 +7,10 @@ from django.core.management.base import BaseCommand
 
 from django_mailbox.models import Mailbox
 
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
 
 class Command(BaseCommand):
     args = "<[Mailbox Name (optional)]>"
@@ -22,14 +24,17 @@ class Command(BaseCommand):
             else:
                 mailbox = self.get_mailbox_for_message(message)
             mailbox.process_incoming_message(message)
-            logger.info("Message received from %s" % message['from'])
+            logger.info(
+                "Message received from %s",
+                message['from']
+            )
         else:
             logger.warning("Message not processable.")
 
     def get_mailbox_by_name(self, name):
         mailbox, created = Mailbox.objects.get_or_create(
-                name=name,
-                )
+            name=name,
+        )
         return mailbox
 
     def get_mailbox_for_message(self, message):
