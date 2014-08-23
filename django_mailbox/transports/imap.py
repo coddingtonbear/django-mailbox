@@ -1,12 +1,12 @@
+from imaplib import IMAP4, IMAP4_SSL
 import logging
 
-logger = logging.getLogger(__name__)
-
-from imaplib import IMAP4, IMAP4_SSL
+from django.conf import settings
 
 from .base import EmailTransport, MessageParseError
 
-from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 class ImapTransport(EmailTransport):
