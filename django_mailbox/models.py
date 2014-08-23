@@ -3,6 +3,7 @@ import email
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
 from email.encoders import encode_base64
+import logging
 import mimetypes
 import os.path
 from quopri import encode as encode_quopri
@@ -21,6 +22,9 @@ import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
 from .utils import convert_header_to_unicode
+
+
+logger = logging.getLogger(__name__)
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
@@ -447,7 +451,7 @@ class Message(models.Model):
 
     def get_text_body(self):
         def get_body_from_message(message):
-            body = ''
+            body = six.text_type('')
             for part in message.walk():
                 if (
                     part.get_content_maintype() == 'text'
@@ -458,7 +462,19 @@ class Message(models.Model):
                     if charset:
                         this_part = this_part.decode(charset, 'replace')
 
-                    body += this_part
+                    try:
+                        body += this_part
+                    except ValueError:
+                        # Since it did not declare a charset, and we *should*
+                        # be 7-bit clean right now, let's assume it is ASCII.
+                        body += this_part.decode('ascii', 'replace')
+                        logger.warning(
+                            'Error encountered while decoding text '
+                            'payload from an incorrectly-constructed e-mail; '
+                            'payload was converted to ASCII with '
+                            'replacement, but some data may not be '
+                            'represented as the sender intended.'
+                        )
             return body
 
         return get_body_from_message(
