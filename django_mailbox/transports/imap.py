@@ -96,6 +96,6 @@ class ImapTransport(EmailTransport):
             if self.archive:
                 self.server.uid('copy', uid, self.archive)
 
-            self.server.uid('store', uid, "+FLAGS", "\\Deleted")
+            self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
         self.server.expunge()
         return
