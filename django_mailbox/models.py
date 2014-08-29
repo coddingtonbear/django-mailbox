@@ -1,27 +1,35 @@
-import base64
-import email
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Models declaration for application ``django_mailbox``.
+"""
+
+from email.encoders import encode_base64
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
-from email.encoders import encode_base64
+from quopri import encode as encode_quopri
+import base64
+import email
 import logging
 import mimetypes
 import os.path
-from quopri import encode as encode_quopri
 import sys
 import uuid
-
-from django.conf import settings
-from django.core.mail.message import make_msgid
-from django.core.files.base import ContentFile
-from django.db import models
-from django_mailbox.transports import Pop3Transport, ImapTransport,\
-    MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport
-from django_mailbox.signals import message_received
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.mail.message import make_msgid
+from django.db import models
+from django.utils.translation import ugettext as _
+
 from .utils import convert_header_to_unicode
+from django_mailbox.signals import message_received
+from django_mailbox.transports import Pop3Transport, ImapTransport, \
+    MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
+    MMDFTransport, GmailImapTransport
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +40,7 @@ STRIP_UNALLOWED_MIMETYPES = getattr(
     'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
     False
 )
+
 ALLOWED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_ALLOWED_MIMETYPES',
@@ -40,6 +49,7 @@ ALLOWED_MIMETYPES = getattr(
         'text/html'
     ]
 )
+
 TEXT_STORED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_TEXT_STORED_MIMETYPES',
@@ -48,11 +58,13 @@ TEXT_STORED_MIMETYPES = getattr(
         'text/html'
     ]
 )
+
 ALTERED_MESSAGE_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ALTERED_MESSAGE_HEADER',
     'X-Django-Mailbox-Altered-Message'
 )
+
 ATTACHMENT_INTERPOLATION_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
