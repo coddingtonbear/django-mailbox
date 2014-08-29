@@ -16,6 +16,7 @@ import mimetypes
 import os.path
 import sys
 import uuid
+
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
@@ -80,10 +81,15 @@ class ActiveMailboxManager(models.Manager):
 
 
 class Mailbox(models.Model):
-    name = models.CharField(max_length=255)
-    uri = models.CharField(
+    name = models.CharField(
+        _(u'Name'),
         max_length=255,
-        help_text=(
+    )
+
+    uri = models.CharField(
+        _(u'URI'),
+        max_length=255,
+        help_text=(_(
             "Example: imap+ssl://myusername:mypassword@someserver <br />"
             "<br />"
             "Internet transports include 'imap' and 'pop3'; "
@@ -92,14 +98,16 @@ class Mailbox(models.Model):
             "<br />"
             "Be sure to urlencode your username and password should they "
             "contain illegal characters (like @, :, etc)."
-        ),
+        )),
         blank=True,
         null=True,
         default=None,
     )
+
     from_email = models.CharField(
+        _(u'From email'),
         max_length=255,
-        help_text=(
+        help_text=(_(
             "Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />"
             "'From' header to set for outgoing email.<br />"
             "<br />"
@@ -107,19 +115,21 @@ class Mailbox(models.Model):
             "setting is unnecessary.<br />"
             "If you send e-mail without setting this, your 'From' header will'"
             "be set to match the setting `DEFAULT_FROM_EMAIL`."
-        ),
+        )),
         blank=True,
         null=True,
         default=None,
     )
+
     active = models.BooleanField(
-        help_text=(
+        _(u'Active'),
+        help_text=(_(
             "Check this e-mail inbox for new e-mail messages during polling "
             "cycles.  This checkbox does not have an effect upon whether "
             "mail is collected here when this mailbox receives mail from a "
             "pipe, and does not affect whether e-mail messages can be "
             "dispatched from this mailbox. "
-        ),
+        )),
         blank=True,
         default=True,
     )
@@ -362,34 +372,62 @@ class UnreadMessageManager(models.Manager):
 
 
 class Message(models.Model):
-    mailbox = models.ForeignKey(Mailbox, related_name='messages')
-    subject = models.CharField(max_length=255)
-    message_id = models.CharField(max_length=255)
+    mailbox = models.ForeignKey(
+        Mailbox,
+        related_name='messages',
+        verbose_name=_(u'Mailbox'),
+    )
+
+    subject = models.CharField(
+        _(u'Subject'),
+        max_length=255
+    )
+
+    message_id = models.CharField(
+        _(u'Message ID'),
+        max_length=255
+    )
+
     in_reply_to = models.ForeignKey(
         'django_mailbox.Message',
         related_name='replies',
         blank=True,
         null=True,
+        verbose_name=_(u'In reply to'),
     )
+
     from_header = models.CharField(
+        _('From header'),
         max_length=255,
     )
-    to_header = models.TextField()
+
+    to_header = models.TextField(
+        _(u'To header'),
+    )
+
     outgoing = models.BooleanField(
+        _(u'Outgoing'),
         default=False,
         blank=True,
     )
 
-    body = models.TextField()
+    body = models.TextField(
+        _(u'Body'),
+    )
+
     encoded = models.BooleanField(
+        _(u'Encoded'),
         default=False,
-        help_text='True if the e-mail body is Base64 encoded'
+        help_text=_('True if the e-mail body is Base64 encoded'),
     )
 
     processed = models.DateTimeField(
+        _('Processed'),
         auto_now_add=True
     )
+
     read = models.DateTimeField(
+        _(u'Read'),
         default=None,
         blank=True,
         null=True,
@@ -584,9 +622,19 @@ class MessageAttachment(models.Model):
         related_name='attachments',
         null=True,
         blank=True,
+        verbose_name=_('Message'),
     )
-    headers = models.TextField(null=True, blank=True)
-    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
+
+    headers = models.TextField(
+        _(u'Headers'),
+        null=True,
+        blank=True,
+    )
+
+    document = models.FileField(
+        _(u'Document'),
+        upload_to='mailbox_attachments/%Y/%m/%d/'
+    )
 
     def delete(self, *args, **kwargs):
         self.document.delete()
