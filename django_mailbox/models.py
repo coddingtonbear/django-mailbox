@@ -499,6 +499,10 @@ class Message(models.Model):
     def text(self):
         return self.get_text_body()
 
+    @property
+    def html(self):
+        return "<html><head></head><body></body></html>"
+
     def get_text_body(self):
         def get_body_from_message(message):
             body = six.text_type('')

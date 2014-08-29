@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Model configuration in application ``django_mailbox`` for administration
+console.
+"""
+
 import logging
 
 from django.conf import settings
@@ -6,6 +14,7 @@ from django.contrib import admin
 from django_mailbox.models import MessageAttachment, Message, Mailbox
 from django_mailbox.signals import message_received
 from django_mailbox.utils import convert_header_to_unicode
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +30,8 @@ def resend_message_received_signal(message_admin, request, queryset):
     for message in queryset.all():
         logger.debug('Resending \'message_received\' signal for %s' % message)
         message_received.send(sender=message_admin, message=message)
+
+
 resend_message_received_signal.short_description = (
     'Re-send message received signal'
 )
@@ -79,6 +90,7 @@ class MessageAdmin(admin.ModelAdmin):
     )
     readonly_fields = (
         'text',
+        'html',
     )
     actions = [resend_message_received_signal]
 
