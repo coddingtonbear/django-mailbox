@@ -65,7 +65,7 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = mailbox.process_incoming_message(message)
 
         expected_results = 'Hello there!'
-        actual_results = msg.get_text_body().strip()
+        actual_results = msg.text.strip()
 
         self.assertEqual(
             expected_results,
@@ -80,7 +80,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         message.get_email_object = lambda: email_object
 
-        actual_text = message.get_text_body()
+        actual_text = message.text
         expected_text = (
             'The one of us with a bike pump is far ahead, '
             'but a man stopped to help us and gave us his pump.'
@@ -122,11 +122,11 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        actual_text = msg.get_text_body()
         expected_text = six.u(
             'This message contains funny UTF16 characters like this one: '
             '"\xc2\xa0" and this one "\xe2\x9c\xbf".'
         )
+        actual_text = msg.text
 
         self.assertEqual(
             expected_text,
@@ -151,7 +151,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        msg.get_text_body()
+        msg.text
 
     def test_message_with_valid_content_in_single_byte_encoding(self):
         email_object = self._get_email_object(
@@ -160,8 +160,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        actual_body = msg.get_text_body()
-
+        actual_text = msg.text
         expected_body = six.u(
             '\u042d\u0442\u043e '
             '\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 '
@@ -172,7 +171,7 @@ class TestProcessEmail(EmailMessageTestCase):
         )
 
         self.assertEqual(
-            actual_body,
+            actual_text,
             expected_body,
         )
 
