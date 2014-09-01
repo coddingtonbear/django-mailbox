@@ -26,7 +26,7 @@ from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from .utils import convert_header_to_unicode
+from .utils import convert_header_to_unicode, get_body_from_message
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -497,43 +497,21 @@ class Message(models.Model):
 
     @property
     def text(self):
-        return self.get_text_body()
+        """
+        Returns the message body matching content type 'text/plain'.
+        """
+        return get_body_from_message(
+            self.get_email_object(), 'text', 'plain'
+        ).replace('=\n', '').strip()
 
     @property
     def html(self):
-        return "<html><head></head><body></body></html>"
-
-    def get_text_body(self):
-        def get_body_from_message(message):
-            body = six.text_type('')
-            for part in message.walk():
-                if (
-                    part.get_content_maintype() == 'text'
-                    and part.get_content_subtype() == 'plain'
-                ):
-                    charset = part.get_content_charset()
-                    this_part = part.get_payload(decode=True)
-                    if charset:
-                        this_part = this_part.decode(charset, 'replace')
-
-                    try:
-                        body += this_part
-                    except ValueError:
-                        # Since it did not declare a charset, and we *should*
-                        # be 7-bit clean right now, let's assume it is ASCII.
-                        body += this_part.decode('ascii', 'replace')
-                        logger.warning(
-                            'Error encountered while decoding text '
-                            'payload from an incorrectly-constructed e-mail; '
-                            'payload was converted to ASCII with '
-                            'replacement, but some data may not be '
-                            'represented as the sender intended.'
-                        )
-            return body
-
+        """
+        Returns the message body matching content type 'text/html'.
+        """
         return get_body_from_message(
-            self.get_email_object()
-        ).replace('=\n', '').strip()
+            self.get_email_object(), 'text', 'html'
+        ).replace('\n', '').strip()
 
     def _rehydrate(self, msg):
         new = EmailMessage()
