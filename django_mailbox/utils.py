@@ -39,3 +39,34 @@ def convert_header_to_unicode(header):
             DEFAULT_CHARSET,
         )
         return unicode(header, DEFAULT_CHARSET, 'replace')
+
+
+def get_body_from_message(message, maintype, subtype):
+    """
+    Fetchs the body message matching main/sub content type.
+    """
+    body = six.text_type('')
+    for part in message.walk():
+        if part.get_content_maintype() == maintype and \
+                part.get_content_subtype() == subtype:
+            charset = part.get_content_charset()
+            this_part = part.get_payload(decode=True)
+            if charset:
+                this_part = this_part.decode(charset, 'replace')
+
+            try:
+                body += this_part
+            except ValueError:
+                # Since it did not declare a charset, and we
+                # *should* be 7-bit clean right now, let's assume it
+                # is ASCII.
+                body += this_part.decode('ascii', 'replace')
+                logger.warning(
+                    'Error encountered while decoding text '
+                    'payload from an incorrectly-constructed '
+                    'e-mail; payload was converted to ASCII with '
+                    'replacement, but some data may not be '
+                    'represented as the sender intended.'
+                )
+
+    return body
