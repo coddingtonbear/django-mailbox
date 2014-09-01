@@ -1,6 +1,13 @@
 .. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
    :target: https://travis-ci.org/coddingtonbear/django-mailbox
 
+.. image:: https://badge.fury.io/py/django-mailbox.png
+    :target: http://badge.fury.io/py/django-mailbox
+
+.. image:: https://pypip.in/d/django-mailbox/badge.png
+    :target: https://pypi.python.org/pypi/django-mailbox
+
+
 Easily pull messages from POP3, IMAP, or local mailboxes into Django models.
 
 This Django application will allow you to specify mailboxes that you would like consumed for incoming content; 
