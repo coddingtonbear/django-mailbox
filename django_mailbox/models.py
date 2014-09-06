@@ -74,7 +74,7 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
 
 
 class ActiveMailboxManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(ActiveMailboxManager, self).get_query_set().filter(
             active=True,
         )
@@ -351,21 +351,21 @@ class Mailbox(models.Model):
 
 
 class IncomingMessageManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(IncomingMessageManager, self).get_query_set().filter(
             outgoing=False,
         )
 
 
 class OutgoingMessageManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(OutgoingMessageManager, self).get_query_set().filter(
             outgoing=True,
         )
 
 
 class UnreadMessageManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(UnreadMessageManager, self).get_query_set().filter(
             read=None
         )
