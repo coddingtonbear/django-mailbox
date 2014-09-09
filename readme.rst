@@ -22,10 +22,3 @@ or -- if you're in a hurry -- by using a signal receiver.
   `Github <http://github.com/coddingtonbear/django-mailbox/issues>`_.
 - Test status available on
   `Travis-CI <https://travis-ci.org/coddingtonbear/django-mailbox>`_.
-
-
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/coddingtonbear/django-mailbox/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
-
