@@ -8,10 +8,13 @@
     :target: https://pypi.python.org/pypi/django-mailbox
 
 
-Easily pull messages from POP3, IMAP, or local mailboxes into Django models.
+Easily ingest messages from POP3, IMAP, or local mailboxes into your Django application.
 
-This Django application will allow you to specify mailboxes that you would like consumed for incoming content; 
-the e-mail will be stored in the database, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
+This app allows you to either ingest e-mail content from common e-mail services (as long as the service provides POP3 or IMAP support),
+or directly recieve e-mail messages from stdin (for locally processing messages from Postfix or Exim4).
+
+These ingested messages will be stored in the database as Django models and you can process their content at will,
+or if you're in a hurry, by subscribing to a signal.
 
 - Documentation for django-mailbox is available on
   `ReadTheDocs <http://django-mailbox.readthedocs.org/>`_.
