@@ -13,7 +13,7 @@ Easily ingest messages from POP3, IMAP, or local mailboxes into your Django appl
 This app allows you to either ingest e-mail content from common e-mail services (as long as the service provides POP3 or IMAP support),
 or directly recieve e-mail messages from ``stdin`` (for locally processing messages from Postfix or Exim4).
 
-These ingested messages will be stored in the database as Django models and you can process their content at will,
+These ingested messages will be stored in the database in Django models and you can process their content at will,
 or -- if you're in a hurry -- by using a signal receiver.
 
 - Documentation for django-mailbox is available on
