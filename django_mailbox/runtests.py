@@ -3,6 +3,7 @@ import sys
 
 from os.path import dirname, abspath
 
+from django import setup
 from django.conf import settings
 
 if not settings.configured:
@@ -27,6 +28,8 @@ def runtests(*test_args):
         test_args = ['django_mailbox']
     parent = dirname(abspath(__file__))
     sys.path.insert(0, parent)
+    # ensure that AppRegistry has loaded
+    setup()
     runner = DjangoTestSuiteRunner(
         verbosity=1,
         interactive=False,
