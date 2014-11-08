@@ -12,10 +12,6 @@ env:
   - DJANGO=1.7.1
 
 matrix:
-  allow_failures:
-    # Allow failures for legacy django versions
-    - env: DJANGO=1.4.14
-    - env: DJANGO=1.5.9
   exclude:
     - env: DJANGO=1.4.14
       python: "3.3"
