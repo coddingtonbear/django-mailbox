@@ -1,18 +1,24 @@
 language: python
+
 python:
-    - "2.6"
-    - "2.7"
-    - "3.3"
+  - "2.6"
+  - "2.7"
+  - "3.3"
+
 env:
-    - DJANGO=1.4.14
-    - DJANGO=1.5.9
-    - DJANGO=1.6.6
+  - DJANGO=1.4.14
+  - DJANGO=1.5.9
+  - DJANGO=1.6.8
+  - DJANGO=1.7.1
+
 matrix:
-    exclude:
-        - env: DJANGO=1.4.14
-          python: "3.3"
+  exclude:
+    - env: DJANGO=1.4.14
+      python: "3.3"
+    - env: DJANGO=1.7.1
+      python: "2.6"
 install:
-    - pip install -q Django==$DJANGO --use-mirrors
-    - pip install -q -e . --use-mirrors
+  - pip install -q Django==$DJANGO --use-mirrors
+  - pip install -q -e . --use-mirrors
 script:
-    - python setup.py test
+  - python setup.py test
