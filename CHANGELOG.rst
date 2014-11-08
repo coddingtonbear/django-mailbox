@@ -1,6 +1,11 @@
 Changelog
 =========
 
+4.1
+---
+
+* Adds Django 1.7 migrations support.
+
 4.0
 ---
 
