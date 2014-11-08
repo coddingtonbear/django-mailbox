@@ -3,7 +3,10 @@ import sys
 
 from os.path import dirname, abspath
 
-from django import setup
+try:
+    from django import setup
+except ImportError:
+    pass
 from django.conf import settings
 
 if not settings.configured:
@@ -28,8 +31,12 @@ def runtests(*test_args):
         test_args = ['django_mailbox']
     parent = dirname(abspath(__file__))
     sys.path.insert(0, parent)
-    # ensure that AppRegistry has loaded
-    setup()
+    try:
+        # ensure that AppRegistry has loaded
+        setup()
+    except NameError:
+        # This version of Django is too old for an app registry.
+        pass
     runner = DjangoTestSuiteRunner(
         verbosity=1,
         interactive=False,
