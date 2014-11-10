@@ -1,4 +1,6 @@
-from setuptools import setup
+from setuptools import find_packages, setup
+
+from django_mailbox import __version__ as version_string
 
 tests_require = [
     'django',
@@ -11,7 +13,7 @@ gmail_oauth2_require = [
 
 setup(
     name='django-mailbox',
-    version='4.1',
+    version=version_string,
     url='http://github.com/coddingtonbear/django-mailbox/',
     description=(
         'Import mail from POP3, IMAP, local mailboxes or directly from '
@@ -40,14 +42,7 @@ setup(
         'Topic :: Communications :: Email :: Post-Office :: POP3',
         'Topic :: Communications :: Email :: Email Clients (MUA)',
     ],
-    packages=[
-        'django_mailbox',
-        'django_mailbox.management',
-        'django_mailbox.management.commands',
-        'django_mailbox.migrations',
-        'django_mailbox.transports',
-        'django_mailbox.tests',
-    ],
+    packages=find_packages(),
     install_requires=[
         'six>=1.6.1'
     ]
