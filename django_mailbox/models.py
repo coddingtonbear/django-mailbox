@@ -320,6 +320,8 @@ class Mailbox(models.Model):
             msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
             msg.to_header = convert_header_to_unicode(message['to'])
+        elif 'Delivered-To' in message:
+            msg.to_header = convert_header_to_unicode(message['Delivered-To'])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
