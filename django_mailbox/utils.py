@@ -52,21 +52,29 @@ def get_body_from_message(message, maintype, subtype):
             charset = part.get_content_charset()
             this_part = part.get_payload(decode=True)
             if charset:
-                this_part = this_part.decode(charset, 'replace')
+                try:
+                    this_part = this_part.decode(charset, 'replace')
+                except LookupError:
+                    this_part = this_part.decode('ascii', 'replace')
+                    logger.warning(
+                        'Unknown encoding %s encountered while decoding '
+                        'text payload.  Interpreting as ASCII with '
+                        'replacement, but some data may not be '
+                        'represented as the sender intended.',
+                        charset
+                    )
+                except ValueError:
+                    this_part = this_part.decode('ascii', 'replace')
+                    logger.warning(
+                        'Error encountered while decoding text '
+                        'payload from an incorrectly-constructed '
+                        'e-mail; payload was converted to ASCII with '
+                        'replacement, but some data may not be '
+                        'represented as the sender intended.'
+                    )
+            else:
+                this_part = this_part.decode('ascii', 'replace')
 
-            try:
-                body += this_part
-            except ValueError:
-                # Since it did not declare a charset, and we
-                # *should* be 7-bit clean right now, let's assume it
-                # is ASCII.
-                body += this_part.decode('ascii', 'replace')
-                logger.warning(
-                    'Error encountered while decoding text '
-                    'payload from an incorrectly-constructed '
-                    'e-mail; payload was converted to ASCII with '
-                    'replacement, but some data may not be '
-                    'represented as the sender intended.'
-                )
+            body += this_part
 
     return body
