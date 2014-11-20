@@ -18,8 +18,10 @@ this method will gather new messages from the server.
 Using the Django Admin
 ----------------------
 
-Check the box next to each of the mailboxes you'd like to fetch e-mail from, 
-and select the 'Get new mail' option.
+From the 'Mailboxes' page in the Django Admin,
+check the box next to each of the mailboxes you'd like to fetch e-mail from, 
+select 'Get new mail' from the action selector at the top of the list
+of mailboxes, then click 'Go'.
 
 Using a cron job
 ----------------
