@@ -16,6 +16,8 @@ import mimetypes
 import os.path
 import sys
 import uuid
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -233,9 +235,11 @@ class Mailbox(models.Model):
 
         return msg
 
-    def record_outgoing_message(self, message):
+    def record_outgoing_message(self, message, related_object=None):
         msg = self._process_message(message)
         msg.outgoing = True
+        if related_object:
+            msg.related_object = related_object
         msg.save()
         return msg
 
@@ -412,6 +416,17 @@ class Message(models.Model):
         null=True,
         verbose_name=_(u'In reply to'),
     )
+
+    related_content_type = models.ForeignKey(
+        ContentType,
+        blank=True,
+        null=True
+    )
+    related_object_id = models.PositiveIntegerField(
+        blank=True,
+        null=True
+    )
+    related_object = generic.GenericForeignKey('related_content_type', 'related_object_id')
 
     from_header = models.CharField(
         _('From header'),
