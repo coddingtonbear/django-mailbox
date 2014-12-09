@@ -1,4 +1,4 @@
-from django.core.mail import get_connection, EmailMultiAlternatives, EmailMessage
+from django.core.mail import get_connection, EmailMultiAlternatives, EmailMessage, make_msgid
 
 
 def record_messages(mailbox, messages, related_object=None):
@@ -21,7 +21,7 @@ def send_mass_mail_recorded(datatuple, mailbox, related_object=None, bcc=None,
         username=auth_user, password=auth_password, fail_silently=fail_silently
     )
 
-    messages = [EmailMessage(subject, message, sender, recipient, bcc)
+    messages = [EmailMessage(subject, message, sender, recipient, bcc, headers={'Message-ID': make_msgid()})
                 for subject, message, sender, recipient in datatuple]
 
     record_messages(mailbox, messages, related_object)
@@ -40,7 +40,7 @@ def send_mass_html_mail_recorded(datatuple, mailbox, related_object=None, bcc=No
 
     messages = []
     for subject, text, html, from_email, recipient in datatuple:
-        message = EmailMultiAlternatives(subject, text, from_email, recipient, bcc)
+        message = EmailMultiAlternatives(subject, text, from_email, recipient, bcc, headers={'Message-ID': make_msgid()})
         message.attach_alternative(html, 'text/html')
         messages.append(message)
 
