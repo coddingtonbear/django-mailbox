@@ -64,6 +64,12 @@ class MessageAdmin(admin.ModelAdmin):
     def subject(self, msg):
         return convert_header_to_unicode(msg.subject)
 
+    def envelope_headers(self, msg):
+        email = msg.get_email_object()
+        return '\n'.join(
+            [('%s: %s' % (h, v)) for h, v in email.items()]
+        )
+
     inlines = [
         MessageAttachmentInline,
     ]
@@ -89,6 +95,7 @@ class MessageAdmin(admin.ModelAdmin):
         'in_reply_to',
     )
     readonly_fields = (
+        'envelope_headers',
         'text',
         'html',
     )
