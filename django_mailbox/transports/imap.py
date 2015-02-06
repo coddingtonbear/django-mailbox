@@ -72,12 +72,12 @@ class ImapTransport(EmailTransport):
     def get_message(self):
         message_ids = self._get_all_message_ids()
 
+        if not message_ids:
+            return
+
         # Limit the uids to the small ones if we care about that
         if self.max_message_size:
             message_ids = self._get_small_message_ids(message_ids)
-
-        if not message_ids:
-            return
 
         if self.archive:
             typ, folders = self.server.list(pattern=self.archive)
