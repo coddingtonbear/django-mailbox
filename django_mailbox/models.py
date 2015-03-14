@@ -498,10 +498,11 @@ class Message(models.Model):
         pre-set it.
 
         """
-        if self.mailbox.from_email:
-            message.from_email = self.mailbox.from_email
-        else:
-            message.from_email = settings.DEFAULT_FROM_EMAIL
+        if not getattr(message, 'from_email', None):
+            if self.mailbox.from_email:
+                message.from_email = self.mailbox.from_email
+            else:
+                message.from_email = settings.DEFAULT_FROM_EMAIL
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
