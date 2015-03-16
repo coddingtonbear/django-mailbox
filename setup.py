@@ -1,13 +1,20 @@
-from setuptools import setup
+from setuptools import find_packages, setup
+
+from django_mailbox import __version__ as version_string
 
 tests_require = [
     'django',
+    'mock',
+]
+
+gmail_oauth2_require = [
+    'python-social-auth',
 ]
 
 setup(
     name='django-mailbox',
-    version='3.0.3',
-    url='http://github.com/latestrevision/django-mailbox/',
+    version=version_string,
+    url='http://github.com/coddingtonbear/django-mailbox/',
     description=(
         'Import mail from POP3, IMAP, local mailboxes or directly from '
         'Postfix or Exim4 into your Django application automatically.'
@@ -15,7 +22,10 @@ setup(
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     tests_require=tests_require,
-    extras_require={'test': tests_require},
+    extras_require={
+        'test': tests_require,
+        'gmail-oauth2': gmail_oauth2_require
+    },
     test_suite='django_mailbox.runtests.runtests',
     classifiers=[
         'Framework :: Django',
@@ -32,15 +42,8 @@ setup(
         'Topic :: Communications :: Email :: Post-Office :: POP3',
         'Topic :: Communications :: Email :: Email Clients (MUA)',
     ],
-    packages=[
-        'django_mailbox',
-        'django_mailbox.management',
-        'django_mailbox.management.commands',
-        'django_mailbox.migrations',
-        'django_mailbox.transports',
-        'django_mailbox.tests',
-    ],
+    packages=find_packages(),
     install_requires=[
-        'six'
+        'six>=1.6.1'
     ]
 )

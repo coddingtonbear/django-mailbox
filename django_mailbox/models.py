@@ -1,30 +1,39 @@
-import base64
-import email
-from email.header import decode_header
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Models declaration for application ``django_mailbox``.
+"""
+
+from email.encoders import encode_base64
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
-from email.encoders import encode_base64
-import urllib
+from quopri import encode as encode_quopri
+import base64
+import email
+import logging
 import mimetypes
 import os.path
-from quopri import encode as encode_quopri
 import sys
 import uuid
 
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urlparse
+import six
+from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
 from django.conf import settings
-from django.core.mail.message import make_msgid
 from django.core.files.base import ContentFile
+from django.core.mail.message import make_msgid
 from django.db import models
-from django_mailbox.transports import Pop3Transport, ImapTransport,\
-    MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport
+from django.utils.translation import ugettext as _
+
+from .utils import convert_header_to_unicode, get_body_from_message
 from django_mailbox.signals import message_received
-import six
+from django_mailbox.transports import Pop3Transport, ImapTransport, \
+    MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
+    MMDFTransport, GmailImapTransport
+
+
+logger = logging.getLogger(__name__)
 
 
 STRIP_UNALLOWED_MIMETYPES = getattr(
@@ -32,6 +41,7 @@ STRIP_UNALLOWED_MIMETYPES = getattr(
     'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
     False
 )
+
 ALLOWED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_ALLOWED_MIMETYPES',
@@ -40,6 +50,7 @@ ALLOWED_MIMETYPES = getattr(
         'text/html'
     ]
 )
+
 TEXT_STORED_MIMETYPES = getattr(
     settings,
     'DJANGO_MAILBOX_TEXT_STORED_MIMETYPES',
@@ -48,11 +59,13 @@ TEXT_STORED_MIMETYPES = getattr(
         'text/html'
     ]
 )
+
 ALTERED_MESSAGE_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ALTERED_MESSAGE_HEADER',
     'X-Django-Mailbox-Altered-Message'
 )
+
 ATTACHMENT_INTERPOLATION_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
@@ -61,17 +74,22 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
 
 
 class ActiveMailboxManager(models.Manager):
-    def get_query_set(self):
-        return super(ActiveMailboxManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(ActiveMailboxManager, self).get_queryset().filter(
             active=True,
         )
 
 
 class Mailbox(models.Model):
-    name = models.CharField(max_length=255)
-    uri = models.CharField(
+    name = models.CharField(
+        _(u'Name'),
         max_length=255,
-        help_text=(
+    )
+
+    uri = models.CharField(
+        _(u'URI'),
+        max_length=255,
+        help_text=(_(
             "Example: imap+ssl://myusername:mypassword@someserver <br />"
             "<br />"
             "Internet transports include 'imap' and 'pop3'; "
@@ -80,14 +98,16 @@ class Mailbox(models.Model):
             "<br />"
             "Be sure to urlencode your username and password should they "
             "contain illegal characters (like @, :, etc)."
-        ),
+        )),
         blank=True,
         null=True,
         default=None,
     )
+
     from_email = models.CharField(
+        _(u'From email'),
         max_length=255,
-        help_text=(
+        help_text=(_(
             "Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />"
             "'From' header to set for outgoing email.<br />"
             "<br />"
@@ -95,19 +115,21 @@ class Mailbox(models.Model):
             "setting is unnecessary.<br />"
             "If you send e-mail without setting this, your 'From' header will'"
             "be set to match the setting `DEFAULT_FROM_EMAIL`."
-        ),
+        )),
         blank=True,
         null=True,
         default=None,
     )
+
     active = models.BooleanField(
-        help_text=(
+        _(u'Active'),
+        help_text=(_(
             "Check this e-mail inbox for new e-mail messages during polling "
             "cycles.  This checkbox does not have an effect upon whether "
             "mail is collected here when this mailbox receives mail from a "
             "pipe, and does not affect whether e-mail messages can be "
             "dispatched from this mailbox. "
-        ),
+        )),
         blank=True,
         default=True,
     )
@@ -117,7 +139,11 @@ class Mailbox(models.Model):
 
     @property
     def _protocol_info(self):
-        return urlparse.urlparse(self.uri)
+        return urlparse(self.uri)
+
+    @property
+    def _query_string(self):
+        return parse_qs(self._protocol_info.query)
 
     @property
     def _domain(self):
@@ -129,11 +155,11 @@ class Mailbox(models.Model):
 
     @property
     def username(self):
-        return urllib.unquote(self._protocol_info.username)
+        return unquote(self._protocol_info.username)
 
     @property
     def password(self):
-        return urllib.unquote(self._protocol_info.password)
+        return unquote(self._protocol_info.password)
 
     @property
     def location(self):
@@ -150,6 +176,13 @@ class Mailbox(models.Model):
     def use_ssl(self):
         return '+ssl' in self._protocol_info.scheme.lower()
 
+    @property
+    def archive(self):
+        archive_folder = self._query_string.get('archive', None)
+        if not archive_folder:
+            return None
+        return archive_folder[0]
+
     def get_connection(self):
         if not self.uri:
             return None
@@ -157,7 +190,16 @@ class Mailbox(models.Model):
             conn = ImapTransport(
                 self.location,
                 port=self.port if self.port else None,
-                ssl=self.use_ssl
+                ssl=self.use_ssl,
+                archive=self.archive
+            )
+            conn.connect(self.username, self.password)
+        elif self.type == 'gmail':
+            conn = GmailImapTransport(
+                self.location,
+                port=self.port if self.port else None,
+                ssl=True,
+                archive=self.archive
             )
             conn.connect(self.username, self.password)
         elif self.type == 'pop3':
@@ -249,6 +291,36 @@ class Mailbox(models.Model):
             placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
             new = placeholder
         else:
+            content_charset = msg.get_content_charset()
+            if not content_charset:
+                content_charset = 'ascii'
+            try:
+                # Make sure that the payload can be properly decoded in the
+                # defined charset, if it can't, let's mash some things
+                # inside the payload :-\
+                msg.get_payload(decode=True).decode(content_charset)
+            except LookupError:
+                logger.warning(
+                    "Unknown encoding %s; interpreting as ASCII!",
+                    content_charset
+                )
+                msg.set_payload(
+                    msg.get_payload(decode=True).decode(
+                        'ascii',
+                        'ignore'
+                    )
+                )
+            except ValueError:
+                logger.warning(
+                    "Decoding error encountered; interpreting as ASCII!",
+                    content_charset
+                )
+                msg.set_payload(
+                    msg.get_payload(decode=True).decode(
+                        content_charset,
+                        'ignore'
+                    )
+                )
             new = msg
         return new
 
@@ -256,13 +328,15 @@ class Mailbox(models.Model):
         msg = Message()
         msg.mailbox = self
         if 'subject' in message:
-            msg.subject = message['subject'][0:255]
+            msg.subject = convert_header_to_unicode(message['subject'])[0:255]
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255]
         if 'from' in message:
-            msg.from_header = message['from']
+            msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
-            msg.to_header = message['to']
+            msg.to_header = convert_header_to_unicode(message['to'])
+        elif 'Delivered-To' in message:
+            msg.to_header = convert_header_to_unicode(message['Delivered-To'])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
@@ -294,55 +368,83 @@ class Mailbox(models.Model):
 
 
 class IncomingMessageManager(models.Manager):
-    def get_query_set(self):
-        return super(IncomingMessageManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(IncomingMessageManager, self).get_queryset().filter(
             outgoing=False,
         )
 
 
 class OutgoingMessageManager(models.Manager):
-    def get_query_set(self):
-        return super(OutgoingMessageManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(OutgoingMessageManager, self).get_queryset().filter(
             outgoing=True,
         )
 
 
 class UnreadMessageManager(models.Manager):
-    def get_query_set(self):
-        return super(UnreadMessageManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(UnreadMessageManager, self).get_queryset().filter(
             read=None
         )
 
 
 class Message(models.Model):
-    mailbox = models.ForeignKey(Mailbox, related_name='messages')
-    subject = models.CharField(max_length=255)
-    message_id = models.CharField(max_length=255)
+    mailbox = models.ForeignKey(
+        Mailbox,
+        related_name='messages',
+        verbose_name=_(u'Mailbox'),
+    )
+
+    subject = models.CharField(
+        _(u'Subject'),
+        max_length=255
+    )
+
+    message_id = models.CharField(
+        _(u'Message ID'),
+        max_length=255
+    )
+
     in_reply_to = models.ForeignKey(
         'django_mailbox.Message',
         related_name='replies',
         blank=True,
         null=True,
+        verbose_name=_(u'In reply to'),
     )
+
     from_header = models.CharField(
+        _('From header'),
         max_length=255,
     )
-    to_header = models.TextField()
+
+    to_header = models.TextField(
+        _(u'To header'),
+    )
+
     outgoing = models.BooleanField(
+        _(u'Outgoing'),
         default=False,
         blank=True,
     )
 
-    body = models.TextField()
+    body = models.TextField(
+        _(u'Body'),
+    )
+
     encoded = models.BooleanField(
+        _(u'Encoded'),
         default=False,
-        help_text='True if the e-mail body is Base64 encoded'
+        help_text=_('True if the e-mail body is Base64 encoded'),
     )
 
     processed = models.DateTimeField(
+        _('Processed'),
         auto_now_add=True
     )
+
     read = models.DateTimeField(
+        _(u'Read'),
         default=None,
         blank=True,
         null=True,
@@ -412,27 +514,21 @@ class Message(models.Model):
 
     @property
     def text(self):
-        return self.get_text_body()
-
-    def get_text_body(self):
-        def get_body_from_message(message):
-            body = ''
-            for part in message.walk():
-                if (
-                    part.get_content_maintype() == 'text'
-                    and part.get_content_subtype() == 'plain'
-                ):
-                    charset = part.get_content_charset()
-                    this_part = part.get_payload(decode=True)
-                    if charset:
-                        this_part = this_part.decode(charset, 'replace')
-
-                    body += this_part
-            return body
-
+        """
+        Returns the message body matching content type 'text/plain'.
+        """
         return get_body_from_message(
-            self.get_email_object()
+            self.get_email_object(), 'text', 'plain'
         ).replace('=\n', '').strip()
+
+    @property
+    def html(self):
+        """
+        Returns the message body matching content type 'text/html'.
+        """
+        return get_body_from_message(
+            self.get_email_object(), 'text', 'html'
+        ).replace('\n', '').strip()
 
     def _rehydrate(self, msg):
         new = EmailMessage()
@@ -495,7 +591,7 @@ class Message(models.Model):
         return self.body.encode('utf-8')
 
     def set_body(self, body):
-        if sys.version_info >= (3, 0):
+        if six.PY3:
             body = body.encode('utf-8')
         self.encoded = True
         self.body = base64.b64encode(body).decode('ascii')
@@ -503,10 +599,10 @@ class Message(models.Model):
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message."""
         body = self.get_body()
-        if sys.version_info < (3, 0):
-            flat = email.message_from_string(body)
-        else:
+        if six.PY3:
             flat = email.message_from_bytes(body)
+        else:
+            flat = email.message_from_string(body)
         return self._rehydrate(flat)
 
     def delete(self, *args, **kwargs):
@@ -525,9 +621,19 @@ class MessageAttachment(models.Model):
         related_name='attachments',
         null=True,
         blank=True,
+        verbose_name=_('Message'),
     )
-    headers = models.TextField(null=True, blank=True)
-    document = models.FileField(upload_to='mailbox_attachments/%Y/%m/%d/')
+
+    headers = models.TextField(
+        _(u'Headers'),
+        null=True,
+        blank=True,
+    )
+
+    document = models.FileField(
+        _(u'Document'),
+        upload_to='mailbox_attachments/%Y/%m/%d/'
+    )
 
     def delete(self, *args, **kwargs):
         self.document.delete()
@@ -556,11 +662,10 @@ class MessageAttachment(models.Model):
 
     def get_filename(self):
         file_name = self._get_rehydrated_headers().get_filename()
-        if file_name:
-            encoded_subject, encoding = decode_header(file_name)[0]
-            if encoding:
-                encoded_subject = encoded_subject.decode(encoding)
-            return encoded_subject
+        if isinstance(file_name, six.text_type):
+            return file_name
+        elif file_name:
+            return convert_header_to_unicode(file_name)
         else:
             return None
 

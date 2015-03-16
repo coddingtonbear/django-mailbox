@@ -6,8 +6,8 @@
 Django-mailbox
 ==============
 
-.. image:: https://travis-ci.org/latestrevision/django-mailbox.png?branch=master
-   :target: https://travis-ci.org/latestrevision/django-mailbox
+.. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
+   :target: https://travis-ci.org/coddingtonbear/django-mailbox
 
 How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content, 
 or had to otherwise construct an application driven by e-mail?
@@ -20,9 +20,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 3
-   :glob:
 
-   topics/*
+   topics/installation
+   topics/mailbox_types
+   topics/polling
+   topics/signal
+   topics/appendix
 
 
 Indices and tables

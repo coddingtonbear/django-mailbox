@@ -1,8 +1,11 @@
-import email
+import six
+
 from poplib import POP3, POP3_SSL
 
+from .base import EmailTransport, MessageParseError
 
-class Pop3Transport(object):
+
+class Pop3Transport(EmailTransport):
     def __init__(self, hostname, port=None, ssl=False):
         self.hostname = hostname
         self.port = port
@@ -20,14 +23,21 @@ class Pop3Transport(object):
         self.server.user(username)
         self.server.pass_(password)
 
+    def get_message_body(self, message_lines):
+        if six.PY3:
+            return six.binary_type('\r\n', 'ascii').join(message_lines)
+        return '\r\n'.join(message_lines)
+
     def get_message(self):
         message_count = len(self.server.list()[1])
         for i in range(message_count):
             try:
-                msg_contents = "\r\n".join(self.server.retr(i + 1)[1])
-                message = email.message_from_string(msg_contents)
+                msg_contents = self.get_message_body(
+                    self.server.retr(i + 1)[1]
+                )
+                message = self.get_email_from_bytes(msg_contents)
                 yield message
-            except email.Errors.MessageParseError:
+            except MessageParseError:
                 continue
             self.server.dele(i + 1)
         self.server.quit()

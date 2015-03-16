@@ -1,6 +1,8 @@
 import email.header
 import logging
 
+import six
+
 from django.conf import settings
 
 
@@ -10,16 +12,24 @@ logger = logging.getLogger(__name__)
 DEFAULT_CHARSET = getattr(
     settings,
     'DJANGO_MAILBOX_DEFAULT_CHARSET',
-    'ascii',
+    'iso8859-1',
 )
 
 
-def decode_header(header):
+def convert_header_to_unicode(header):
+    def _decode(value, encoding):
+        if isinstance(value, six.text_type):
+            return value
+        if not encoding or encoding == 'unknown-8bit':
+            encoding = DEFAULT_CHARSET
+        return value.decode(encoding, 'REPLACE')
+
     try:
         return ''.join(
             [
-                unicode(t[0], t[1] or DEFAULT_CHARSET)
-                for t in email.header.decode_header(header)
+                (
+                    _decode(bytestr, encoding)
+                ) for bytestr, encoding in email.header.decode_header(header)
             ]
         )
     except UnicodeDecodeError:
@@ -29,3 +39,42 @@ def decode_header(header):
             DEFAULT_CHARSET,
         )
         return unicode(header, DEFAULT_CHARSET, 'replace')
+
+
+def get_body_from_message(message, maintype, subtype):
+    """
+    Fetchs the body message matching main/sub content type.
+    """
+    body = six.text_type('')
+    for part in message.walk():
+        if part.get_content_maintype() == maintype and \
+                part.get_content_subtype() == subtype:
+            charset = part.get_content_charset()
+            this_part = part.get_payload(decode=True)
+            if charset:
+                try:
+                    this_part = this_part.decode(charset, 'replace')
+                except LookupError:
+                    this_part = this_part.decode('ascii', 'replace')
+                    logger.warning(
+                        'Unknown encoding %s encountered while decoding '
+                        'text payload.  Interpreting as ASCII with '
+                        'replacement, but some data may not be '
+                        'represented as the sender intended.',
+                        charset
+                    )
+                except ValueError:
+                    this_part = this_part.decode('ascii', 'replace')
+                    logger.warning(
+                        'Error encountered while decoding text '
+                        'payload from an incorrectly-constructed '
+                        'e-mail; payload was converted to ASCII with '
+                        'replacement, but some data may not be '
+                        'represented as the sender intended.'
+                    )
+            else:
+                this_part = this_part.decode('ascii', 'replace')
+
+            body += this_part
+
+    return body

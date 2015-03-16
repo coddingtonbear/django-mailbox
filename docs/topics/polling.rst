@@ -18,8 +18,10 @@ this method will gather new messages from the server.
 Using the Django Admin
 ----------------------
 
-Check the box next to each of the mailboxes you'd like to fetch e-mail from, 
-and select the 'Get new mail' option.
+From the 'Mailboxes' page in the Django Admin,
+check the box next to each of the mailboxes you'd like to fetch e-mail from, 
+select 'Get new mail' from the action selector at the top of the list
+of mailboxes, then click 'Go'.
 
 Using a cron job
 ----------------
@@ -58,8 +60,8 @@ start by adding a new router configuration to your Exim4 configuration like::
   django_mailbox:
     debug_print = 'R: django_mailbox for $localpart@$domain'
     driver = accept
-    domains = +local_domains
     transport = send_to_django_mailbox
+    domains = mydomain.com
     local_parts = emailusernameone : emailusernametwo
 
 Make sure that the e-mail addresses you would like handled by Django Mailbox
@@ -71,6 +73,14 @@ usernames for which you would like to receive mail.
 For example, if one of the e-mail addresses targeted at this machine is
 ``jane@example.com``, 
 the contents of ``local_parts`` would be, simply ``jane``.
+
+.. note::
+
+   If you would like messages addressed to *any* account *@mydomain.com*
+   to be delivered to django_mailbox, simply omit the above ``local_parts``
+   setting.  In the same vein, if you would like messages addressed to
+   any domain or any local domains, you can omit the ``domains`` setting
+   or set it to ``+local_domains`` respectively.
 
 Next, a new transport configuration to your Exim4 configuration::
 

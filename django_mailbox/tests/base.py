@@ -1,12 +1,23 @@
 import email
 import os.path
 
+import six
+
 from django.test import TestCase
-import sys
 
 from django_mailbox import models
 from django_mailbox.models import Mailbox, Message
 
+def get_email_as_text(name):
+    with open(
+        os.path.join(
+            os.path.dirname(__file__),
+            'messages',
+            name,
+        ),
+        'rb'
+    ) as f:
+        return f.read()
 
 class EmailMessageTestCase(TestCase):
     ALLOWED_EXTRA_HEADERS = [
@@ -22,7 +33,7 @@ class EmailMessageTestCase(TestCase):
         self.mailbox = Mailbox.objects.create()
         super(EmailMessageTestCase, self).setUp()
 
-    def _get_email_object(self, name):
+    def _get_email_as_text(self, name):
         with open(
             os.path.join(
                 os.path.dirname(__file__),
@@ -31,10 +42,14 @@ class EmailMessageTestCase(TestCase):
             ),
             'rb'
         ) as f:
-            if sys.version_info < (3, 0):
-                return email.message_from_string(f.read())
-            else:
-                return email.message_from_bytes(f.read())
+            return f.read()
+
+    def _get_email_object(self, name):
+        copy = self._get_email_as_text(name)
+        if six.PY3:
+            return email.message_from_bytes(copy)
+        else:
+            return email.message_from_string(copy)
 
     def _headers_identical(self, left, right, header=None):
         """ Check if headers are (close enough to) identical.

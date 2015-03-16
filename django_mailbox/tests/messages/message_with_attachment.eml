@@ -17,8 +17,8 @@ This message has an attachment.
 --047d7b33dd729737fe04d3bde348
 Content-Type: image/png; name="heart.png"
 Content-Disposition: attachment; filename="heart.png"
-Content-Transfer-Encoding: base64
 X-Attachment-Id: f_hc6mair60
+Content-Transfer-Encoding: base64
 
 iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAFoTx1HAAAAzUlEQVQoz32RWxXDIBBEr4NIQEIl
 ICESkFAJkRAJSIgEpEQCEqYfu6QUkn7sCcyDGQiSACKSKCAkGwBJwhDwZQNMEiYAIBdQvk7rfaHf

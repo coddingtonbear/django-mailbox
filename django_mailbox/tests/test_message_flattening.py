@@ -85,3 +85,20 @@ class TestMessageFlattening(EmailMessageTestCase):
             actual_email_object,
             expected_email_object,
         )
+
+    def test_message_processing_unknown_encoding(self):
+        incoming_email_object = self._get_email_object(
+            'message_with_invalid_encoding.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(incoming_email_object)
+
+        expected_text = (
+            "We offer loans to private individuals and corporate "
+            "organizations at 2% interest rate. Interested serious "
+            "applicants should apply via email with details of their "
+            "requirements.\n\nWarm Regards,\nLoan Team"
+        )
+        actual_text = msg.text
+
+        self.assertEqual(actual_text, expected_text)
