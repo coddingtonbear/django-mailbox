@@ -182,6 +182,13 @@ class Mailbox(models.Model):
         if not archive_folder:
             return None
         return archive_folder[0]
+        
+    @property
+    def folder(self):
+        folder = self._query_string.get('folder', None)
+        if not folder:
+            return None
+        return folder[0]
 
     def get_connection(self):
         if not self.uri:
@@ -191,7 +198,8 @@ class Mailbox(models.Model):
                 self.location,
                 port=self.port if self.port else None,
                 ssl=self.use_ssl,
-                archive=self.archive
+                archive=self.archive,
+                folder=self.folder
             )
             conn.connect(self.username, self.password)
         elif self.type == 'gmail':
