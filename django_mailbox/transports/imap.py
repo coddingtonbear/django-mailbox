@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class ImapTransport(EmailTransport):
-    def __init__(self, hostname, port=None, ssl=False, archive=''):
+    def __init__(self, hostname, port=None, ssl=False, archive='', folder=None):
         self.max_message_size = getattr(
             settings,
             'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
@@ -19,6 +19,7 @@ class ImapTransport(EmailTransport):
         self.hostname = hostname
         self.port = port
         self.archive = archive
+        self.folder = folder
         if ssl:
             self.transport = IMAP4_SSL
             if not self.port:
@@ -31,7 +32,12 @@ class ImapTransport(EmailTransport):
     def connect(self, username, password):
         self.server = self.transport(self.hostname, self.port)
         typ, msg = self.server.login(username, password)
-        self.server.select()
+
+        if self.folder:
+            self.server.select(self.folder)
+        else:
+            self.server.select()
+
 
     def _get_all_message_ids(self):
         # Fetch all the message uids
