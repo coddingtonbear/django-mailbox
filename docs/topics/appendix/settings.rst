@@ -66,6 +66,7 @@ Settings
   * If this is set, it will be read as a number of
     bytes.  Any messages above that size will not be
     downloaded.  ``2000000`` is 2 Megabytes.
+
 * ``DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE``
   * Default: ``False``
   * Type: ``boolean``

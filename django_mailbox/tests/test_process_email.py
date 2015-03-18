@@ -210,7 +210,7 @@ class TestProcessEmail(EmailMessageTestCase):
         )
         msg = self.mailbox.record_outgoing_message(email_object.message())
 
-        self.assertEqual(msg.outgoing, True)
+        self.assertTrue(msg.outgoing)
 
         actual_from = 'username@example.com'
         reply_email_object = EmailMessage('Test subject',  # subject
