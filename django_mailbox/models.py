@@ -511,7 +511,7 @@ class Message(models.Model):
         pre-set it.
 
         """
-        if not self.from_email:
+        if not message.from_email:
             if self.mailbox.from_email:
                 message.from_email = self.mailbox.from_email
             else:
