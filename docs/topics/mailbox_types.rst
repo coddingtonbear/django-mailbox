@@ -11,7 +11,7 @@ POP3 and IMAP as well as local file-based mailboxes.
   Mailbox Type 'Protocol'://    Notes
   ============ ================ =================================================================================================================================================================
   POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, specify imap folder to fetch emails with uri param ``folder``, or specify archive folder to store emails after processing in uri param ``archive``. See :ref:`pop3-and-imap-mailboxes` for details.
+  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, specify imap folder to get emails with uri param ``folder``, or specify archive folder to store emails after processing in uri param ``archive``. See :ref:`pop3-and-imap-mailboxes` for details.
   Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
   Maildir      ``maildir://``
   Mbox         ``mbox://``
@@ -53,7 +53,7 @@ are deleted from the inbox. To archive emails, add the archive folder
 name as a query paremeter to the uri.  For example, if your mailbox has a
 folder named ``myarchivefolder`` that you would like to copy messages to
 after processing, add ``?archive=myarchivefolder`` to the end of the URI. 
-Also if you want to fetch new emails from imap folder  other than 'INBOX' (for example, Myfolder) you 
+Also if you want to get new emails from imap folder  other than 'INBOX' (for example, Myfolder) you 
 could specify another uri query parameter: ``?folder=Myfolder``. 
 
 For a verbose example, if you have an account named
