@@ -182,7 +182,7 @@ class Mailbox(models.Model):
         if not archive_folder:
             return None
         return archive_folder[0]
-        
+
     @property
     def folder(self):
         folder = self._query_string.get('folder', None)
