@@ -11,7 +11,7 @@ POP3 and IMAP as well as local file-based mailboxes.
   Mailbox Type 'Protocol'://    Notes
   ============ ================ =================================================================================================================================================================
   POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``, specify imap folder to get emails with uri param ``folder``, or specify archive folder to store emails after processing in uri param ``archive``. See :ref:`pop3-and-imap-mailboxes` for details.
+  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
   Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
   Maildir      ``maildir://``
   Mbox         ``mbox://``
@@ -48,14 +48,6 @@ Also, if your username or password include any non-ascii characters,
 they should be URL-encoded  (for example, if your username includes an
 ``@``, it should be changed to ``%40`` in your URI).
 
-If you are using an IMAP Mailbox, you can archive all messages before they
-are deleted from the inbox. To archive emails, add the archive folder
-name as a query paremeter to the uri.  For example, if your mailbox has a
-folder named ``myarchivefolder`` that you would like to copy messages to
-after processing, add ``?archive=myarchivefolder`` to the end of the URI. 
-Also if you want to get new emails from imap folder  other than 'INBOX' (for example, Myfolder) you 
-could specify another uri query parameter: ``?folder=Myfolder``. 
-
 For a verbose example, if you have an account named
 ``youremailaddress@gmail.com`` with a password
 of ``1234`` on GMail, which uses a IMAP server of ``imap.gmail.com`` (requiring
@@ -63,7 +55,40 @@ SSL) and you would like to fetch new emails from folder named `Myfolder` and arc
 into a folder named ``Archived``, you
 would enter the following as your URI::
 
-    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?folder=Myfolder&archive=Archived
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
+
+Additional IMAP Mailbox Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are using an IMAP Mailbox, you have two additional configuration
+options that you can set by appending parameters to the end of your
+mailbox URI.
+
+Specifying the source folder
+++++++++++++++++++++++++++++
+
+Although by default, Django Mailbox will consume messages from your 'INBOX'
+folder, you can specify the folder from which you'd like messages consumed
+by specifying the ``folder`` URI query parameter; for example, to instead
+consume from the folder named 'MyFolder', you could add ``?folder=MyFolder``
+to the end of your URI::
+
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?folder=MyFolder
+
+Specifying an archive folder
+++++++++++++++++++++++++++++
+
+Django Mailbox will delete messages immediately after processing them,
+but you can specify an IMAP folder to which the messages should be copied
+before the original message is deleted.
+
+To archive email messages, add the archive folder
+name as a query parameter to the URI.  For example, if your mailbox has a
+folder named ``myarchivefolder`` that you would like to copy messages to
+after processing, add ``?archive=myarchivefolder`` to the end of the URI::
+
+
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=myarchivefolder
 
 .. _gmail-oauth:
 
