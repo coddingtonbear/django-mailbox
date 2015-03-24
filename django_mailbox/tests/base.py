@@ -19,6 +19,7 @@ def get_email_as_text(name):
     ) as f:
         return f.read()
 
+
 class EmailMessageTestCase(TestCase):
     ALLOWED_EXTRA_HEADERS = [
         'MIME-Version',
@@ -30,7 +31,7 @@ class EmailMessageTestCase(TestCase):
         self._STRIP_UNALLOWED_MIMETYPES = models.STRIP_UNALLOWED_MIMETYPES
         self._TEXT_STORED_MIMETYPES = models.TEXT_STORED_MIMETYPES
 
-        self.mailbox = Mailbox.objects.create()
+        self.mailbox = Mailbox.objects.create(from_email='from@example.com')
         super(EmailMessageTestCase, self).setUp()
 
     def _get_email_as_text(self, name):

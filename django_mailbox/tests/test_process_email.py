@@ -5,6 +5,7 @@ import six
 
 from django_mailbox.models import Mailbox, Message
 from django_mailbox.tests.base import EmailMessageTestCase
+from django.core.mail import EmailMessage
 
 
 __all__ = ['TestProcessEmail']
@@ -200,3 +201,32 @@ class TestProcessEmail(EmailMessageTestCase):
         actual_from = msg.from_header
 
         self.assertEqual(expected_from, actual_from)
+
+    def test_message_reply(self):
+        email_object = EmailMessage('Test subject',  # subject
+            'Test body',  # body
+            'username@example.com',  # from
+            ['mr.test32@mail.ru'],  # to
+        )
+        msg = self.mailbox.record_outgoing_message(email_object.message())
+
+        self.assertTrue(msg.outgoing)
+
+        actual_from = 'username@example.com'
+        reply_email_object = EmailMessage('Test subject',  # subject
+            'Test body',  # body
+            actual_from,  # from
+            ['mr.test32@mail.ru'],  # to
+        )
+
+        reply_msg = msg.reply(reply_email_object)
+
+        self.assertEqual(reply_msg.in_reply_to, msg)
+
+        self.assertEqual(actual_from, msg.from_header)
+
+        reply_email_object.from_email = None
+
+        second_reply_msg = msg.reply(reply_email_object)
+
+        self.assertEqual(self.mailbox.from_email, second_reply_msg.from_header)

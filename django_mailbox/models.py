@@ -32,7 +32,6 @@ from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport, GmailImapTransport
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +69,12 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
     settings,
     'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
     'X-Django-Mailbox-Interpolate-Attachment'
+)
+
+STORE_ORIGINAL_MESSAGE = getattr(
+    settings,
+    'DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE',
+    False
 )
 
 
@@ -334,6 +339,8 @@ class Mailbox(models.Model):
 
     def _process_message(self, message):
         msg = Message()
+        if STORE_ORIGINAL_MESSAGE:
+            msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message), save=False)
         msg.mailbox = self
         if 'subject' in message:
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
@@ -458,6 +465,12 @@ class Message(models.Model):
         null=True,
     )
 
+    eml = models.FileField(
+        _(u'Message as a file'),
+        null=True,
+        upload_to="messages",
+        help_text=_(u'Original full content of message')
+    )
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
     incoming_messages = IncomingMessageManager()
@@ -506,10 +519,11 @@ class Message(models.Model):
         pre-set it.
 
         """
-        if self.mailbox.from_email:
-            message.from_email = self.mailbox.from_email
-        else:
-            message.from_email = settings.DEFAULT_FROM_EMAIL
+        if not message.from_email:
+            if self.mailbox.from_email:
+                message.from_email = self.mailbox.from_email
+            else:
+                message.from_email = settings.DEFAULT_FROM_EMAIL
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id
@@ -606,6 +620,8 @@ class Message(models.Model):
 
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message."""
+        if self.eml:
+            return email.message_from_file(self.eml)
         body = self.get_body()
         if six.PY3:
             flat = email.message_from_bytes(body)
