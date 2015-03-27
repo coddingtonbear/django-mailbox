@@ -466,7 +466,7 @@ class Message(models.Model):
     )
 
     eml = models.FileField(
-        _(u'Message as a file'),
+        _(u'Raw message contents'),
         null=True,
         upload_to="messages",
         help_text=_(u'Original full content of message')
