@@ -1,12 +1,19 @@
 import email
 import os.path
+import time
 
 import six
 
+from django.conf import settings
 from django.test import TestCase
 
 from django_mailbox import models
 from django_mailbox.models import Mailbox, Message
+
+
+class EmailIntegrationTimeout(Exception):
+    pass
+
 
 def get_email_as_text(name):
     with open(
@@ -32,7 +39,31 @@ class EmailMessageTestCase(TestCase):
         self._TEXT_STORED_MIMETYPES = models.TEXT_STORED_MIMETYPES
 
         self.mailbox = Mailbox.objects.create(from_email='from@example.com')
+
+        self.test_account = os.environ['EMAIL_ACCOUNT']
+        self.test_password = os.environ['EMAIL_PASSWORD']
+        self.test_smtp_server = os.environ['EMAIL_SMTP_SERVER']
+        self.test_from_email = 'nobody@nowhere.com'
+
+        self.maximum_wait_seconds = 60 * 5
+
+        settings.EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+        settings.EMAIL_HOST = self.test_smtp_server
+        settings.EMAIL_PORT = 587
+        settings.EMAIL_HOST_USER = self.test_account
+        settings.EMAIL_HOST_PASSWORD = self.test_password
+        settings.EMAIL_USE_TLS = True
         super(EmailMessageTestCase, self).setUp()
+
+    def _get_new_messages(self, mailbox):
+        maximum_wait = time.time() + self.maximum_wait_seconds
+        while True:
+            if time.time() > maximum_wait:
+                raise EmailIntegrationTimeout()
+            messages = self.mailbox.get_new_mail()
+            if messages:
+                return messages
+            time.sleep(5)
 
     def _get_email_as_text(self, name):
         with open(

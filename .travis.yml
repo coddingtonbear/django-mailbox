@@ -1,24 +1,27 @@
 language: python
-
 python:
-  - "2.6"
-  - "2.7"
-  - "3.3"
-
+- '2.6'
+- '2.7'
+- '3.3'
 env:
+  matrix:
   - DJANGO=1.4.14
   - DJANGO=1.5.9
   - DJANGO=1.6.8
   - DJANGO=1.7.1
-
+  global:
+  - secure: aswHU7pQroGM+GHoYlhXzzk2FYfqxXJORjqXPsbgoHAIu4Bssaj8+YAzIcdy3j9kSt4I8VBpjnn8H/wzQXki75JBZOosQrIeMK018+uR+ZMONBLqDYW/N7EJHLgZt9QXxQNKeZygrD4GN/Dc4gLHGvPQC/RfPuuHcnF0Liaahoo=
+  - secure: RZ6M6984P885GRoyx9n/WCCWGoFAzYpS8sZkXu3e/HK9oPXfaM2IEHjkq03jIC/FcWn/QMtFjOUBqQU94rnqdivFdFkeZHk1WUQgC0hztH3Qhh9zu2PNIrYUDpVD5dJqBpprWbSwFP8yNsJlP9A2RUubTlZblKHuaBhhiuNN+kU=
+  - secure: gsAAl/RaTodLJDHWOuHZWtooa9/psyXBONF7ElZOTki3WvH+KugtjuXn3pXBGbUhvGqd5qfgPqX7WQOFP9KTdkXBbkU20rCHLh3SV8V2vRkGFAFiGPBTFfSA83zFNMvmgEnTww4OzYsfs4wHTEyxBeQkggnB5bXEvqkFVrHBjuQ=
+  - secure: mMa7UUt+CQDB52fGM1T3oRL67OzQzRIc+BQCOqUEUhBV7p5g7Y1Hv6NTdVZTvK16x3DsP+5kFNd1v7rsTFw2qzP3hOxIv2BtMPuSzZdnN85Zd/nGwnztxzj/rqw7TMBaYvIdEZZbpRF/K0p0Xr6LJK2s9UkPXPUaLqly7kNi360=
 matrix:
   exclude:
-    - env: DJANGO=1.4.14
-      python: "3.3"
-    - env: DJANGO=1.7.1
-      python: "2.6"
+  - env: DJANGO=1.4.14
+    python: '3.3'
+  - env: DJANGO=1.7.1
+    python: '2.6'
 install:
-  - pip install -q Django==$DJANGO --use-mirrors
-  - pip install -q -e . --use-mirrors
+- pip install -q Django==$DJANGO --use-mirrors
+- pip install -q -e . --use-mirrors
 script:
-  - python setup.py test
+- python setup.py test
