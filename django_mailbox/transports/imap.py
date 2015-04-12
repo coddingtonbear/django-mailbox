@@ -101,6 +101,8 @@ class ImapTransport(EmailTransport):
         for uid in message_ids:
             try:
                 typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
+                if not msg_contents:
+                    continue
                 message = self.get_email_from_bytes(msg_contents[0][1])
 
                 if (
