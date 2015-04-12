@@ -1,15 +1,49 @@
 import mock
+import six
 
 from django.test.utils import override_settings
 
 from django_mailbox.tests.base import EmailMessageTestCase, get_email_as_text
 from django_mailbox.transports import ImapTransport, Pop3Transport
 
-FAKE_UID_SEARCH_ANSWER = ('OK', ['18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'])
-FAKE_UID_FETCH_SIZES = ('OK', ['1 (UID 18 RFC822.SIZE 58070000000)', '2 (UID 19 RFC822.SIZE 2593)'])
-FAKE_UID_FETCH_MSG = ('OK', [('1 (UID 18 RFC822 {5807}', get_email_as_text('generic_message.eml') ),])
-FAKE_UID_COPY_MSG = ('OK', ['[COPYUID 1 2 2] (Success)'])
-FAKE_LIST_ARCHIVE_FOLDERS_ANSWERS = ('OK', ['(\\HasNoChildren \\All) "/" "[Gmail]/All Mail"'])
+FAKE_UID_SEARCH_ANSWER = (
+    'OK',
+    [
+        six.b(
+            '18 19 20 21 22 23 24 25 26 27 28 29 '
+            '30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'
+        )
+    ]
+)
+FAKE_UID_FETCH_SIZES = (
+    'OK',
+    [
+        six.b('1 (UID 18 RFC822.SIZE 58070000000)'),
+        six.b('2 (UID 19 RFC822.SIZE 2593)')
+    ]
+)
+FAKE_UID_FETCH_MSG = (
+    'OK',
+    [
+        (
+            six.b('1 (UID 18 RFC822 {5807}'),
+            get_email_as_text('generic_message.eml')
+        ),
+    ]
+)
+FAKE_UID_COPY_MSG = (
+    'OK',
+    [
+        six.b('[COPYUID 1 2 2] (Success)')
+    ]
+)
+FAKE_LIST_ARCHIVE_FOLDERS_ANSWERS = (
+    'OK',
+    [
+        six.b('(\\HasNoChildren \\All) "/" "[Gmail]/All Mail"')
+    ]
+)
+
 
 class IMAPTestCase(EmailMessageTestCase):
     def setUp(self):

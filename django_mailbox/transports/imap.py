@@ -10,11 +10,18 @@ logger = logging.getLogger(__name__)
 
 
 class ImapTransport(EmailTransport):
-    def __init__(self, hostname, port=None, ssl=False, archive='', folder=None):
+    def __init__(
+        self, hostname, port=None, ssl=False, archive='', folder=None
+    ):
         self.max_message_size = getattr(
             settings,
             'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
             False
+        )
+        self.integration_testing_subject = getattr(
+            settings,
+            'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
+            None
         )
         self.hostname = hostname
         self.port = port
@@ -38,7 +45,6 @@ class ImapTransport(EmailTransport):
         else:
             self.server.select()
 
-
     def _get_all_message_ids(self):
         # Fetch all the message uids
         response, message_ids = self.server.uid('search', None, 'ALL')
@@ -47,7 +53,7 @@ class ImapTransport(EmailTransport):
         # ids; we must make sure that it isn't an empty string before
         # splitting into individual UIDs.
         if message_id_string:
-            return message_id_string.split(' ')
+            return message_id_string.decode().split(' ')
         return []
 
     def _get_small_message_ids(self, message_ids):
@@ -63,6 +69,7 @@ class ImapTransport(EmailTransport):
         )
 
         for each_msg in data:
+            each_msg = each_msg.decode()
             try:
                 uid = each_msg.split(' ')[2]
                 size = each_msg.split(' ')[4].rstrip(')')
@@ -95,6 +102,13 @@ class ImapTransport(EmailTransport):
             try:
                 typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
                 message = self.get_email_from_bytes(msg_contents[0][1])
+
+                if (
+                    self.integration_testing_subject and
+                    message['Subject'] != self.integration_testing_subject
+                ):
+                    continue
+
                 yield message
             except MessageParseError:
                 continue
