@@ -621,6 +621,7 @@ class Message(models.Model):
     def get_email_object(self):
         """ Returns an `email.message.Message` instance for this message."""
         if self.eml:
+            self.eml.open()
             body = self.eml.file.read()
         else:
             body = self.get_body()
