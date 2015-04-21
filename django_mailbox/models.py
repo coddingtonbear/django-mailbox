@@ -156,22 +156,27 @@ class Mailbox(models.Model):
 
     @property
     def port(self):
+        """Returns the port to use for fetching messages."""
         return self._protocol_info.port
 
     @property
     def username(self):
+        """Returns the username to use for fetching messages."""
         return unquote(self._protocol_info.username)
 
     @property
     def password(self):
+        """Returns the password to use for fetching messages."""
         return unquote(self._protocol_info.password)
 
     @property
     def location(self):
+        """Returns the location (domain and path) of messages."""
         return self._domain if self._domain else '' + self._protocol_info.path
 
     @property
     def type(self):
+        """Returns the 'transport' name for this mailbox."""
         scheme = self._protocol_info.scheme.lower()
         if '+' in scheme:
             return scheme.split('+')[0]
@@ -179,10 +184,12 @@ class Mailbox(models.Model):
 
     @property
     def use_ssl(self):
+        """Returns whether or not this mailbox's connection uses SSL."""
         return '+ssl' in self._protocol_info.scheme.lower()
 
     @property
     def archive(self):
+        """Returns (if specified) the folder to archive messages to."""
         archive_folder = self._query_string.get('archive', None)
         if not archive_folder:
             return None
@@ -190,12 +197,19 @@ class Mailbox(models.Model):
 
     @property
     def folder(self):
+        """Returns (if specified) the folder to fetch mail from."""
         folder = self._query_string.get('folder', None)
         if not folder:
             return None
         return folder[0]
 
     def get_connection(self):
+        """Returns the transport instance for this mailbox.
+
+        These will always be instances of
+        `django_mailbox.transports.base.EmailTransport`.
+
+        """
         if not self.uri:
             return None
         elif self.type == 'imap':
@@ -235,6 +249,7 @@ class Mailbox(models.Model):
         return conn
 
     def process_incoming_message(self, message):
+        """Process a message incoming to this mailbox."""
         msg = self._process_message(message)
         msg.outgoing = False
         msg.save()
@@ -247,6 +262,7 @@ class Mailbox(models.Model):
         return msg
 
     def record_outgoing_message(self, message):
+        """Record an outgoing message associated with this mailbox."""
         msg = self._process_message(message)
         msg.outgoing = True
         msg.save()
@@ -366,6 +382,7 @@ class Mailbox(models.Model):
         return msg
 
     def get_new_mail(self):
+        """Connect to this transport and fetch new messages."""
         new_mail = []
         connection = self.get_connection()
         if not connection:
@@ -493,6 +510,16 @@ class Message(models.Model):
 
     @property
     def from_address(self):
+        """Returns the address (as a list) from which this message was received
+
+        .. note::
+
+           This was once (and probably should be) a string rather than a list,
+           but in a pull request received long, long ago it was changed;
+           presumably to make the interface identical to that of
+           `to_addresses`.
+
+        """
         if self.from_header:
             return [parseaddr(self.from_header)[1].lower()]
         else:
@@ -500,6 +527,7 @@ class Message(models.Model):
 
     @property
     def to_addresses(self):
+        """Returns a list of addresses to which this message was sent."""
         addresses = []
         for address in self.to_header.split(','):
             if address:
@@ -608,18 +636,48 @@ class Message(models.Model):
         return new
 
     def get_body(self):
+        """Returns the `body` field of this record.
+
+        This will automatically base64-decode the message contents
+        if they are encoded as such.
+
+        """
         if self.encoded:
             return base64.b64decode(self.body.encode('ascii'))
         return self.body.encode('utf-8')
 
     def set_body(self, body):
+        """Set the `body` field of this record.
+
+        This will automatically base64-encode the message contents to
+        circumvent a limitation in earlier versions of Django in which
+        no fields existed for storing arbitrary bytes.
+
+        """
         if six.PY3:
             body = body.encode('utf-8')
         self.encoded = True
         self.body = base64.b64encode(body).decode('ascii')
 
     def get_email_object(self):
-        """ Returns an `email.message.Message` instance for this message."""
+        """Returns an `email.message.Message` instance representing the
+        contents of this message and all attachments.
+
+        See [email.Message.Message]_ for more information as to what methods
+        and properties are available on `email.message.Message` instances.
+
+        .. note::
+
+           Depending upon the storage methods in use (specifically --
+           whether ``DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE`` is set
+           to ``True``, this may either create a "rehydrated" message
+           using stored attachments, or read the message contents stored
+           on-disk.
+
+        .. [email.Message.Message]: Python's `email.message.Message` docs
+           (https://docs.python.org/2/library/email.message.html)
+
+        """
         if self.eml:
             self.eml.open()
             body = self.eml.file.read()
@@ -632,6 +690,7 @@ class Message(models.Model):
         return self._rehydrate(flat)
 
     def delete(self, *args, **kwargs):
+        """Delete this message and all stored attachments."""
         for attachment in self.attachments.all():
             # This attachment is attached only to this message.
             attachment.delete()
@@ -662,6 +721,7 @@ class MessageAttachment(models.Model):
     )
 
     def delete(self, *args, **kwargs):
+        """Deletes the attachment."""
         self.document.delete()
         return super(MessageAttachment, self).delete(*args, **kwargs)
 
@@ -687,6 +747,7 @@ class MessageAttachment(models.Model):
         self._set_dehydrated_headers(rehydrated)
 
     def get_filename(self):
+        """Returns the original filename of this attachment."""
         file_name = self._get_rehydrated_headers().get_filename()
         if isinstance(file_name, six.text_type):
             return file_name
