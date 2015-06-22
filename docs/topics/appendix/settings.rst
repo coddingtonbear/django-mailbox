@@ -12,7 +12,7 @@ Settings
 
   * Default: ``False``
   * Type: ``boolean``
-  * Controls whether or not we remove mimetypes not specified in 
+  * Controls whether or not we remove mimetypes not specified in
     ``DJANGO_MAILBOX_PRESERVED_MIMETYPES`` from the message prior to storage.
 
 * ``DJANGO_MAILBOX_ALLOWED_MIMETYPES``
@@ -58,6 +58,14 @@ Settings
     a message instance's ``get_email_object`` method being called.  Value of
     this field is the primary key of the ``django_mailbox.MessageAttachment``
     instance currently storing this payload component's contents.
+
+* ``DJANGO_MAILBOX_ATTACHMENT_UPLOAD_TO``
+
+  * Default: ``mailbox_attachments/%Y/%m/%d/``
+  * Type: ``string``
+  * Attachments will be saved to this location. Specifies the ``upload_to`` setting
+    for the attachment FileField. For more on FileFields and upload_to, see the
+    `Django docs <https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#handling-uploaded-files-with-a-model>`__
 
 * ``DJANGO_MAILBOX_MAX_MESSAGE_SIZE``
 
