@@ -71,6 +71,12 @@ ATTACHMENT_INTERPOLATION_HEADER = getattr(
     'X-Django-Mailbox-Interpolate-Attachment'
 )
 
+ATTACHMENT_UPLOAD_TO = getattr(
+    settings,
+    'DJANGO_MAILBOX_ATTACHMENT_UPLOAD_TO',
+    'mailbox_attachments/%Y/%m/%d/'
+)
+
 STORE_ORIGINAL_MESSAGE = getattr(
     settings,
     'DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE',
@@ -717,7 +723,7 @@ class MessageAttachment(models.Model):
 
     document = models.FileField(
         _(u'Document'),
-        upload_to='mailbox_attachments/%Y/%m/%d/'
+        upload_to=ATTACHMENT_UPLOAD_TO,
     )
 
     def delete(self, *args, **kwargs):
