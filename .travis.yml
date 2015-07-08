@@ -5,10 +5,9 @@ python:
 - '3.3'
 env:
   matrix:
-  - DJANGO=1.4.14
-  - DJANGO=1.5.9
-  - DJANGO=1.6.8
-  - DJANGO=1.7.1
+  - DJANGO=1.4.20
+  - DJANGO=1.7.8
+  - DJANGO=1.8.2
   global:
   - secure: aswHU7pQroGM+GHoYlhXzzk2FYfqxXJORjqXPsbgoHAIu4Bssaj8+YAzIcdy3j9kSt4I8VBpjnn8H/wzQXki75JBZOosQrIeMK018+uR+ZMONBLqDYW/N7EJHLgZt9QXxQNKeZygrD4GN/Dc4gLHGvPQC/RfPuuHcnF0Liaahoo=
   - secure: RZ6M6984P885GRoyx9n/WCCWGoFAzYpS8sZkXu3e/HK9oPXfaM2IEHjkq03jIC/FcWn/QMtFjOUBqQU94rnqdivFdFkeZHk1WUQgC0hztH3Qhh9zu2PNIrYUDpVD5dJqBpprWbSwFP8yNsJlP9A2RUubTlZblKHuaBhhiuNN+kU=

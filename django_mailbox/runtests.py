@@ -23,7 +23,10 @@ if not settings.configured:
         ]
     )
 
-from django.test.simple import DjangoTestSuiteRunner
+try:
+    from django.test.runner import DiscoverRunner as TestRunner
+except ImportError:
+    from django.test.simple import DjangoTestSuiteRunner as TestRunner
 
 
 def runtests(*test_args):
@@ -37,7 +40,7 @@ def runtests(*test_args):
     except NameError:
         # This version of Django is too old for an app registry.
         pass
-    runner = DjangoTestSuiteRunner(
+    runner = TestRunner(
         verbosity=1,
         interactive=False,
         failfast=False
