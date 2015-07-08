@@ -9,8 +9,13 @@ Changelog
 4.3
 ---
 
+* Adds functionality for allowing one to store the message body on-disk
+  instead of in the database.
+
 4.2
 ---
+
+* Adds 'envelope headers' to the Admin interface.
 
 4.1
 ---
