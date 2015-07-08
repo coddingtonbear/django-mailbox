@@ -1,0 +1,33 @@
+MIME-Version: 1.0
+Received: by 10.76.173.10 with HTTP; Tue, 7 Jul 2015 19:50:29 -0700 (PDT)
+X-Originating-IP: [71.63.222.120]
+Date: Tue, 7 Jul 2015 19:50:29 -0700
+Delivered-To: me@adamcoddington.net
+Message-ID: <CAMdmm+ixRrk+SY2ktbTbGcQctY0VrCZ9C2VJtMqwiY3Zce23Ng@mail.gmail.com>
+Subject: Test e-mail message
+From: Adam Coddington <me@adamcoddington.net>
+To: Adam Coddington <me@adamcoddington.net>
+Content-Type: multipart/mixed; boundary=089e0111d1089c45be051a5433d8
+
+--089e0111d1089c45be051a5433d8
+Content-Type: multipart/alternative; boundary=089e0111d1089c45b4051a5433d6
+
+--089e0111d1089c45b4051a5433d6
+Content-Type: text/plain; charset=UTF-8
+
+Has an attached text document, too!
+
+--089e0111d1089c45b4051a5433d6
+Content-Type: text/html; charset=UTF-8
+
+<div dir="ltr">Has an attached text document, too!</div>
+
+--089e0111d1089c45b4051a5433d6--
+--089e0111d1089c45be051a5433d8
+Content-Type: text/plain; charset=US-ASCII; name="attachment.txt"
+Content-Disposition: attachment; filename="attachment.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ibu64edo0
+
+VGhpcyBpcyBhbiBhdHRhY2htZW50Lgo=
+--089e0111d1089c45be051a5433d8--

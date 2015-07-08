@@ -103,7 +103,13 @@ class ImapTransport(EmailTransport):
                 typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
                 if not msg_contents:
                     continue
-                message = self.get_email_from_bytes(msg_contents[0][1])
+                try:
+                    message = self.get_email_from_bytes(msg_contents[0][1])
+                except TypeError:
+                    # This happens if another thread/process deletes the
+                    # message between our generating the ID list and our
+                    # processing it here.
+                    continue
 
                 if condition and not condition(message):
                     continue
