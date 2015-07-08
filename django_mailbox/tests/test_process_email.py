@@ -230,3 +230,12 @@ class TestProcessEmail(EmailMessageTestCase):
         second_reply_msg = msg.reply(reply_email_object)
 
         self.assertEqual(self.mailbox.from_email, second_reply_msg.from_header)
+
+    def test_message_with_text_attachment(self):
+        email_object = self._get_email_object(
+            'message_with_text_attachment.eml',
+        )
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        self.assertEqual(msg.attachments.all().count(), 1)
