@@ -393,7 +393,7 @@ class Mailbox(models.Model):
         connection = self.get_connection()
         if not connection:
             return new_mail
-        for message in connection.get_message():
+        for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
             new_mail.append(msg)
         return new_mail

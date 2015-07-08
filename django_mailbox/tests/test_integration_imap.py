@@ -3,7 +3,6 @@ import uuid
 
 from six.moves.urllib import parse
 
-from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
 from django_mailbox.models import Mailbox
