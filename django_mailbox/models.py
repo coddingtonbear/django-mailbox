@@ -298,7 +298,10 @@ class Mailbox(models.Model):
                 )
             )
             new.set_payload('')
-        elif msg.get_content_type() not in TEXT_STORED_MIMETYPES:
+        elif (
+            (msg.get_content_type() not in TEXT_STORED_MIMETYPES) or
+            ('attachment' in msg.get('Content-Disposition', ''))
+        ):
             filename = msg.get_filename()
             if not filename:
                 extension = mimetypes.guess_extension(msg.get_content_type())
