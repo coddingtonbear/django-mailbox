@@ -82,7 +82,7 @@ class ImapTransport(EmailTransport):
                 pass
         return safe_message_ids
 
-    def get_message(self):
+    def get_message(self, condition=None):
         message_ids = self._get_all_message_ids()
 
         if not message_ids:
@@ -105,10 +105,7 @@ class ImapTransport(EmailTransport):
                     continue
                 message = self.get_email_from_bytes(msg_contents[0][1])
 
-                if (
-                    self.integration_testing_subject and
-                    message['Subject'] != self.integration_testing_subject
-                ):
+                if condition and not condition(message):
                     continue
 
                 yield message

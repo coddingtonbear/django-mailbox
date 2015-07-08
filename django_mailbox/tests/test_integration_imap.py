@@ -24,12 +24,6 @@ class TestImap(EmailMessageTestCase):
             uri=self.get_connection_string()
         )
         self.arbitrary_identifier = str(uuid.uuid4())
-        settings.DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT = (
-            self.arbitrary_identifier
-        )
-
-    def tearDown(self):
-        settings.DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT = None
 
     def get_connection_string(self):
         return "imap+ssl://{account}:{password}@{server}".format(
@@ -50,7 +44,10 @@ class TestImap(EmailMessageTestCase):
         )
         msg.send()
 
-        messages = self._get_new_messages(self.mailbox)
+        messages = self._get_new_messages(
+            self.mailbox,
+            condition=lambda m: m['subject'] == self.arbitrary_identifier
+        )
 
         self.assertEqual(1, len(messages))
         self.assertEqual(messages[0].subject, self.arbitrary_identifier)

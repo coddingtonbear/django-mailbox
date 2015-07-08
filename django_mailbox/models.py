@@ -387,7 +387,7 @@ class Mailbox(models.Model):
         msg.save()
         return msg
 
-    def get_new_mail(self):
+    def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
         new_mail = []
         connection = self.get_connection()

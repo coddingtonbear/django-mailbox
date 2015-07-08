@@ -55,12 +55,12 @@ class EmailMessageTestCase(TestCase):
         settings.EMAIL_USE_TLS = True
         super(EmailMessageTestCase, self).setUp()
 
-    def _get_new_messages(self, mailbox):
+    def _get_new_messages(self, mailbox, condition=None):
         maximum_wait = time.time() + self.maximum_wait_seconds
         while True:
             if time.time() > maximum_wait:
                 raise EmailIntegrationTimeout()
-            messages = self.mailbox.get_new_mail()
+            messages = self.mailbox.get_new_mail(condition)
             if messages:
                 return messages
             time.sleep(5)

@@ -28,7 +28,7 @@ class Pop3Transport(EmailTransport):
             return six.binary_type('\r\n', 'ascii').join(message_lines)
         return '\r\n'.join(message_lines)
 
-    def get_message(self):
+    def get_message(self, condition=None):
         message_count = len(self.server.list()[1])
         for i in range(message_count):
             try:
@@ -36,6 +36,10 @@ class Pop3Transport(EmailTransport):
                     self.server.retr(i + 1)[1]
                 )
                 message = self.get_email_from_bytes(msg_contents)
+
+                if condition and not condition(message):
+                    continue
+
                 yield message
             except MessageParseError:
                 continue
