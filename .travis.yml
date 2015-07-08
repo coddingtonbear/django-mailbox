@@ -15,9 +15,11 @@ env:
   - secure: mMa7UUt+CQDB52fGM1T3oRL67OzQzRIc+BQCOqUEUhBV7p5g7Y1Hv6NTdVZTvK16x3DsP+5kFNd1v7rsTFw2qzP3hOxIv2BtMPuSzZdnN85Zd/nGwnztxzj/rqw7TMBaYvIdEZZbpRF/K0p0Xr6LJK2s9UkPXPUaLqly7kNi360=
 matrix:
   exclude:
-  - env: DJANGO=1.4.14
+  - env: DJANGO=1.4.20
     python: '3.3'
-  - env: DJANGO=1.7.1
+  - env: DJANGO=1.7.8
+    python: '2.6'
+  - env: DJANGO=1.8.2
     python: '2.6'
 install:
 - pip install -q Django==$DJANGO --use-mirrors
