@@ -22,7 +22,7 @@ def convert_header_to_unicode(header):
             return value
         if not encoding or encoding == 'unknown-8bit':
             encoding = DEFAULT_CHARSET
-        return value.decode(encoding, 'REPLACE')
+        return value.decode(encoding, 'replace')
 
     try:
         return ''.join(
