@@ -1,4 +1,5 @@
 import sys
+import six
 
 from .base import EmailTransport
 
@@ -9,9 +10,12 @@ class GenericFileMailbox(EmailTransport):
 
     def __init__(self, path):
         super(GenericFileMailbox, self).__init__()
-        self._path = path.encode(
-            sys.getfilesystemencoding()
-        )
+        if six.PY2:
+            self._path = path.encode(
+                sys.getfilesystemencoding()
+            )
+        else:
+            self._path = path
 
     def get_instance(self):
         return self._variant(self._path)
