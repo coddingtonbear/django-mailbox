@@ -1,4 +1,5 @@
 import os
+from unittest import SkipTest
 import uuid
 
 from six.moves.urllib import parse
@@ -15,9 +16,26 @@ __all__ = ['TestImap']
 class TestImap(EmailMessageTestCase):
     def setUp(self):
         super(TestImap, self).setUp()
+
         self.test_imap_server = (
-            os.environ['EMAIL_IMAP_SERVER']
+            os.environ.get('EMAIL_IMAP_SERVER')
         )
+
+        required_settings = [
+            self.test_imap_server,
+            self.test_account,
+            self.test_password,
+            self.test_smtp_server,
+            self.test_from_email,
+        ]
+        if not all(required_settings):
+            raise SkipTest(
+                "Integration tests are not available without having "
+                "the the following environment variables set: "
+                "EMAIL_ACCOUNT, EMAIL_PASSWORD, EMAIL_SMTP_SERVER, "
+                "EMAIL_IMAP_SERVER."
+            )
+
         self.mailbox = Mailbox.objects.create(
             name='Integration Test Imap',
             uri=self.get_connection_string()
