@@ -1,5 +1,5 @@
 import os
-from unittest import SkipTest
+from unittest2 import SkipTest
 import uuid
 
 from six.moves.urllib import parse
