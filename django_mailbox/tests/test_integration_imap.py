@@ -30,7 +30,7 @@ class TestImap(EmailMessageTestCase):
             None
         ]
         if not all(required_settings):
-            raise SkipTest(
+            self.skipTest(
                 "Integration tests are not available without having "
                 "the the following environment variables set: "
                 "EMAIL_ACCOUNT, EMAIL_PASSWORD, EMAIL_SMTP_SERVER, "
