@@ -5,6 +5,7 @@ from django_mailbox import __version__ as version_string
 tests_require = [
     'django',
     'mock',
+    'unittest2',
 ]
 
 gmail_oauth2_require = [

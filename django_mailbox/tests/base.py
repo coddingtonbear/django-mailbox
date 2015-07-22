@@ -40,9 +40,9 @@ class EmailMessageTestCase(TestCase):
 
         self.mailbox = Mailbox.objects.create(from_email='from@example.com')
 
-        self.test_account = os.environ['EMAIL_ACCOUNT']
-        self.test_password = os.environ['EMAIL_PASSWORD']
-        self.test_smtp_server = os.environ['EMAIL_SMTP_SERVER']
+        self.test_account = os.environ.get('EMAIL_ACCOUNT')
+        self.test_password = os.environ.get('EMAIL_PASSWORD')
+        self.test_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
         self.test_from_email = 'nobody@nowhere.com'
 
         self.maximum_wait_seconds = 60 * 5
