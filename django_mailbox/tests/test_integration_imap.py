@@ -27,6 +27,7 @@ class TestImap(EmailMessageTestCase):
             self.test_password,
             self.test_smtp_server,
             self.test_from_email,
+            None
         ]
         if not all(required_settings):
             raise SkipTest(
