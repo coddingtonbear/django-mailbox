@@ -260,11 +260,8 @@ class Mailbox(models.Model):
         msg.outgoing = False
         msg.save()
 
-        try:
-            message_received.send(sender=self, message=msg)
-        except:
-            pass
-
+        message_received.send(sender=self, message=msg)
+        
         return msg
 
     def record_outgoing_message(self, message):
