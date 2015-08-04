@@ -1,6 +1,7 @@
 import os.path
 import sys
 
+import mock
 import six
 
 from django_mailbox.models import Mailbox, Message
@@ -213,13 +214,15 @@ class TestProcessEmail(EmailMessageTestCase):
         self.assertTrue(msg.outgoing)
 
         actual_from = 'username@example.com'
-        reply_email_object = EmailMessage('Test subject',  # subject
+        reply_email_object = EmailMessage(
+            'Test subject',  # subject
             'Test body',  # body
             actual_from,  # from
             ['mr.test32@mail.ru'],  # to
         )
 
-        reply_msg = msg.reply(reply_email_object)
+        with mock.patch.object(reply_email_object, 'send'):
+            reply_msg = msg.reply(reply_email_object)
 
         self.assertEqual(reply_msg.in_reply_to, msg)
 
