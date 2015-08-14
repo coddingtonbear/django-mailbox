@@ -27,7 +27,7 @@ matrix:
   - env: DJANGO=1.8.2
     python: '2.6'
 install:
-- pip install pip wheel -u
+- pip install -U pip wheel
 - pip install -q Django==$DJANGO
 - pip install -q -e .
 script:
