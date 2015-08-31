@@ -261,7 +261,7 @@ class Mailbox(models.Model):
         msg.save()
 
         message_received.send(sender=self, message=msg)
-        
+
         return msg
 
     def record_outgoing_message(self, message):
@@ -736,7 +736,10 @@ class MessageAttachment(models.Model):
         if headers is None:
             return EmailMessage()
         if sys.version_info < (3, 0):
-            headers = headers.encode('utf-8')
+            try:
+                headers = headers.encode('utf-8')
+            except UnicodeDecodeError:
+                headers = unicode(headers, 'utf-8').encode('utf-8')
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):

@@ -60,6 +60,28 @@ class TestProcessEmail(EmailMessageTestCase):
             'heart.png',
         )
 
+    def test_message_with_not_decoded_attachment_header(self):
+        email_object = self._get_email_object(
+            'message_with_not_decoded_attachment_header.eml',
+        )
+
+        mailbox = Mailbox.objects.create()
+        msg = mailbox.process_incoming_message(email_object)
+
+        expected_count = 1
+        actual_count = msg.attachments.count()
+
+        self.assertEqual(
+            expected_count,
+            actual_count,
+        )
+
+        attachment = msg.attachments.all()[0]
+        self.assertEqual(
+            attachment.get_filename(),
+            u'\xc3\xb0\xcc\x9eo\xce\xb2\xcc\x9ele.png',
+        )
+
     def test_message_get_text_body(self):
         message = self._get_email_object('multipart_text.eml')
 
