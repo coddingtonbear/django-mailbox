@@ -230,7 +230,8 @@ class TestProcessEmail(EmailMessageTestCase):
 
         reply_email_object.from_email = None
 
-        second_reply_msg = msg.reply(reply_email_object)
+        with mock.patch.object(reply_email_object, 'send'):
+            second_reply_msg = msg.reply(reply_email_object)
 
         self.assertEqual(self.mailbox.from_email, second_reply_msg.from_header)
 
