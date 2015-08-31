@@ -61,6 +61,11 @@ class TestProcessEmail(EmailMessageTestCase):
         )
 
     def test_message_with_not_decoded_attachment_header(self):
+        if sys.version_info > (3, 0):
+            self.skipTest(
+                "This test is only relevant on Python 2.x."
+            )
+
         email_object = self._get_email_object(
             'message_with_not_decoded_attachment_header.eml',
         )
