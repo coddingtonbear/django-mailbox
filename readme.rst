@@ -22,3 +22,8 @@ or -- if you're in a hurry -- by using a signal receiver.
   `Github <http://github.com/coddingtonbear/django-mailbox/issues>`_.
 - Test status available on
   `Travis-CI <https://travis-ci.org/coddingtonbear/django-mailbox>`_.
+
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/coddingtonbear/django-mailbox
+   :target: https://gitter.im/coddingtonbear/django-mailbox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
