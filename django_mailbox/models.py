@@ -24,7 +24,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from .utils import convert_header_to_unicode, get_body_from_message
 from django_mailbox.signals import message_received
