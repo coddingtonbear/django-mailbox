@@ -368,6 +368,7 @@ class Mailbox(models.Model):
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255]
+            print("*** DEBUG REPLY *** ", repr(msg.message_id))
         if 'from' in message:
             msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
@@ -378,6 +379,8 @@ class Mailbox(models.Model):
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
         if message['in-reply-to']:
+            print("*** DEBUG REPLY *** ", repr(message['in-reply-to']))
+            print("*** DEBUG REPLY *** ", Message.objects.all().values_list('message_id', flat=1))
             try:
                 msg.in_reply_to = Message.objects.filter(
                     message_id=message['in-reply-to']
