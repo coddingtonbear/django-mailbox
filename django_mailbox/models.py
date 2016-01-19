@@ -362,7 +362,11 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         if STORE_ORIGINAL_MESSAGE:
-            msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message.as_string(unixfrom=True)), save=False)
+            msg.eml.save(
+                '%s.eml' % uuid.uuid4(),
+                ContentFile(message.as_string(unixfrom=True)),
+                save=False
+            )
         msg.mailbox = self
         if 'subject' in message:
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
