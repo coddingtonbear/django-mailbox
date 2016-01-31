@@ -38,4 +38,7 @@ install:
 - pip install -q Django$DJANGO --use-mirrors
 - pip install -q -e . --use-mirrors
 script:
+- echo $EMAIL_SMTP_SERVER
+- echo $EMAIL_IMAP_SERVER
+- echo $EMAIL_ACCOUNT
 - python setup.py test
