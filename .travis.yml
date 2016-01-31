@@ -26,6 +26,8 @@ matrix:
     python: '3.5'
   - env: DJANGO='>=1.7,<1.8'
     python: '2.6'
+  - env: DJANGO='>=1.7,<1.8'
+    python: '3.5'
   - env: DJANGO='>=1.8,<1.9'
     python: '2.6'
   - env: DJANGO='>=1.9,<1.10'
@@ -35,7 +37,8 @@ matrix:
   - env: DJANGO='>=1.9,<1.10'
     python: '3.4'
 install:
-- pip install -q Django$DJANGO --use-mirrors
-- pip install -q -e . --use-mirrors
+- pip install -q Django$DJANGO
+- pip install -q -e .
 script:
 - python setup.py test
+sudo: false

@@ -367,7 +367,7 @@ class Mailbox(models.Model):
         if 'subject' in message:
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
         if 'message-id' in message:
-            msg.message_id = message['message-id'][0:255]
+            msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
             msg.from_header = convert_header_to_unicode(message['from'])
         if 'to' in message:
@@ -380,7 +380,7 @@ class Mailbox(models.Model):
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
-                    message_id=message['in-reply-to']
+                    message_id=message['in-reply-to'].strip()
                 )[0]
             except IndexError:
                 pass
@@ -560,7 +560,7 @@ class Message(models.Model):
                 message.from_email = settings.DEFAULT_FROM_EMAIL
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
-        message.extra_headers['In-Reply-To'] = self.message_id
+        message.extra_headers['In-Reply-To'] = self.message_id.strip()
         message.send()
         return self.mailbox.record_outgoing_message(
             email.message_from_string(
