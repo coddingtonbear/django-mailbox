@@ -1,9 +1,16 @@
-from imaplib import IMAP4, IMAP4_SSL
+import imaplib
 import logging
 
 from django.conf import settings
 
 from .base import EmailTransport, MessageParseError
+
+
+# By default, imaplib will raise an exception if it encounters more
+# than 10k bytes; sometimes users attempt to consume mailboxes that
+# have a more, and modern computers are skookum-enough to handle just
+# a *few* more messages without causing any sort of problem.
+imaplib._MAXLINE = 1000000
 
 
 logger = logging.getLogger(__name__)
@@ -28,11 +35,11 @@ class ImapTransport(EmailTransport):
         self.archive = archive
         self.folder = folder
         if ssl:
-            self.transport = IMAP4_SSL
+            self.transport = imaplib.IMAP4_SSL
             if not self.port:
                 self.port = 993
         else:
-            self.transport = IMAP4
+            self.transport = imaplib.IMAP4
             if not self.port:
                 self.port = 143
 
