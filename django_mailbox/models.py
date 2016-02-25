@@ -336,8 +336,7 @@ class Mailbox(models.Model):
                 msg.get_payload(decode=True).decode(content_charset)
             except LookupError:
                 logger.warning(
-                    "Unknown encoding %s; interpreting as ASCII!",
-                    content_charset
+                    "Unknown encoding %s; interpreting as ASCII!"
                 )
                 msg.set_payload(
                     msg.get_payload(decode=True).decode(
@@ -347,8 +346,7 @@ class Mailbox(models.Model):
                 )
             except ValueError:
                 logger.warning(
-                    "Decoding error encountered; interpreting as ASCII!",
-                    content_charset
+                    "Decoding error encountered; interpreting as ASCII!"
                 )
                 msg.set_payload(
                     msg.get_payload(decode=True).decode(
