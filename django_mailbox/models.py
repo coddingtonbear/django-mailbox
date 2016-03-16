@@ -25,6 +25,7 @@ from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_text
 
 from .utils import convert_header_to_unicode, get_body_from_message
 from django_mailbox.signals import message_received
@@ -362,7 +363,7 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         if STORE_ORIGINAL_MESSAGE:
-            msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message), save=False)
+            msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(force_text(message)), save=False)
         msg.mailbox = self
         if 'subject' in message:
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
