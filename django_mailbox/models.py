@@ -347,7 +347,7 @@ class Mailbox(models.Model):
                 )
             except ValueError:
                 logger.warning(
-                    "Decoding error encountered; interpreting as ASCII!",
+                    "Decoding error encountered; interpreting %s as ASCII!",
                     content_charset
                 )
                 msg.set_payload(
