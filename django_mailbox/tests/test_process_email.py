@@ -140,6 +140,22 @@ class TestProcessEmail(EmailMessageTestCase):
             actual_body
         )
 
+    def test_message_issue_82(self):
+        """ Ensure that we properly handle incorrectly encoded messages
+
+        ``message_with_utf8_char.eml``'s primary text payload is marked
+        as being iso-8859-1 data, but actually contains UTF-8 bytes.
+
+        """
+        email_object = self._get_email_object('email_issue_82.eml')
+        success = True
+        try:
+            msg = self.mailbox.process_incoming_message(email_object)
+        except ValueError:
+            success = False
+
+        self.assertEqual(True, success)
+
     def test_message_with_misplaced_utf8_content(self):
         """ Ensure that we properly handle incorrectly encoded messages
 
