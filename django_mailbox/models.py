@@ -352,7 +352,7 @@ class Mailbox(models.Model):
                 )
                 msg.set_payload(
                     msg.get_payload(decode=True).decode(
-                        content_charset,
+                        'ascii',
                         'ignore'
                     )
                 )
