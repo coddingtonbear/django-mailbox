@@ -26,7 +26,7 @@ from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from .utils import convert_header_to_unicode, get_body_from_message
+from .utils import convert_header_to_unicode, get_body_from_message, cleanup_message
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
@@ -336,8 +336,7 @@ class Mailbox(models.Model):
                 msg.get_payload(decode=True).decode(content_charset)
             except LookupError:
                 logger.warning(
-                    "Unknown encoding %s; interpreting as ASCII!",
-                    content_charset
+                    "Unknown encoding %s; interpreting as ASCII!"
                 )
                 msg.set_payload(
                     msg.get_payload(decode=True).decode(
@@ -347,8 +346,7 @@ class Mailbox(models.Model):
                 )
             except ValueError:
                 logger.warning(
-                    "Decoding error encountered; interpreting as ASCII!",
-                    content_charset
+                    "Decoding error encountered; interpreting as ASCII!"
                 )
                 msg.set_payload(
                     msg.get_payload(decode=True).decode(
@@ -375,7 +373,7 @@ class Mailbox(models.Model):
         elif 'Delivered-To' in message:
             msg.to_header = convert_header_to_unicode(message['Delivered-To'])
         msg.save()
-        message = self._get_dehydrated_message(message, msg)
+        message = cleanup_message(self._get_dehydrated_message(message, msg))
         msg.set_body(message.as_string())
         if message['in-reply-to']:
             try:
