@@ -1,0 +1,44 @@
+From nobody Wed Mar 30 12:15:10 2016
+Delivered-To: info@test.org
+X-Orig-To: info@test.org
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01D18A74.C17A9D2D"
+Subject: character issue.
+Date: Wed, 30 Mar 2016 08:10:23 -0300
+Message-ID: <2A4988FCD265FE438FD0848B3ED91ABA2C0AAF3E@issue>
+From: "Me" <me@test.org>
+To: <info@test.org>
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01D18A74.C17A9D2D
+Content-Type: multipart/alternative;
+ boundary="----_=_NextPart_002_01D18A74.C17A9D2D"
+
+
+------_=_NextPart_002_01D18A74.C17A9D2D
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+
+
+QXRlbmNpw7NuIGFsdXN0b21lciBTZXJ2aWNlIEYW9ubGluZQ0KCVIA0KCURJ
+aWxlZ2lhZGFzIChwcm90ZWdpZGFzIHBvciBzaWdpbG8gcHJvZmlzc2lvbmFs
+IGNvbnRyYXR1YWwsIHBvciBsZWkgZGUKcHJvcHJpZWRhZGUgaW50ZWxlY3R1
+YWwvaW5kdXN0cmlhbCBvdSBjdWphIGRpdnVsZ2Hn428gc2VqYSBwcm9pYmlk
+YSBwb3Igc2V1IHByb3ByaWV04XJpbykgcXVlIHPjbyBkZSBpbnRlcmVzc2Ug
+ZXhjbHVzaXZvIGRlIHNldShzKSByZW1ldGVudGUocykgZQpkZXN0aW5hdOFy
+aW8ocykuIENhc28gbuNvIGVzdGVqYSBlbnZvbHZpZG8gbm8gcHJvY2Vzc28g
+ZG8gcXVhbCB0cmF0YSBlc3RhIG1lbnNhZ2VtIGUvb3UgcmVjZWJldS1hIHBv
+ciBlbmdhbm8sIHBvciBmYXZvciwgZXhjbHVhLWEgZGEgc3VhIGNhaXhhIHBv
+c3RhbCBlCmNvbXVuaXF1ZSBvIG9jb3JyaWRvIGFvIHNldSBwcm9wcmlldOFy
+aW8uIE8gdXNvLCByZXZlbGHn428sIGRpc3RyaWJ1aefjbyxpbXByZXNz428g
+b3UgY/NwaWEgZGUgdG9kYSBvdSBhbGd1bWEgcGFydGUgZGFzIGluZm9ybWHn
+9WVzLCBzZW0gcHLpdmlhCmF1dG9yaXph5+NvLCBlc3ThIHN1amVpdG8g4HMg
+cGVuYWxpZGFkZXMgY2Fi7XZlaXMuIEFzIGluZm9ybWHn9WVzIGFxdWkgY29u
+dGlkYXMgbuNvIG5lY2Vzc2FyaWFtZW50ZSByZWZsZXRlbSBhIG9waW5p428g
+ZGEgTUVUQUdBTCBJTkQuIENPTS4gTFREQS4sCmZpY2FuZG8gbyByZW1ldGVu
+dGUgaW50ZWlyYW1lbnRlIHJlc3BvbnPhdmVsIHBlbG8gc2V1IGNvbnRl+mRv
+LiAKCg==
+
+------_=_NextPart_002_01D18A74.C17A9D2D--

@@ -5,6 +5,7 @@ import mock
 import six
 
 from django_mailbox.models import Mailbox, Message
+from django_mailbox.utils import convert_header_to_unicode
 from django_mailbox.tests.base import EmailMessageTestCase
 from django.core.mail import EmailMessage
 
@@ -139,6 +140,75 @@ class TestProcessEmail(EmailMessageTestCase):
             expected_body,
             actual_body
         )
+
+    def test_message_issue_82(self):
+        """ Ensure that we properly handle incorrectly encoded messages
+
+        """
+        email_object = self._get_email_object('email_issue_82.eml')
+        it = 'works'
+        try:
+            # it's ok to call as_string() before passing email_object
+            # to _get_dehydrated_message()
+            email_object.as_string()
+        except:
+            it = 'do not works'
+
+        success = True
+        try:
+            msg = self.mailbox.process_incoming_message(email_object)
+        except ValueError:
+            success = False
+
+        self.assertEqual(it, 'works')
+        self.assertEqual(True, success)
+
+    def test_message_issue_82_bis(self):
+        """ Ensure that the email object is good before and after
+        calling _get_dehydrated_message()
+
+        """
+        message = self._get_email_object('email_issue_82.eml')
+
+        success = True
+
+        # this is the code of _process_message()
+        msg = Message()
+        # if STORE_ORIGINAL_MESSAGE:
+        #     msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message), save=False)
+        msg.mailbox = self.mailbox
+        if 'subject' in message:
+            msg.subject = convert_header_to_unicode(message['subject'])[0:255]
+        if 'message-id' in message:
+            msg.message_id = message['message-id'][0:255]
+        if 'from' in message:
+            msg.from_header = convert_header_to_unicode(message['from'])
+        if 'to' in message:
+            msg.to_header = convert_header_to_unicode(message['to'])
+        elif 'Delivered-To' in message:
+            msg.to_header = convert_header_to_unicode(message['Delivered-To'])
+        msg.save()
+
+        #here the message is ok
+        str_msg = message.as_string()
+        message = self.mailbox._get_dehydrated_message(message, msg)
+        try:
+            # here as_string raises UnicodeEncodeError
+            str_msg = message.as_string()
+        except:
+            success = False
+
+        msg.set_body(str_msg)
+        if message['in-reply-to']:
+            try:
+                msg.in_reply_to = Message.objects.filter(
+                    message_id=message['in-reply-to']
+                )[0]
+            except IndexError:
+                pass
+        msg.save()
+
+        self.assertEqual(True, success)
 
     def test_message_with_misplaced_utf8_content(self):
         """ Ensure that we properly handle incorrectly encoded messages
