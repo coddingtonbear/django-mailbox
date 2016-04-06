@@ -148,7 +148,7 @@ class TestPop3Transport(EmailMessageTestCase):
                 '+OK message follows',
                 [
                     line.encode('ascii')
-                    for line in self._get_email_as_text(
+                    for line in get_email_as_text(
                         'generic_message.eml'
                     ).decode('ascii').split('\n')
                 ],
