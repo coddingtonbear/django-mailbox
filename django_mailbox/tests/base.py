@@ -59,7 +59,7 @@ class EmailMessageTestCase(TestCase):
             time.sleep(5)
 
     def _get_email_object(self, name):
-        with open(join(dirname(__file__), 'messages', name), 'rb') as f:
+        with open(join(dirname(__file__), 'messages', name), 'r') as f:
             if six.PY3:
                 return email.message_from_binary_file(f)
             else:
