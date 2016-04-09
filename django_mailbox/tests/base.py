@@ -59,7 +59,7 @@ class EmailMessageTestCase(TestCase):
 
     def _get_email_object(self, name):
         with open(join(dirname(__file__), 'messages', name), 'rb') as f:
-            return email.message_from_files(f)
+            return email.message_from_file(f)
 
     def _headers_identical(self, left, right, header=None):
         """ Check if headers are (close enough to) identical.
