@@ -15,7 +15,7 @@ class EmailIntegrationTimeout(Exception):
 
 
 def get_email_as_text(name):
-    with open(join(dirname(__file__), 'messages', name), 'rb') as f:
+    with open(join(dirname(__file__), 'messages', name), 'r') as f:
         return f.read()
 
 
