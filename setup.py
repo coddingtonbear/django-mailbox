@@ -45,6 +45,7 @@ setup(
     ],
     packages=find_packages(),
     install_requires=[
-        'six>=1.6.1'
+        'six>=1.6.1',
+        'future>=0.15.2'
     ]
 )
