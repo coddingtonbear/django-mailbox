@@ -1,7 +1,10 @@
 import email
 import logging
-import rfc822
 import sys
+try:
+    from email import utils
+except ImportError:
+    import rfc822 as utils
 
 from django.core.management.base import BaseCommand
 
@@ -38,5 +41,5 @@ class Command(BaseCommand):
         return mailbox
 
     def get_mailbox_for_message(self, message):
-        email_address = rfc822.parseaddr(message['to'])[1][0:255]
+        email_address = utils.parseaddr(message['to'])[1][0:255]
         return self.get_mailbox_by_name(email_address)
