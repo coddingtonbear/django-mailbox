@@ -50,18 +50,18 @@ class TestProcessEmail(EmailMessageTestCase):
 
         attachments = msg.attachments.order_by('pk').all()
         self.assertEqual(
-            '\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
-            '\u043e\u0436\u0435\u043d\u0438\u0439 HSE Career Fair 8 \u0430'
-            '\u043f\u0440\u0435\u043b\u044f 2016.pdf',
+            u'\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
+            u'\u043e\u0436\u0435\u043d\u0438\u0439 HSE Career Fair 8 \u0430'
+            u'\u043f\u0440\u0435\u043b\u044f 2016.pdf',
             attachments[0].get_filename()
         )
         self.assertEqual(
-            '\u0412\u0435\u0434\u043e\u043c\u043e\u0441\u0442\u0438.pdf',
+            u'\u0412\u0435\u0434\u043e\u043c\u043e\u0441\u0442\u0438.pdf',
             attachments[1].get_filename()
         )
         self.assertEqual(
-            '\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
-            '\u043e\u0436\u0435\u043d\u0438\u0439 2016.pptx',
+            u'\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
+            u'\u043e\u0436\u0435\u043d\u0438\u0439 2016.pptx',
             attachments[2].get_filename()
         )
 
