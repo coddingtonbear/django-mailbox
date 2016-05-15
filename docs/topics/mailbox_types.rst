@@ -7,11 +7,11 @@ POP3 and IMAP as well as local file-based mailboxes.
 
 .. table:: 'Protocol' Options
 
-  ============ ================ =================================================================================================================================================================
+  ============ ================ ====================================================================================================================================================================
   Mailbox Type 'Protocol'://    Notes
-  ============ ================ =================================================================================================================================================================
+  ============ ================ ====================================================================================================================================================================
   POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
+  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://`` or STARTTLS with ``imap+tls``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
   Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
   Maildir      ``maildir://``
   Mbox         ``mbox://``
@@ -19,7 +19,7 @@ POP3 and IMAP as well as local file-based mailboxes.
   MH           ``mh://``
   MMDF         ``mmdf://``
   Piped Mail   *empty*          See :ref:`receiving-mail-from-exim4-or-postfix`
-  ============ ================ =================================================================================================================================================================
+  ============ ================ ====================================================================================================================================================================
 
 
 .. warning::
@@ -42,8 +42,9 @@ Basic IMAP Example: ``imap://username:password@server``
 
 Basic POP3 Example: ``pop3://username:password@server``
 
-Most mailboxes these days are SSL-enabled; 
-if yours is, add ``+ssl`` to the protocol section of your URI.  
+Most mailboxes these days are SSL-enabled;
+if yours use plain SSL add ``+ssl`` to the protocol section of your URI,
+but for STARTTLS add ``+tls``.
 Also, if your username or password include any non-ascii characters,
 they should be URL-encoded  (for example, if your username includes an
 ``@``, it should be changed to ``%40`` in your URI).

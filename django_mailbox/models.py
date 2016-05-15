@@ -145,6 +145,11 @@ class Mailbox(models.Model):
         return '+ssl' in self._protocol_info.scheme.lower()
 
     @property
+    def use_tls(self):
+        """Returns whether or not this mailbox's connection uses STARTTLS."""
+        return '+tls' in self._protocol_info.scheme.lower()
+
+    @property
     def archive(self):
         """Returns (if specified) the folder to archive messages to."""
         archive_folder = self._query_string.get('archive', None)
@@ -174,6 +179,7 @@ class Mailbox(models.Model):
                 self.location,
                 port=self.port if self.port else None,
                 ssl=self.use_ssl,
+                tls=self.use_tls,
                 archive=self.archive,
                 folder=self.folder
             )
