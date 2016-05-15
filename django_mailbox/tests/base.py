@@ -7,7 +7,7 @@ import six
 from django.conf import settings
 from django.test import TestCase
 
-from django_mailbox import models
+from django_mailbox import models, utils
 from django_mailbox.models import Mailbox, Message
 
 
@@ -34,9 +34,13 @@ class EmailMessageTestCase(TestCase):
     ]
 
     def setUp(self):
-        self._ALLOWED_MIMETYPES = models.ALLOWED_MIMETYPES
-        self._STRIP_UNALLOWED_MIMETYPES = models.STRIP_UNALLOWED_MIMETYPES
-        self._TEXT_STORED_MIMETYPES = models.TEXT_STORED_MIMETYPES
+        dm_settings = utils.get_settings()
+
+        self._ALLOWED_MIMETYPES = dm_settings['allowed_mimetypes']
+        self._STRIP_UNALLOWED_MIMETYPES = (
+            dm_settings['strip_unallowed_mimetypes']
+        )
+        self._TEXT_STORED_MIMETYPES = dm_settings['text_stored_mimetypes']
 
         self.mailbox = Mailbox.objects.create(from_email='from@example.com')
 
