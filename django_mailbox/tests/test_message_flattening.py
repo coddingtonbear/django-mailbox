@@ -1,4 +1,8 @@
-from django_mailbox import models
+import copy
+
+import mock
+
+from django_mailbox import models, utils
 from django_mailbox.models import Message
 from django_mailbox.tests.base import EmailMessageTestCase
 
@@ -74,10 +78,16 @@ class TestMessageFlattening(EmailMessageTestCase):
         expected_email_object = self._get_email_object(
             'message_with_many_multiparts_stripped_html.eml',
         )
-        models.STRIP_UNALLOWED_MIMETYPES = True
-        models.ALLOWED_MIMETYPES = ['text/plain']
+        default_settings = utils.get_settings()
 
-        msg = self.mailbox.process_incoming_message(incoming_email_object)
+        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+            altered = copy.deepcopy(default_settings)
+            altered['strip_unallowed_mimetypes'] = True
+            altered['allowed_mimetypes'] = ['text/plain']
+
+            get_settings.return_value = altered
+
+            msg = self.mailbox.process_incoming_message(incoming_email_object)
 
         actual_email_object = msg.get_email_object()
 

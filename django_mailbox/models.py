@@ -20,68 +20,19 @@ import uuid
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
-from django.conf import settings
+from django.conf import settings as django_settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from .utils import convert_header_to_unicode, get_body_from_message
+from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport, GmailImapTransport
 
 logger = logging.getLogger(__name__)
-
-
-STRIP_UNALLOWED_MIMETYPES = getattr(
-    settings,
-    'DJANGO_MAILBOX_STRIP_UNALLOWED_MIMETYPES',
-    False
-)
-
-ALLOWED_MIMETYPES = getattr(
-    settings,
-    'DJANGO_MAILBOX_ALLOWED_MIMETYPES',
-    [
-        'text/plain',
-        'text/html'
-    ]
-)
-
-TEXT_STORED_MIMETYPES = getattr(
-    settings,
-    'DJANGO_MAILBOX_TEXT_STORED_MIMETYPES',
-    [
-        'text/plain',
-        'text/html'
-    ]
-)
-
-ALTERED_MESSAGE_HEADER = getattr(
-    settings,
-    'DJANGO_MAILBOX_ALTERED_MESSAGE_HEADER',
-    'X-Django-Mailbox-Altered-Message'
-)
-
-ATTACHMENT_INTERPOLATION_HEADER = getattr(
-    settings,
-    'DJANGO_MAILBOX_ATTACHMENT_INTERPOLATION_HEADER',
-    'X-Django-Mailbox-Interpolate-Attachment'
-)
-
-ATTACHMENT_UPLOAD_TO = getattr(
-    settings,
-    'DJANGO_MAILBOX_ATTACHMENT_UPLOAD_TO',
-    'mailbox_attachments/%Y/%m/%d/'
-)
-
-STORE_ORIGINAL_MESSAGE = getattr(
-    settings,
-    'DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE',
-    False
-)
 
 
 class ActiveMailboxManager(models.Manager):
@@ -272,6 +223,8 @@ class Mailbox(models.Model):
         return msg
 
     def _get_dehydrated_message(self, msg, record):
+        settings = utils.get_settings()
+
         new = EmailMessage()
         if msg.is_multipart():
             for header, value in msg.items():
@@ -281,25 +234,27 @@ class Mailbox(models.Model):
                     self._get_dehydrated_message(part, record)
                 )
         elif (
-            STRIP_UNALLOWED_MIMETYPES
-            and not msg.get_content_type() in ALLOWED_MIMETYPES
+            settings['strip_unallowed_mimetypes']
+            and not msg.get_content_type() in settings['allowed_mimetypes']
         ):
             for header, value in msg.items():
                 new[header] = value
             # Delete header, otherwise when attempting to  deserialize the
             # payload, it will be expecting a body for this.
             del new['Content-Transfer-Encoding']
-            new[ALTERED_MESSAGE_HEADER] = (
+            new[settings['altered_message_header']] = (
                 'Stripped; Content type %s not allowed' % (
                     msg.get_content_type()
                 )
             )
             new.set_payload('')
         elif (
-            (msg.get_content_type() not in TEXT_STORED_MIMETYPES) or
+            (
+                msg.get_content_type() not in settings['text_stored_mimetypes']
+            ) or
             ('attachment' in msg.get('Content-Disposition', ''))
         ):
-            filename = msg.get_filename()
+            filename = utils.convert_header_to_unicode(msg.get_filename())
             if not filename:
                 extension = mimetypes.guess_extension(msg.get_content_type())
             else:
@@ -323,7 +278,9 @@ class Mailbox(models.Model):
             attachment.save()
 
             placeholder = EmailMessage()
-            placeholder[ATTACHMENT_INTERPOLATION_HEADER] = str(attachment.pk)
+            placeholder[
+                settings['attachment_interpolation_header']
+            ] = str(attachment.pk)
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
@@ -361,19 +318,29 @@ class Mailbox(models.Model):
 
     def _process_message(self, message):
         msg = Message()
-        if STORE_ORIGINAL_MESSAGE:
-            msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message.as_string(unixfrom=True)), save=False)
+        settings = utils.get_settings()
+
+        if settings['store_original_message']:
+            msg.eml.save(
+                '%s.eml' % uuid.uuid4(),
+                ContentFile(message.as_string(unixfrom=True)),
+                save=False
+            )
         msg.mailbox = self
         if 'subject' in message:
-            msg.subject = convert_header_to_unicode(message['subject'])[0:255]
+            msg.subject = (
+                utils.convert_header_to_unicode(message['subject'])[0:255]
+            )
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
-            msg.from_header = convert_header_to_unicode(message['from'])
+            msg.from_header = utils.convert_header_to_unicode(message['from'])
         if 'to' in message:
-            msg.to_header = convert_header_to_unicode(message['to'])
+            msg.to_header = utils.convert_header_to_unicode(message['to'])
         elif 'Delivered-To' in message:
-            msg.to_header = convert_header_to_unicode(message['Delivered-To'])
+            msg.to_header = utils.convert_header_to_unicode(
+                message['Delivered-To']
+            )
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
@@ -557,7 +524,7 @@ class Message(models.Model):
             if self.mailbox.from_email:
                 message.from_email = self.mailbox.from_email
             else:
-                message.from_email = settings.DEFAULT_FROM_EMAIL
+                message.from_email = django_settings.DEFAULT_FROM_EMAIL
         message.extra_headers['Message-ID'] = make_msgid()
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id.strip()
@@ -573,7 +540,7 @@ class Message(models.Model):
         """
         Returns the message body matching content type 'text/plain'.
         """
-        return get_body_from_message(
+        return utils.get_body_from_message(
             self.get_email_object(), 'text', 'plain'
         ).replace('=\n', '').strip()
 
@@ -582,12 +549,14 @@ class Message(models.Model):
         """
         Returns the message body matching content type 'text/html'.
         """
-        return get_body_from_message(
+        return utils.get_body_from_message(
             self.get_email_object(), 'text', 'html'
         ).replace('\n', '').strip()
 
     def _rehydrate(self, msg):
         new = EmailMessage()
+        settings = utils.get_settings()
+
         if msg.is_multipart():
             for header, value in msg.items():
                 new[header] = value
@@ -595,10 +564,10 @@ class Message(models.Model):
                 new.attach(
                     self._rehydrate(part)
                 )
-        elif ATTACHMENT_INTERPOLATION_HEADER in msg.keys():
+        elif settings['attachment_interpolation_header'] in msg.keys():
             try:
                 attachment = MessageAttachment.objects.get(
-                    pk=msg[ATTACHMENT_INTERPOLATION_HEADER]
+                    pk=msg[settings['attachment_interpolation_header']]
                 )
                 for header, value in attachment.items():
                     new[header] = value
@@ -627,9 +596,9 @@ class Message(models.Model):
                     del new['Content-Transfer-Encoding']
                     encode_base64(new)
             except MessageAttachment.DoesNotExist:
-                new[ALTERED_MESSAGE_HEADER] = (
+                new[settings['altered_message_header']] = (
                     'Missing; Attachment %s not found' % (
-                        msg[ATTACHMENT_INTERPOLATION_HEADER]
+                        msg[settings['attachment_interpolation_header']]
                     )
                 )
                 new.set_payload('')
@@ -723,7 +692,7 @@ class MessageAttachment(models.Model):
 
     document = models.FileField(
         _(u'Document'),
-        upload_to=ATTACHMENT_UPLOAD_TO,
+        upload_to=utils.get_attachment_save_path,
     )
 
     def delete(self, *args, **kwargs):
@@ -758,10 +727,11 @@ class MessageAttachment(models.Model):
     def get_filename(self):
         """Returns the original filename of this attachment."""
         file_name = self._get_rehydrated_headers().get_filename()
-        if isinstance(file_name, six.text_type):
-            return file_name
-        elif file_name:
-            return convert_header_to_unicode(file_name)
+        if isinstance(file_name, six.string_types):
+            result = utils.convert_header_to_unicode(file_name)
+            if result is None:
+                return file_name
+            return result
         else:
             return None
 

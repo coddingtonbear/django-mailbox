@@ -22,12 +22,9 @@ setup(
     ),
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
-    tests_require=tests_require,
     extras_require={
-        'test': tests_require,
         'gmail-oauth2': gmail_oauth2_require
     },
-    test_suite='django_mailbox.runtests.runtests',
     classifiers=[
         'Framework :: Django',
         'Intended Audience :: Developers',
@@ -44,6 +41,7 @@ setup(
         'Topic :: Communications :: Email :: Email Clients (MUA)',
     ],
     packages=find_packages(),
+    include_package_data = True,
     install_requires=[
         'six>=1.6.1'
     ]
