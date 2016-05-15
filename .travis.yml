@@ -41,5 +41,5 @@ install:
 - pip install -r test_requirements.txt
 - pip install -q -e .
 script:
-- python setup.py test
+- py.test
 sudo: false

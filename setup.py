@@ -22,12 +22,9 @@ setup(
     ),
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
-    tests_require=tests_require,
     extras_require={
-        'test': tests_require,
         'gmail-oauth2': gmail_oauth2_require
     },
-    test_suite='django_mailbox.runtests.runtests',
     classifiers=[
         'Framework :: Django',
         'Intended Audience :: Developers',
