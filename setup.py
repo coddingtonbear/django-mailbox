@@ -41,6 +41,7 @@ setup(
         'Topic :: Communications :: Email :: Email Clients (MUA)',
     ],
     packages=find_packages(),
+    include_package_data = True,
     install_requires=[
         'six>=1.6.1'
     ]
