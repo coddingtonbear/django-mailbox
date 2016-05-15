@@ -724,7 +724,10 @@ class MessageAttachment(models.Model):
         """Returns the original filename of this attachment."""
         file_name = self._get_rehydrated_headers().get_filename()
         if isinstance(file_name, six.text_type):
-            return utils.convert_header_to_unicode(file_name)
+            result = utils.convert_header_to_unicode(file_name)
+            if result is None:
+                return file_name
+            return result
         else:
             return None
 
