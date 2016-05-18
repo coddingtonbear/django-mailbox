@@ -260,7 +260,10 @@ class Mailbox(models.Model):
             ) or
             ('attachment' in msg.get('Content-Disposition', ''))
         ):
-            filename = utils.convert_header_to_unicode(msg.get_filename())
+            filename = None
+            raw_filename = msg.get_filename()
+            if raw_filename:
+                filename = utils.convert_header_to_unicode(raw_filename)
             if not filename:
                 extension = mimetypes.guess_extension(msg.get_content_type())
             else:
