@@ -232,7 +232,8 @@ class Mailbox(models.Model):
         settings = utils.get_settings()
 
         new = EmailMessage()
-        if msg.is_multipart():
+        # walk only in multipart messages which are not contained as an attachment (message/rfc822)
+        if msg.is_multipart() and not 'attachment' in msg.get('Content-Disposition', ''):
             for header, value in msg.items():
                 new[header] = value
             for part in msg.get_payload():
@@ -254,6 +255,31 @@ class Mailbox(models.Model):
                 )
             )
             new.set_payload('')
+        # very similar to the regular attachment branch and could be refactored
+        elif msg.get_content_type() == 'message/rfc822' and 'attachment' in msg.get('Content-Disposition', ''):
+            extension = ".eml"
+            attachment = MessageAttachment()
+            # can 'message/rfc822' have anything else than one single part? if so this is not safe and needs to be handled properly
+            msg_part = msg.get_payload(0)
+
+            attachment.document.save(
+                uuid.uuid4().hex + extension,
+                ContentFile(
+                    six.BytesIO(
+                        msg_part.as_string(unixfrom=False) # see django-mailbox issue #100
+                    ).getvalue()
+                )
+            )
+            attachment.message = record
+            for key, value in msg.items():
+                attachment[key] = value
+            attachment.save()
+
+            placeholder = EmailMessage()
+            placeholder[
+                settings['attachment_interpolation_header']
+            ] = str(attachment.pk)
+            new = placeholder
         elif (
             (
                 msg.get_content_type() not in settings['text_stored_mimetypes']
