@@ -332,7 +332,7 @@ class Mailbox(models.Model):
         if settings['store_original_message']:
             msg.eml.save(
                 '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string(unixfrom=True)),
+                ContentFile(message.as_string()),
                 save=False
             )
         msg.mailbox = self
