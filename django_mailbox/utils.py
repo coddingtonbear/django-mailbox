@@ -65,6 +65,9 @@ def get_settings():
 def convert_header_to_unicode(header):
     default_charset = get_settings()['default_charset']
 
+    if six.PY2 and isinstance(header, six.text_type):
+        return header
+
     def _decode(value, encoding):
         if isinstance(value, six.text_type):
             return value

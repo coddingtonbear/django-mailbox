@@ -1,0 +1,58 @@
+Return-path: <SRS0=9Ddk64=SW=REDACTED=kontakt@porady.REDACTED>
+Envelope-to: porady@REDACTED
+Delivery-date: Thu, 30 Jun 2016 12:52:33 +0200
+Received: from s33.linuxpl.com ([88.198.46.46])
+    by s50.hekko.net.pl with esmtps (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+    (Exim 4.87)
+    (envelope-from <kontakt@REDACTED>)
+    id 1bIZaC-0000Cx-W0
+    for porady@REDACTED; Thu, 30 Jun 2016 12:52:33 +0200
+Received: from [127.0.0.1] (helo=s33.linuxpl.com)
+    by s33.linuxpl.com with esmtpa (Exim 4.87)
+    (envelope-from <kontakt@REDACTED>)
+    id 1bIZaB-0002KZ-Lq
+    for porady@REDACTED; Thu, 30 Jun 2016 12:52:31 +0200
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="=_23825343e9a28de91c2eec59d6c7d4bf"
+Date: Thu, 30 Jun 2016 12:52:31 +0200
+From: Kontakt <kontakt@REDACTED>
+To: porady@REDACTED
+Subject: =?UTF-8?Q?Odpowied=C5=BA_od_burmistrza_na_wniosek_stowarzyszenia?=
+Organization: VE-TO
+Message-ID: <8cd4a49b11cf9a1867432bd5909a06bb@REDACTED>
+X-Sender: kontakt@REDACTED
+User-Agent: Roundcube Webmail/1.1.4
+X-HEKKO: 88.198.46.46:
+
+--=_23825343e9a28de91c2eec59d6c7d4bf
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+
+REDACTED
+------------------------------------------------------------------------------------
+Niniejsza wiadomość elektroniczna [lub jej załączniki] może zawierać 
+poufne lub chronione prawem informacje, które przeznaczone są wyłącznie 
+dla adresata tej wiadomości.
+Należy dołożyć należytej staranności w celu nie ujawniania ich osobom 
+trzecim.
+--=_23825343e9a28de91c2eec59d6c7d4bf
+Content-Transfer-Encoding: base64
+Content-Type: image/jpeg;
+ name="=?UTF-8?Q?pi=C5=82kochwyty=2Ejpg?="
+Content-Disposition: attachment;
+ filename*=UTF-8''pi%C5%82kochwyty.jpg;
+ size=465813
+
+UkVEQUNURUQK
+--=_23825343e9a28de91c2eec59d6c7d4bf
+Content-Transfer-Encoding: base64
+Content-Type: image/jpeg;
+ name="=?UTF-8?Q?odpowied=C5=BA_Burmistrza=2Ejpg?="
+Content-Disposition: attachment;
+ filename*=UTF-8''odpowied%C5%BA%20Burmistrza.jpg;
+ size=544348
+
+UkVEQUNURUQK
+--=_23825343e9a28de91c2eec59d6c7d4bf--
