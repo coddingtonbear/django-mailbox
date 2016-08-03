@@ -7,6 +7,7 @@ import six
 from django_mailbox.models import Mailbox, Message
 from django_mailbox.utils import convert_header_to_unicode
 from django_mailbox.tests.base import EmailMessageTestCase
+from django.utils.encoding import force_text
 from django.core.mail import EmailMessage
 
 
@@ -396,3 +397,14 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.process_incoming_message(email_object)
 
         self.assertEqual(msg.attachments.all().count(), 1)
+
+    def test_message_with_long_content(self):
+        email_object = self._get_email_object(
+            'message_with_long_content.eml',
+        )
+        size = len(force_text(email_object.as_string()))
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        self.assertEqual(size,
+                         len(force_text(msg.get_email_object().as_string())))

@@ -1,0 +1,321 @@
+Delivered-To: inbox+e1610728c9a39d45a39f6de9d3e7882d@appfluence.com
+Received: by 10.202.65.3 with SMTP id o3csp2439694oia;
+ Mon, 1 Aug 2016 07:14:31 -0700 (PDT)
+X-Received: by 10.55.174.2 with SMTP id x2mr24289941qke.176.1470060871862;
+ Mon, 01 Aug 2016 07:14:31 -0700 (PDT)
+Return-Path: <samuel@appfluence.com>
+Received: from mail-qk0-x231.google.com (mail-qk0-x231.google.com.
+ [2607:f8b0:400d:c09::231])
+ by mx.google.com with ESMTPS id z24si20091602qtb.68.2016.08.01.07.14.31
+ for <inbox+e1610728c9a39d45a39f6de9d3e7882d@appfluence.com>
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 01 Aug 2016 07:14:31 -0700 (PDT)
+Received-SPF: fail (google.com: domain of samuel@appfluence.com does not
+ designate 2607:f8b0:400d:c09::231 as permitted sender)
+ client-ip=2607:f8b0:400d:c09::231; 
+Authentication-Results: mx.google.com;
+ dkim=pass (test mode) header.i=@appfluence.com;
+ spf=fail (google.com: domain of samuel@appfluence.com does not designate
+ 2607:f8b0:400d:c09::231 as permitted sender)
+ smtp.mailfrom=samuel@appfluence.com
+Received: by mail-qk0-x231.google.com with SMTP id s63so146544737qkb.2
+ for <inbox+e1610728c9a39d45a39f6de9d3e7882d@appfluence.com>;
+ Mon, 01 Aug 2016 07:14:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=appfluence.com; s=google;
+ h=mime-version:in-reply-to:references:from:date:message-id:subject:to;
+ bh=BdDzvT6vMuB8ml9Gj8Rpu5N56mm+mxDWmJj1C2qj1DI=;
+ b=S3tMqWmjc/j5VI+G+OP0ZifdNuUhr0Oa7+vP+CM799JAVpLj2AHhxqAehiK4chdEBJ
+ mqCjTDr8HD94+5sRPkXXITnG4e+Qbf+Ev2j7uSva3tzWqwstE16Dgk+5P90zD13Jcw2Z
+ iR95lJM4P4pjAYPdvI+xIZJzUATYsFeGiLKCk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20130820;
+ h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+ :message-id:subject:to;
+ bh=BdDzvT6vMuB8ml9Gj8Rpu5N56mm+mxDWmJj1C2qj1DI=;
+ b=H6WI5oNvUGYkwJYteWNZRQpbUZlsb93j7WHHuwMfC1LhTdJhVD8cdARx8BY9hfqqxh
+ h8ENaNeUEUWvXZIQfqnZLZSBcB2i/7ma30MSRvQjr7fK64HG5as8YzypLHcoMX0tTy6M
+ KTwejbdeL6Q+kj8LicwlBtW56P6/pNE2JAh+Tz2Jwk0lf8J+I+JAhzYw6Rcl4ePqlsaY
+ +wEq+nw4L9JCSzcRuoTOXJ4XGuIUl88zqs3gD44fipFBbvksSvv9bcVklv7Zl70H8l49
+ QFV5gso7Gd/ucv7GmdoII6P4nreumLzsbp8X2E1ITfmbpRj6ZNVfYCm4GJkNmPnIr92z
+ wTSA==
+X-Gm-Message-State: AEkoouvaSnp95p/T1DJAbPeVKXqVUqN0vg8BJ2EGw9PYnyjFbr8scKge3m0yhdFoBpzeJvmDsIC7fHtZI7+kYg==
+X-Received: by 10.55.212.218 with SMTP id s87mr21265928qks.10.1470060870080;
+ Mon, 01 Aug 2016 07:14:30 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.55.214.148 with HTTP; Mon, 1 Aug 2016 07:14:29 -0700 (PDT)
+X-Originating-IP: [217.216.81.186]
+In-Reply-To: <CAAqFzoA1U_QrzJ7X12SpE-AteNpjd6ad6x-mJh847_gtQM8kSw@mail.gmail.com>
+References: <CAAqFzoA1U_QrzJ7X12SpE-AteNpjd6ad6x-mJh847_gtQM8kSw@mail.gmail.com>
+From: Samuel Carmona <samuel@appfluence.com>
+Date: Mon, 1 Aug 2016 16:14:29 +0200
+Message-ID: <CAAqFzoDNo1JC+wBmAd=xh1DRv+EUPaNJBS+mc3wKehK9jiSpfw@mail.gmail.com>
+Subject: Fwd: Test
+To: inbox+e1610728c9a39d45a39f6de9d3e7882d@appfluence.com
+Content-Type: multipart/alternative; boundary=001a11479a7cf5bcb6053903371b
+
+--001a11479a7cf5bcb6053903371b
+Content-Type: text/plain; charset=UTF-8
+
+Geralt takes up a contract sent out by Olgierd von Everec, who tasks him
+with eliminating a giant toad monster in the sewers of Oxenfurt. While
+hunting the monster, Geralt runs into Shani, a Redanian medic and an old
+acquaintance of his, whom he has the option of romancing. Geralt then kills
+the toad monster, only to find it was actually a cursed Ofieri prince. The
+prince's guards capture Geralt with the intention of executing him. While
+awaiting his execution en route to Ofier, Geralt is approached by the
+mysterious Gaunter O'Dimm. O'Dimm helps Geralt escape, but in return Geralt
+must help O'Dimm recover a debt from von Everec, who had set up Geralt
+knowing the toad monster was an Ofieri prince. O'Dimm tells Geralt that
+according to terms of his contract with von Everec, he must fulfill three
+of von Everec's wishes. Geralt confronts von Everec and discovers that von
+Everec had obtained immortality at the cost of his emotions, giving him a
+"Heart of Stone". He admits to cursing the Ofieri prince since he was
+arranged to marry his true love Iris, and that he wished for immortality in
+order to be with her. He then tells Geralt his three wishes: to entertain
+his brother Vlodomir for one night, to get revenge on the Borsodi family by
+obtaining Maximillian Borsodi's house, and to obtain the violet rose he had
+given to Iris. O'Dimm tells Geralt that the three tasks are meant to be
+impossible, as Maximillian Borsodi's house is kept in a highly secure vault
+and both Vlodomir and Iris have been dead for years, but he agrees to
+assist Geralt.
+
+With O'Dimm's help, Geralt allows Vlodimir's spirit to possess his body for
+one night, allowing him to attend a wedding party and fulfilling the first
+wish. Geralt then participates in a heist to steal Maximillian Borsodi's
+house from its vault, and finds that it contains a will that would grant
+the entire Borsodi fortune to charity, fulfilling von Everec's revenge and
+second wish. To obtain Iris' rose, Geralt enlists the help of demonic
+entities to gain access to a supernatural realm where he witnesses von
+Everec and Iris' past. There, he learns that due to his "Heart of Stone",
+von Everec could not truly love Iris and she died neglected and unhappy.
+Geralt, on player's choice can either obtain the rose from Iris' spirit in
+order to free her from "pinned" into the world or let the rose be with her.
+Either way, Geralt fulfills von Everec's last wish and goes to meet with
+him. Along the way, he learns that O'Dimm is in fact an ancient entity of
+pure evil that thrives off tricking people into trading away their souls in
+return for wishes. When Geralt meets with von Everec, the three wishes are
+fulfilled and O'Dimm arrives to collect von Everec's soul.
+
+At this point, Geralt has the option of allowing O'Dimm to take von
+Everec's soul or intervening to save von Everec. If Geralt does nothing,
+O'Dimm kills von Everec, takes his soul, and rewards Geralt with one wish.
+If Geralt intervenes, he challenges O'Dimm by wagering his own soul to save
+von Everec. After Geralt solves O'Dimm's riddle, O'Dimm is forced to
+release both Geralt and von Everec from their pacts. von Everec, now mortal
+again, regains his emotions and immediately feels regret for his past
+actions and mistakes. He gives Geralt his family sword, and promises to
+start a new life free from O'Dimm's control.
+
+
+11111111111111111
+
+
+
+Geralt takes up a contract sent out by Olgierd von Everec, who tasks him
+with eliminating a giant toad monster in the sewers of Oxenfurt. While
+hunting the monster, Geralt runs into Shani, a Redanian medic and an old
+acquaintance of his, whom he has the option of romancing. Geralt then kills
+the toad monster, only to find it was actually a cursed Ofieri prince. The
+prince's guards capture Geralt with the intention of executing him. While
+awaiting his execution en route to Ofier, Geralt is approached by the
+mysterious Gaunter O'Dimm. O'Dimm helps Geralt escape, but in return Geralt
+must help O'Dimm recover a debt from von Everec, who had set up Geralt
+knowing the toad monster was an Ofieri prince. O'Dimm tells Geralt that
+according to terms of his contract with von Everec, he must fulfill three
+of von Everec's wishes. Geralt confronts von Everec and discovers that von
+Everec had obtained immortality at the cost of his emotions, giving him a
+"Heart of Stone". He admits to cursing the Ofieri prince since he was
+arranged to marry his true love Iris, and that he wished for immortality in
+order to be with her. He then tells Geralt his three wishes: to entertain
+his brother Vlodomir for one night, to get revenge on the Borsodi family by
+obtaining Maximillian Borsodi's house, and to obtain the violet rose he had
+given to Iris. O'Dimm tells Geralt that the three tasks are meant to be
+impossible, as Maximillian Borsodi's house is kept in a highly secure vault
+and both Vlodomir and Iris have been dead for years, but he agrees to
+assist Geralt.
+
+With O'Dimm's help, Geralt allows Vlodimir's spirit to possess his body for
+one night, allowing him to attend a wedding party and fulfilling the first
+wish. Geralt then participates in a heist to steal Maximillian Borsodi's
+house from its vault, and finds that it contains a will that would grant
+the entire Borsodi fortune to charity, fulfilling von Everec's revenge and
+second wish. To obtain Iris' rose, Geralt enlists the help of demonic
+entities to gain access to a supernatural realm where he witnesses von
+Everec and Iris' past. There, he learns that due to his "Heart of Stone",
+von Everec could not truly love Iris and she died neglected and unhappy.
+Geralt, on player's choice can either obtain the rose from Iris' spirit in
+order to free her from "pinned" into the world or let the rose be with her.
+Either way, Geralt fulfills von Everec's last wish and goes to meet with
+him. Along the way, he learns that O'Dimm is in fact an ancient entity of
+pure evil that thrives off tricking people into trading away their souls in
+return for wishes. When Geralt meets with von Everec, the three wishes are
+fulfilled and O'Dimm arrives to collect von Everec's soul.
+
+At this point, Geralt has the option of allowing O'Dimm to take von
+Everec's soul or intervening to save von Everec. If Geralt does nothing,
+O'Dimm kills von Everec, takes his soul, and rewards Geralt with one wish.
+If Geralt intervenes, he challenges O'Dimm by wagering his own soul to save
+von Everec. After Geralt solves O'Dimm's riddle, O'Dimm is forced to
+release both Geralt and von Everec from their pacts. von Everec, now mortal
+again, regains his emotions and immediately feels regret for his past
+actions and mistakes. He gives Geralt his family sword, and promises to
+start a new life free from O'Dimm's control.
+
+2222222222222222222
+
+
+Geralt takes up a contract sent out by Olgierd von Everec, who tasks him
+with eliminating a giant toad monster in the sewers of Oxenfurt. While
+hunting the monster, Geralt runs into Shani, a Redanian medic and an old
+acquaintance of his, whom he has the option of romancing. Geralt then kills
+the toad monster, only to find it was actually a cursed Ofieri prince. The
+prince's guards capture Geralt with the intention of executing him. While
+awaiting his execution en route to Ofier, Geralt is approached by the
+mysterious Gaunter O'Dimm. O'Dimm helps Geralt escape, but in return Geralt
+must help O'Dimm recover a debt from von Everec, who had set up Geralt
+knowing the toad monster was an Ofieri prince. O'Dimm tells Geralt that
+according to terms of his contract with von Everec, he must fulfill three
+of von Everec's wishes. Geralt confronts von Everec and discovers that von
+Everec had obtained immortality at the cost of his emotions, giving him a
+"Heart of Stone". He admits to cursing the Ofieri prince since he was
+arranged to marry his true love Iris, and that he wished for immortality in
+order to be with her. He then tells Geralt his three wishes: to entertain
+his brother Vlodomir for one night, to get revenge on the Borsodi family by
+obtaining Maximillian Borsodi's house, and to obtain the violet rose he had
+given to Iris. O'Dimm tells Geralt that the three tasks are meant to be
+impossible, as Maximillian Borsodi's house is kept in a highly secure vault
+and both Vlodomir and Iris have been dead for years, but he agrees to
+assist Geralt.
+
+With O'Dimm's help, Geralt allows Vlodimir's spirit to possess his body for
+one night, allowing him to attend a wedding party and fulfilling the first
+wish. Geralt then participates in a heist to steal Maximillian Borsodi's
+house from its vault, and finds that it contains a will that would grant
+the entire Borsodi fortune to charity, fulfilling von Everec's revenge and
+second wish. To obtain Iris' rose, Geralt enlists the help of demonic
+entities to gain access to a supernatural realm where he witnesses von
+Everec and Iris' past. There, he learns that due to his "Heart of Stone",
+von Everec could not truly love Iris and she died neglected and unhappy.
+Geralt, on player's choice can either obtain the rose from Iris' spirit in
+order to free her from "pinned" into the world or let the rose be with her.
+Either way, Geralt fulfills von Everec's last wish and goes to meet with
+him. Along the way, he learns that O'Dimm is in fact an ancient entity of
+pure evil that thrives off tricking people into trading away their souls in
+return for wishes. When Geralt meets with von Everec, the three wishes are
+fulfilled and O'Dimm arrives to collect von Everec's soul.
+
+At this point, Geralt has the option of allowing O'Dimm to take von
+Everec's soul or intervening to save von Everec. If Geralt does nothing,
+O'Dimm kills von Everec, takes his soul, and rewards Geralt with one wish.
+If Geralt intervenes, he challenges O'Dimm by wagering his own soul to save
+von Everec. After Geralt solves O'Dimm's riddle, O'Dimm is forced to
+release both Geralt and von Everec from their pacts. von Everec, now mortal
+again, regains his emotions and immediately feels regret for his past
+actions and mistakes. He gives Geralt his family sword, and promises to
+start a new life free from O'Dimm's control.
+
+
+
+3333333333333333333333333
+
+Geralt takes up a contract sent out by Olgierd von Everec, who tasks him
+with eliminating a giant toad monster in the sewers of Oxenfurt. While
+hunting the monster, Geralt runs into Shani, a Redanian medic and an old
+acquaintance of his, whom he has the option of romancing. Geralt then kills
+the toad monster, only to find it was actually a cursed Ofieri prince. The
+prince's guards capture Geralt with the intention of executing him. While
+awaiting his execution en route to Ofier, Geralt is approached by the
+mysterious Gaunter O'Dimm. O'Dimm helps Geralt escape, but in return Geralt
+must help O'Dimm recover a debt from von Everec, who had set up Geralt
+knowing the toad monster was an Ofieri prince. O'Dimm tells Geralt that
+according to terms of his contract with von Everec, he must fulfill three
+of von Everec's wishes. Geralt confronts von Everec and discovers that von
+Everec had obtained immortality at the cost of his emotions, giving him a
+"Heart of Stone". He admits to cursing the Ofieri prince since he was
+arranged to marry his true love Iris, and that he wished for immortality in
+order to be with her. He then tells Geralt his three wishes: to entertain
+his brother Vlodomir for one night, to get revenge on the Borsodi family by
+obtaining Maximillian Borsodi's house, and to obtain the violet rose he had
+given to Iris. O'Dimm tells Geralt that the three tasks are meant to be
+impossible, as Maximillian Borsodi's house is kept in a highly secure vault
+and both Vlodomir and Iris have been dead for years, but he agrees to
+assist Geralt.
+
+With O'Dimm's help, Geralt allows Vlodimir's spirit to possess his body for
+one night, allowing him to attend a wedding party and fulfilling the first
+wish. Geralt then participates in a heist to steal Maximillian Borsodi's
+house from its vault, and finds that it contains a will that would grant
+the entire Borsodi fortune to charity, fulfilling von Everec's revenge and
+second wish. To obtain Iris' rose, Geralt enlists the help of demonic
+entities to gain access to a supernatural realm where he witnesses von
+Everec and Iris' past. There, he learns that due to his "Heart of Stone",
+von Everec could not truly love Iris and she died neglected and unhappy.
+Geralt, on player's choice can either obtain the rose from Iris' spirit in
+order to free her from "pinned" into the world or let the rose be with her.
+Either way, Geralt fulfills von Everec's last wish and goes to meet with
+him. Along the way, he learns that O'Dimm is in fact an ancient entity of
+pure evil that thrives off tricking people into trading away their souls in
+return for wishes. When Geralt meets with von Everec, the three wishes are
+fulfilled and O'Dimm arrives to collect von Everec's soul.
+
+At this point, Geralt has the option of allowing O'Dimm to take von
+Everec's soul or intervening to save von Everec. If Geralt does nothing,
+O'Dimm kills von Everec, takes his soul, and rewards Geralt with one wish.
+If Geralt intervenes, he challenges O'Dimm by wagering his own soul to save
+von Everec. After Geralt solves O'Dimm's riddle, O'Dimm is forced to
+release both Geralt and von Everec from their pacts. von Everec, now mortal
+again, regains his emotions and immediately feels regret for his past
+actions and mistakes. He gives Geralt his family sword, and promises to
+start a new life free from O'Dimm's control.
+
+4444444444444444444444444
+
+
+Geralt takes up a contract sent out by Olgierd von Everec, who tasks him
+with eliminating a giant toad monster in the sewers of Oxenfurt. While
+hunting the monster, Geralt runs into Shani, a Redanian medic and an old
+acquaintance of his, whom he has the option of romancing. Geralt then kills
+the toad monster, only to find it was actually a cursed Ofieri prince. The
+prince's guards capture Geralt with the intention of executing him. While
+awaiting his execution en route to Ofier, Geralt is approached by the
+mysterious Gaunter O'Dimm. O'Dimm helps Geralt escape, but in return Geralt
+must help O'Dimm recover a debt from von Everec, who had set up Geralt
+knowing the toad monster was an Ofieri prince. O'Dimm tells Geralt that
+according to terms of his contract with von Everec, he must fulfill three
+of von Everec's wishes. Geralt confronts von Everec and discovers that von
+Everec had obtained immortality at the cost of his emotions, giving him a
+"Heart of Stone". He admits to cursing the Ofieri prince since he was
+arranged to marry his true love Iris, and that he wished for immortality in
+order to be with her. He then tells Geralt his three wishes: to entertain
+his brother Vlodomir for one night, to get revenge on the Borsodi family by
+obtaining Maximillian Borsodi's house, and to obtain the violet rose he had
+given to Iris. O'Dimm tells Geralt that the three tasks are meant to be
+impossible, as Maximillian Borsodi's house is kept in a highly secure vault
+and both Vlodomir and Iris have been dead for years, but he agrees to
+assist Geralt.
+
+With O'Dimm's help, Geralt allows Vlodimir's spirit to possess his body for
+one night, allowing him to attend a wedding party and fulfilling the first
+wish. Geralt then participates in a heist to steal Maximillian Borsodi's
+house from its vault, and finds that it contains a will that would grant
+the entire Borsodi fortune to charity, fulfilling von Everec's revenge and
+second wish. To obtain Iris' rose, Geralt enlists the help of demonic
+entities to gain access to a supernatural realm where he witnesses von
+Everec and Iris' past. There, he learns that due to his "Heart of Stone",
+von Everec could not truly love Iris and she died neglected and unhappy.
+Geralt, on player's choice can either obtain the rose from Iris' spirit in
+order to free her from "pinned" into the world or let the rose be with her.
+Either way, Geralt fulfills von Everec's last wish and goes to meet with
+him. Along the way, he learns that O'Dimm is in fact an ancient entity of
+pure evil that thrives off tricking people into trading away their souls in
+return for wishes. When Geralt meets with von Everec, the three wishes are
+fulfilled and O'Dimm arrives to collect von Everec's soul.
+
+At this point, Geralt has the option of allowing O'Dimm to take von
+Everec's soul or intervening to save von Everec. If Geralt does nothing,
+O'Dimm kills von Everec, takes his soul, and rewards Geralt with one wish.
+If Geralt intervenes, he challenges O'Dimm by wagering his own soul to save
+von Everec. After Geralt solves O'Dimm's riddle, O'Dimm is forced to
+release both Geralt and 
+--001a11479a7cf5bcb6053903371b--
