@@ -1,8 +1,6 @@
 language: python
 python:
-- '2.6'
 - '2.7'
-- '3.3'
 - '3.4'
 - '3.5'
 env:
@@ -11,6 +9,7 @@ env:
   - DJANGO='>=1.7,<1.8'
   - DJANGO='>=1.8,<1.9'
   - DJANGO='>=1.9,<1.10'
+  - DJANGO='>=1.10,<1.11'
   global:
   - secure: aswHU7pQroGM+GHoYlhXzzk2FYfqxXJORjqXPsbgoHAIu4Bssaj8+YAzIcdy3j9kSt4I8VBpjnn8H/wzQXki75JBZOosQrIeMK018+uR+ZMONBLqDYW/N7EJHLgZt9QXxQNKeZygrD4GN/Dc4gLHGvPQC/RfPuuHcnF0Liaahoo=
   - secure: RZ6M6984P885GRoyx9n/WCCWGoFAzYpS8sZkXu3e/HK9oPXfaM2IEHjkq03jIC/FcWn/QMtFjOUBqQU94rnqdivFdFkeZHk1WUQgC0hztH3Qhh9zu2PNIrYUDpVD5dJqBpprWbSwFP8yNsJlP9A2RUubTlZblKHuaBhhiuNN+kU=
