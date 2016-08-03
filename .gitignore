@@ -9,3 +9,5 @@ include/*
 .Python
 *egg*
 dummy_project/*
+.cache/
+.tox/
