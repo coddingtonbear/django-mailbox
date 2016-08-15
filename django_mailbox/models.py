@@ -20,6 +20,7 @@ import uuid
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
+import django
 from django.conf import settings as django_settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
@@ -382,7 +383,10 @@ class Mailbox(models.Model):
             msg = self.process_incoming_message(message)
             new_mail.append(msg)
         self.last_polling = now()
-        self.save(update_fields=['last_polling'])
+        if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
+            self.save(update_fields=['last_polling'])
+        else:
+            self.save()
         return new_mail
 
     def __unicode__(self):
