@@ -25,6 +25,7 @@ from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 from django_mailbox import utils
 from django_mailbox.signals import message_received
@@ -94,6 +95,14 @@ class Mailbox(models.Model):
         )),
         blank=True,
         default=True,
+    )
+
+    last_polling = models.DateTimeField(
+        _(u"Last polling"),
+        help_text=(_("The time of last successfull polling of message. "
+                     "It is blank for new mailbox or processing email via pipe only.")),
+        blank=True,
+        null=True
     )
 
     objects = models.Manager()
@@ -372,6 +381,8 @@ class Mailbox(models.Model):
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
             new_mail.append(msg)
+        self.last_polling = now()
+        self.save(update_fields=['last_polling'])
         return new_mail
 
     def __unicode__(self):
