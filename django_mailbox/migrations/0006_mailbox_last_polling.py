@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mailbox',
             name='last_polling',
-            field=models.DateTimeField(blank=True, null=True, help_text='The time of last successfull polling of message. It is blank for new mailbox or processing email via pipe only.', verbose_name='Last polling'),
+            field=models.DateTimeField(blank=True, help_text='The time of last successful polling for messages.It is blank for new mailboxes and is not set for mailboxes that only receive messages via a pipe.', null=True, verbose_name='Last polling'),
         ),
     ]

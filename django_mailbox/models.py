@@ -100,8 +100,9 @@ class Mailbox(models.Model):
 
     last_polling = models.DateTimeField(
         _(u"Last polling"),
-        help_text=(_("The time of last successfull polling of message. "
-                     "It is blank for new mailbox or processing email via pipe only.")),
+        help_text=(_("The time of last successful polling for messages."
+                     "It is blank for new mailboxes and is not set for "
+                     "mailboxes that only receive messages via a pipe.")),
         blank=True,
         null=True
     )
