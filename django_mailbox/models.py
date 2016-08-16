@@ -20,11 +20,13 @@ import uuid
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
+import django
 from django.conf import settings as django_settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 from django_mailbox import utils
 from django_mailbox.signals import message_received
@@ -94,6 +96,15 @@ class Mailbox(models.Model):
         )),
         blank=True,
         default=True,
+    )
+
+    last_polling = models.DateTimeField(
+        _(u"Last polling"),
+        help_text=(_("The time of last successful polling for messages."
+                     "It is blank for new mailboxes and is not set for "
+                     "mailboxes that only receive messages via a pipe.")),
+        blank=True,
+        null=True
     )
 
     objects = models.Manager()
@@ -372,6 +383,11 @@ class Mailbox(models.Model):
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
             new_mail.append(msg)
+        self.last_polling = now()
+        if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
+            self.save(update_fields=['last_polling'])
+        else:
+            self.save()
         return new_mail
 
     def __unicode__(self):

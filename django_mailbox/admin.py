@@ -43,7 +43,9 @@ class MailboxAdmin(admin.ModelAdmin):
         'uri',
         'from_email',
         'active',
+        'last_polling',
     )
+    readonly_fields = ['last_polling', ]
     actions = [get_new_mail]
 
 
