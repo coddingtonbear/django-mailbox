@@ -20,6 +20,7 @@ setup(
         'Import mail from POP3, IMAP, local mailboxes or directly from '
         'Postfix or Exim4 into your Django application automatically.'
     ),
+    license='MIT',
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     extras_require={
