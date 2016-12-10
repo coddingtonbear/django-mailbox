@@ -408,3 +408,11 @@ class TestProcessEmail(EmailMessageTestCase):
 
         self.assertEqual(size,
                          len(force_text(msg.get_email_object().as_string())))
+
+    def test_message_outgoing_cyrilic(self):
+        email_object = self._get_email_object(
+            'message_with_cyrillic_attachment.eml',
+        )
+        msg = self.mailbox.record_outgoing_message(email_object)
+
+        self.assertEqual(msg.attachments.all().count(), 1)
