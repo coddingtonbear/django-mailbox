@@ -7,8 +7,12 @@ Models declaration for application ``django_mailbox``.
 
 from email.encoders import encode_base64
 from email.message import Message as EmailMessage
-from email.utils import formatdate, parseaddr
+from email.utils import formatdate, parseaddr, parsedate_tz, mktime_tz, parsedate
 from quopri import encode as encode_quopri
+from datetime import datetime
+from time import mktime
+from bs4 import BeautifulSoup
+
 import base64
 import email
 import logging
@@ -16,6 +20,7 @@ import mimetypes
 import os.path
 import sys
 import uuid
+import string
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -281,7 +286,8 @@ class Mailbox(models.Model):
                 _, extension = os.path.splitext(filename)
             if not extension:
                 extension = '.bin'
-
+            if msg.get('Content-ID'):
+                cid = 'cid:%s' % msg.get('Content-ID')[1:len(msg.get('Content-ID'))-1]
             attachment = MessageAttachment()
 
             attachment.document.save(
@@ -295,6 +301,7 @@ class Mailbox(models.Model):
             attachment.message = record
             for key, value in msg.items():
                 attachment[key] = value
+            attachment.cid = cid
             attachment.save()
 
             placeholder = EmailMessage()
@@ -361,6 +368,24 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
+        #rulzart - Save the email date
+        if 'date' in message:
+            if django_settings.USE_TZ:
+                msg.date = datetime.utcfromtimestamp(
+                    mktime_tz(
+                        parsedate_tz(
+                            message['date']
+                        )
+                    )
+                )
+            else:
+                msg.date = datetime.fromtimestamp(
+                    mktime(
+                        parsedate(
+                            message['date']
+                        )
+                    )
+                )
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         msg.set_body(message.as_string())
@@ -486,6 +511,14 @@ class Message(models.Model):
         upload_to="messages",
         help_text=_(u'Original full content of message')
     )
+
+    #rulzart - Added date field to optimize sorting speed
+    date = models.DateTimeField(
+        _(u'Date'),
+        null=True,
+        help_text=_(u'The datetime of the email object')
+    )
+
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
     incoming_messages = IncomingMessageManager()
@@ -577,6 +610,23 @@ class Message(models.Model):
         return utils.get_body_from_message(
             self.get_email_object(), 'text', 'html'
         ).replace('\n', '').strip()
+
+    #rulzart - added a quick way to get Cc addresses
+    @property
+    def get_cc(self):
+        return self.get_email_object()["Cc"]
+
+    @property
+    def html_with_img(self):
+        """
+        Returns the message body matching content type 'text/html' with correct image src.
+        """
+        soup = BeautifulSoup(self.html)
+        for attachment in self.attachments.exclude(cid__isnull=True).exclude(cid__exact=''):
+            for img in soup.findAll('img'):
+                if img['src'] == attachment.cid:
+                    img['src'] = '%s%s' % (django_settings.MEDIA_URL, attachment.document)
+        return str(soup)
 
     def _rehydrate(self, msg):
         new = EmailMessage()
@@ -718,6 +768,13 @@ class MessageAttachment(models.Model):
     document = models.FileField(
         _(u'Document'),
         upload_to=utils.get_attachment_save_path,
+    )
+
+    cid = models.TextField(
+        _(u'Content-ID'),
+        null=True,
+        blank=True,
+        help_text='Used to help you find inline images if you need to display them'
     )
 
     def delete(self, *args, **kwargs):
