@@ -28,4 +28,5 @@ class GenericFileMailbox(EmailTransport):
                 continue
             repository.remove(key)
             yield message
+        repository.flush()
         repository.unlock()
