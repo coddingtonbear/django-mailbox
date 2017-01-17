@@ -416,3 +416,17 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.record_outgoing_message(email_object)
 
         self.assertEqual(msg.attachments.all().count(), 1)
+
+    def test_message_outgoing_cyrilic_constructed(self):
+        msg = EmailMessage(
+            'subject', 'body', 'from@gmail.com', ['to@gmail.com']
+        )
+
+        msg.attach(
+            '\xd0\xa2\xd0\xb0\xd0\xbd\xd0\xba\xd0\xb8.gif'.decode('utf-8'),
+            self._get_email_as_text('message_with_cyrillic_attachment.eml'),
+            'image/gif'
+        )
+        self.mailbox.record_outgoing_message(msg.message())
+
+        self.assertEqual(msg.attachments.all().count(), 1)
