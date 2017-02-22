@@ -145,6 +145,23 @@ class TestProcessEmail(EmailMessageTestCase):
             u'odpowied\u017a Burmistrza.jpg'
         )
 
+    def test_message_with_utf_headers_in_attachments(self):
+        email_object = self._get_email_object(
+            'message_with_utf8_headers_in_attachment.eml',
+        )
+        mailbox = Mailbox.objects.create()
+        msg = mailbox.process_incoming_message(email_object)
+
+        expected_count = 2
+        actual_count = msg.attachments.count()
+
+        self.assertEqual(
+            expected_count,
+            actual_count,
+        )
+
+        # TODO: Verify filenames
+
     def test_message_get_text_body(self):
         message = self._get_email_object('multipart_text.eml')
 
