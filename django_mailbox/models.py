@@ -482,6 +482,7 @@ class Message(models.Model):
 
     eml = models.FileField(
         _(u'Raw message contents'),
+        max_length=2000,
         null=True,
         upload_to="messages",
         help_text=_(u'Original full content of message')
@@ -717,6 +718,7 @@ class MessageAttachment(models.Model):
 
     document = models.FileField(
         _(u'Document'),
+        max_length=2000,
         upload_to=utils.get_attachment_save_path,
     )
 
