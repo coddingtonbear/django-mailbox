@@ -642,12 +642,8 @@ class Message(models.Model):
         if they are encoded as such.
 
         """
-        settings = utils.get_settings()
-
         if self.encoded:
-            return base64.b64decode(
-                self.body.encode(settings['default_charset'], 'replace')
-            )
+            return base64.b64decode(self.body.encode('ascii'))
         return self.body.encode('utf-8')
 
     def set_body(self, body):
@@ -658,16 +654,11 @@ class Message(models.Model):
         no fields existed for storing arbitrary bytes.
 
         """
-        settings = utils.get_settings()
-
         if six.PY3 and isinstance(body, six.text_type):
             body = body.encode('utf-8')
 
         self.encoded = True
-        self.body = base64.b64encode(body).decode(
-            settings['default_charset'],
-            'replace',
-        )
+        self.body = base64.b64encode(body).decode('ascii')
 
     def get_email_object(self):
         """Returns an `email.message.Message` instance representing the
