@@ -1,7 +1,7 @@
 import email
-import os.path
+import os
+from os.path import dirname, join
 import time
-
 import six
 
 from django.conf import settings
@@ -16,14 +16,7 @@ class EmailIntegrationTimeout(Exception):
 
 
 def get_email_as_text(name):
-    with open(
-        os.path.join(
-            os.path.dirname(__file__),
-            'messages',
-            name,
-        ),
-        'rb'
-    ) as f:
+    with open(join(dirname(__file__), 'messages', name), 'r') as f:
         return f.read()
 
 
@@ -69,23 +62,12 @@ class EmailMessageTestCase(TestCase):
                 return messages
             time.sleep(5)
 
-    def _get_email_as_text(self, name):
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'messages',
-                name,
-            ),
-            'rb'
-        ) as f:
-            return f.read()
-
     def _get_email_object(self, name):
-        copy = self._get_email_as_text(name)
-        if six.PY3:
-            return email.message_from_bytes(copy)
-        else:
-            return email.message_from_string(copy)
+        with open(join(dirname(__file__), 'messages', name), 'r') as f:
+            if six.PY3:
+                return email.message_from_binary_file(f)
+            else:
+                return email.message_from_file(f)
 
     def _headers_identical(self, left, right, header=None):
         """ Check if headers are (close enough to) identical.
