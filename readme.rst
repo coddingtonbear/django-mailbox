@@ -8,6 +8,15 @@
     :target: https://pypi.python.org/pypi/django-mailbox
 
 
+Django-Mailbox Version 5.0 Rewrite
+==================================
+
+**Warning**: These changes are in flux and will include backward-incompatible changes!
+
+
+----
+
+
 Easily ingest messages from POP3, IMAP, or local mailboxes into your Django application.
 
 This app allows you to either ingest e-mail content from common e-mail services (as long as the service provides POP3 or IMAP support),
