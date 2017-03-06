@@ -642,8 +642,12 @@ class Message(models.Model):
         if they are encoded as such.
 
         """
+        settings = utils.get_settings()
+
         if self.encoded:
-            return base64.b64decode(self.body.encode('ascii'))
+            return base64.b64decode(
+                self.body.encode(settings['default_charset'], 'replace')
+            )
         return self.body.encode('utf-8')
 
     def set_body(self, body):
@@ -654,10 +658,16 @@ class Message(models.Model):
         no fields existed for storing arbitrary bytes.
 
         """
-        if six.PY3:
+        settings = utils.get_settings()
+
+        if six.PY3 and isinstance(body, six.text_type):
             body = body.encode('utf-8')
+
         self.encoded = True
-        self.body = base64.b64encode(body).decode('ascii')
+        self.body = base64.b64encode(body).decode(
+            settings['default_charset'],
+            'replace',
+        )
 
     def get_email_object(self):
         """Returns an `email.message.Message` instance representing the
@@ -726,18 +736,24 @@ class MessageAttachment(models.Model):
         return super(MessageAttachment, self).delete(*args, **kwargs)
 
     def _get_rehydrated_headers(self):
+        settings = utils.get_settings()
+
         headers = self.headers
         if headers is None:
             return EmailMessage()
-        if sys.version_info < (3, 0):
-            try:
-                headers = headers.encode('utf-8')
-            except UnicodeDecodeError:
-                headers = unicode(headers, 'utf-8').encode('utf-8')
+        if not six.PY3:
+            headers = headers.encode(settings['default_charset'], 'replace')
+
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):
-        self.headers = email_object.as_string()
+        settings = utils.get_settings()
+
+        headers = email_object.as_string()
+        if isinstance(headers, six.binary_type):
+            headers = headers.decode(settings['default_charset'], 'replace')
+
+        self.headers = headers
 
     def __delitem__(self, name):
         rehydrated = self._get_rehydrated_headers()
@@ -745,7 +761,16 @@ class MessageAttachment(models.Model):
         self._set_dehydrated_headers(rehydrated)
 
     def __setitem__(self, name, value):
+        settings = utils.get_settings()
+
         rehydrated = self._get_rehydrated_headers()
+        if isinstance(value, six.binary_type):
+            # Ensure that no values in the bytestring cannot be encoded
+            # in the default charset
+            value = value.decode(
+                settings['default_charset'],
+                'replace'
+            ).encode(settings['default_charset'], 'replace')
         rehydrated[name] = value
         self._set_dehydrated_headers(rehydrated)
 
