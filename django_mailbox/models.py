@@ -34,6 +34,8 @@ from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport, GmailImapTransport
 
+from lino.core.fields import NullCharField
+
 logger = logging.getLogger(__name__)
 
 
@@ -64,8 +66,8 @@ class Mailbox(models.Model):
             "contain illegal characters (like @, :, etc)."
         )),
         blank=True,
-        null=True,
-        default=None,
+        # null=True,
+        default="",
     )
 
     from_email = models.CharField(
@@ -81,8 +83,8 @@ class Mailbox(models.Model):
             "be set to match the setting `DEFAULT_FROM_EMAIL`."
         )),
         blank=True,
-        null=True,
-        default=None,
+        # null=True,
+        default="",
     )
 
     active = models.BooleanField(
@@ -419,6 +421,11 @@ class UnreadMessageManager(models.Manager):
 
 
 class Message(models.Model):
+
+    class Meta:
+        verbose_name = _("Message")
+        verbose_name_plural = _("Messages")
+
     mailbox = models.ForeignKey(
         Mailbox,
         related_name='messages',
@@ -483,6 +490,7 @@ class Message(models.Model):
     eml = models.FileField(
         _(u'Raw message contents'),
         null=True,
+        blank=True,
         upload_to="messages",
         help_text=_(u'Original full content of message')
     )

@@ -382,7 +382,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         self.assertEqual(actual_from, msg.from_header)
 
-        reply_email_object.from_email = None
+        reply_email_object.from_email = ""
 
         with mock.patch.object(reply_email_object, 'send'):
             second_reply_msg = msg.reply(reply_email_object)
