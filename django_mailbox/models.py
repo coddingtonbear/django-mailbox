@@ -477,7 +477,7 @@ class Message(models.Model):
 
     processed = models.DateTimeField(
         _('Processed'),
-        auto_now_add=True
+        default=now
     )
 
     read = models.DateTimeField(
