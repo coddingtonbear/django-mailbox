@@ -64,7 +64,6 @@ class Mailbox(models.Model):
             "contain illegal characters (like @, :, etc)."
         )),
         blank=True,
-        null=True,
         default=None,
     )
 
@@ -81,7 +80,6 @@ class Mailbox(models.Model):
             "be set to match the setting `DEFAULT_FROM_EMAIL`."
         )),
         blank=True,
-        null=True,
         default=None,
     )
 
