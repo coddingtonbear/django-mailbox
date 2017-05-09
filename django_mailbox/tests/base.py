@@ -171,7 +171,7 @@ class EmailMessageTestCase(TestCase):
             )
         )
 
-    def assertEqual(self, left, right):
+    def assertEqual(self, left, right):  # noqa: N802
         if not isinstance(left, email.message.Message):
             return super(EmailMessageTestCase, self).assertEqual(left, right)
         return self.compare_email_objects(left, right)

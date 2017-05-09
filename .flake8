@@ -1,0 +1,2 @@
+[flake8]
+exclude = django_mailbox/migrations, django_mailbox/south_migrations

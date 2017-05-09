@@ -1,3 +1,5 @@
+# all imports below are only used by external modules
+# flake8: noqa
 from django_mailbox.transports.imap import ImapTransport
 from django_mailbox.transports.pop3 import Pop3Transport
 from django_mailbox.transports.maildir import MaildirTransport

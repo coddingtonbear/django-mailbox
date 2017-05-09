@@ -23,6 +23,8 @@ def get_new_mail(mailbox_admin, request, queryset):
     for mailbox in queryset.all():
         logger.debug('Receiving mail for %s' % mailbox)
         mailbox.get_new_mail()
+
+
 get_new_mail.short_description = 'Get new mail'
 
 
@@ -102,6 +104,7 @@ class MessageAdmin(admin.ModelAdmin):
         'html',
     )
     actions = [resend_message_received_signal]
+
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
     admin.site.register(Message, MessageAdmin)

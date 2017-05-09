@@ -733,7 +733,7 @@ class MessageAttachment(models.Model):
             try:
                 headers = headers.encode('utf-8')
             except UnicodeDecodeError:
-                headers = unicode(headers, 'utf-8').encode('utf-8')
+                headers = headers.decode('utf-8').encode('utf-8')
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):

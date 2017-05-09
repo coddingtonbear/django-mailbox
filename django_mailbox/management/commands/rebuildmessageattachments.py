@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
     """
     def handle(self, *args, **options):
-        ATTACHMENT_HASH_MAP = {}
+        attachment_hash_map = {}
 
         attachments_without_messages = MessageAttachment.objects.filter(
             message=None
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             md5 = hashlib.md5()
             for chunk in attachment.document.file.chunks():
                 md5.update(chunk)
-            ATTACHMENT_HASH_MAP[md5.hexdigest()] = attachment.pk
+            attachment_hash_map[md5.hexdigest()] = attachment.pk
 
         for message_record in Message.objects.all().order_by('id'):
             message = email.message_from_string(message_record.body)
@@ -51,9 +51,9 @@ class Command(BaseCommand):
                     md5 = hashlib.md5()
                     md5.update(part.get_payload(decode=True))
                     digest = md5.hexdigest()
-                    if digest in ATTACHMENT_HASH_MAP:
+                    if digest in attachment_hash_map:
                         attachment = MessageAttachment.objects.get(
-                            pk=ATTACHMENT_HASH_MAP[digest]
+                            pk=attachment_hash_map[digest]
                         )
                         attachment.message = message_record
                         attachment.save()
