@@ -59,6 +59,7 @@ class IMAPTestCase(EmailMessageTestCase):
                     return FAKE_UID_FETCH_SIZES
                 if arg2 == '(RFC822)':
                     return FAKE_UID_FETCH_MSG
+
         def imap_server_list_method(pattern=None):
             return FAKE_LIST_ARCHIVE_FOLDERS_ANSWERS
 
@@ -88,6 +89,7 @@ class TestImapTransport(IMAPTestCase):
         expected_message = self._get_email_object('generic_message.eml')
         self.assertEqual(expected_message, actual_message)
 
+
 class TestImapArchivedTransport(TestImapTransport):
     def setUp(self):
         super(TestImapArchivedTransport, self).setUp()
@@ -99,6 +101,7 @@ class TestImapArchivedTransport(TestImapTransport):
             self.archive
         )
         self.transport.server = self.imap_server
+
 
 class TestMaxSizeImapTransport(TestImapTransport):
 
@@ -115,7 +118,9 @@ class TestMaxSizeImapTransport(TestImapTransport):
 
     def test_size_limit(self):
         all_message_ids = self.transport._get_all_message_ids()
-        small_message_ids = self.transport._get_small_message_ids(all_message_ids)
+        small_message_ids = self.transport._get_small_message_ids(
+            all_message_ids,
+        )
         self.assertEqual(len(small_message_ids), 1)
 
     def test_get_email_message(self):
@@ -163,4 +168,3 @@ class TestPop3Transport(EmailMessageTestCase):
         expected_message = self._get_email_object('generic_message.eml')
 
         self.assertEqual(expected_message, actual_message)
-
