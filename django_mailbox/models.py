@@ -109,6 +109,9 @@ class Mailbox(models.Model):
 
     objects = models.Manager()
     active_mailboxes = ActiveMailboxManager()
+    
+    def __str__(self):
+        return self.name
 
     @property
     def _protocol_info(self):
