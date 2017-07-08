@@ -502,6 +502,9 @@ class Message(models.Model):
     unread_messages = UnreadMessageManager()
     incoming_messages = IncomingMessageManager()
     outgoing_messages = OutgoingMessageManager()
+    
+    def __str__(self):
+        return '{} from {}'.format(self.subject, self.from_header)
 
     @property
     def address(self):
