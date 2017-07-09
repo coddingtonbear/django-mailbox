@@ -5,3 +5,5 @@ recursive-include django_mailbox *.eml
 recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
+recursive-include django_mailbox/locale *.po
+recursive-include django_mailbox/locale *.mo

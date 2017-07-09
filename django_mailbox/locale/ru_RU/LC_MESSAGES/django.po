@@ -1,0 +1,193 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-09 05:36-0500\n"
+"PO-Revision-Date: 2017-07-09 13:37+0300\n"
+"Last-Translator: Ivlev Denis <di-erz@yandex.ru>\n"
+"Language-Team: \n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: django_mailbox/admin.py:29
+msgid "Get new mail"
+msgstr "Получить новые сообщения"
+
+#: django_mailbox/admin.py:39
+msgid "Re-send message received signal"
+msgstr "Повторно отправить сигнал о получении"
+
+#: django_mailbox/admin.py:69
+msgid "Attachment count"
+msgstr "Кол-во вложений"
+
+#: django_mailbox/apps.py:7
+msgid "Mail Box"
+msgstr "Почтовый ящик"
+
+#: django_mailbox/models.py:49
+msgid "Name"
+msgstr "Название"
+
+#: django_mailbox/models.py:54
+msgid "URI"
+msgstr "URI"
+
+#: django_mailbox/models.py:57
+msgid ""
+"Example: imap+ssl://myusername:mypassword@someserver <br /><br />Internet "
+"transports include 'imap' and 'pop3'; common local file transports include "
+"'maildir', 'mbox', and less commonly 'babyl', 'mh', and 'mmdf'. <br /><br /"
+">Be sure to urlencode your username and password should they contain illegal "
+"characters (like @, :, etc)."
+msgstr ""
+"Пример: imap+ssl://myusername:mypassword@someserver <br /><br />Интернет-"
+"транспорт может быть 'imap' или 'pop3'; поддерживаются локальные файловые "
+"транспорты 'maildir', 'mbox', а также 'babyl', 'mh', and 'mmdf'. <br /><br /"
+">Используйте urlencode, если имя пользователя или пароль содержат "
+"недопустипые символы (@, :, и т.д.)."
+
+#: django_mailbox/models.py:72
+msgid "From email"
+msgstr "От"
+
+#: django_mailbox/models.py:75
+msgid ""
+"Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />'From' header to set "
+"for outgoing email.<br /><br />If you do not use this e-mail inbox for "
+"outgoing mail, this setting is unnecessary.<br />If you send e-mail without "
+"setting this, your 'From' header will'be set to match the setting "
+"`DEFAULT_FROM_EMAIL`."
+msgstr ""
+"Пример: MailBot &lt;mailbot@yourdomain.com&gt;<br />Исходящая электронная "
+"почта.<br /><br />Если вы не используете этот почтовый ящик для исходящей "
+"почты, этот параметр не нужен.<br />Если вы не указали данный параметр, "
+"будет использоваться указанный в настройках `DEFAULT_FROM_EMAIL`."
+
+#: django_mailbox/models.py:89
+msgid "Active"
+msgstr "Активный"
+
+#: django_mailbox/models.py:91
+msgid ""
+"Check this e-mail inbox for new e-mail messages during polling cycles.  This "
+"checkbox does not have an effect upon whether mail is collected here when "
+"this mailbox receives mail from a pipe, and does not affect whether e-mail "
+"messages can be dispatched from this mailbox. "
+msgstr ""
+"Параметр указывает на необходимость проверки почтового ящика на наличие "
+"новых сообщений в цикле опроса. Этот флажок не влияет на сбор почты, когда "
+"этот почтовый ящик получает почту из канала и не влияет на отправку "
+"сообщений электронной почты из этого почтового ящика."
+
+#: django_mailbox/models.py:102
+msgid "Last polling"
+msgstr "Последний опрос"
+
+#: django_mailbox/models.py:103
+msgid ""
+"The time of last successful polling for messages.It is blank for new "
+"mailboxes and is not set for mailboxes that only receive messages via a pipe."
+msgstr ""
+"Время последнего успешного опроса сообщений. Для нового почтового ящика не "
+"установлено. Также не устанавливается для почтовых ящиков "
+"обновляющих сообщения через pipe."
+
+#: django_mailbox/models.py:409 django_mailbox/models.py:438
+msgid "Mailbox"
+msgstr "Почтовый ящик"
+
+#: django_mailbox/models.py:410
+msgid "Mailboxes"
+msgstr "Почтовые ящики"
+
+#: django_mailbox/models.py:442
+msgid "Subject"
+msgstr "Тема"
+
+#: django_mailbox/models.py:447
+msgid "Message ID"
+msgstr "Идентификатор сообщения"
+
+#: django_mailbox/models.py:456
+msgid "In reply to"
+msgstr "В ответ на"
+
+#: django_mailbox/models.py:460
+msgid "From header"
+msgstr "От(From)"
+
+#: django_mailbox/models.py:465
+msgid "To header"
+msgstr "Кому(To)"
+
+#: django_mailbox/models.py:469
+msgid "Outgoing"
+msgstr "Исходящее"
+
+#: django_mailbox/models.py:475
+msgid "Body"
+msgstr "Тело"
+
+#: django_mailbox/models.py:479
+msgid "Encoded"
+msgstr "Закодировано"
+
+#: django_mailbox/models.py:481
+msgid "True if the e-mail body is Base64 encoded"
+msgstr "True если тело сообщения закодировано в Base64"
+
+#: django_mailbox/models.py:485
+msgid "Processed"
+msgstr "Обработано"
+
+#: django_mailbox/models.py:490
+msgid "Read"
+msgstr "Прочитано"
+
+#: django_mailbox/models.py:497
+msgid "Raw message contents"
+msgstr "Исходное содержимое сообщения"
+
+#: django_mailbox/models.py:500
+msgid "Original full content of message"
+msgstr "Полное содержимое сообщения"
+
+#: django_mailbox/models.py:716
+msgid "E-mail message"
+msgstr "Сообщение"
+
+#: django_mailbox/models.py:717
+msgid "E-mail messages"
+msgstr "Сообщения"
+
+#: django_mailbox/models.py:726
+msgid "Message"
+msgstr "Сообщение"
+
+#: django_mailbox/models.py:730
+msgid "Headers"
+msgstr "Заголовки"
+
+#: django_mailbox/models.py:736
+msgid "Document"
+msgstr "Документ"
+
+#: django_mailbox/models.py:793
+msgid "Message attachment"
+msgstr "Вложение"
+
+#: django_mailbox/models.py:794
+msgid "Message attachments"
+msgstr "Вложения"

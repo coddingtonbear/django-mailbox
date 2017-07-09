@@ -406,7 +406,8 @@ class Mailbox(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = "Mailboxes"
+        verbose_name = _('Mailbox')
+        verbose_name_plural = _('Mailboxes')
 
 
 class IncomingMessageManager(models.Manager):
@@ -711,6 +712,10 @@ class Message(models.Model):
     def __unicode__(self):
         return self.subject
 
+    class Meta:
+        verbose_name = _('E-mail message')
+        verbose_name_plural = _('E-mail messages')
+
 
 class MessageAttachment(models.Model):
     message = models.ForeignKey(
@@ -783,3 +788,7 @@ class MessageAttachment(models.Model):
 
     def __unicode__(self):
         return self.document.url
+
+    class Meta:
+        verbose_name = _('Message attachment')
+        verbose_name_plural = _('Message attachments')
