@@ -387,7 +387,7 @@ class Mailbox(models.Model):
         if settings['compress_original_message']:
             with NamedTemporaryFile(suffix=".eml.gz") as fp_tmp:
                 with gzip.GzipFile(fileobj=fp_tmp, mode="w") as fp:
-                    fp.write(message.as_string())
+                    fp.write(message.as_string().encode('utf-8'))
                 msg.eml.save(
                     "%s.eml.gz" % (uuid.uuid4(), ),
                     File(fp_tmp),
