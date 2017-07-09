@@ -25,6 +25,7 @@ from django.conf import settings as django_settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import make_msgid
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
@@ -44,6 +45,7 @@ class ActiveMailboxManager(models.Manager):
         )
 
 
+@python_2_unicode_compatible
 class Mailbox(models.Model):
     name = models.CharField(
         _(u'Name'),
@@ -402,7 +404,7 @@ class Mailbox(models.Model):
             self.save()
         return new_mail
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -430,6 +432,7 @@ class UnreadMessageManager(models.Manager):
         )
 
 
+@python_2_unicode_compatible
 class Message(models.Model):
     mailbox = models.ForeignKey(
         Mailbox,
@@ -708,10 +711,11 @@ class Message(models.Model):
             attachment.delete()
         return super(Message, self).delete(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.subject
 
 
+@python_2_unicode_compatible
 class MessageAttachment(models.Model):
     message = models.ForeignKey(
         Message,
@@ -781,5 +785,5 @@ class MessageAttachment(models.Model):
             raise KeyError('Header %s does not exist' % name)
         return value
 
-    def __unicode__(self):
+    def __str__(self):
         return self.document.url
