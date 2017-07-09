@@ -37,5 +37,5 @@ install:
 - pip install -r test_requirements.txt
 - pip install -q -e .
 script:
-- python setup.py test
+- python manage.py test
 sudo: false
