@@ -54,6 +54,16 @@ def get_settings():
             'DJANGO_MAILBOX_STORE_ORIGINAL_MESSAGE',
             False
         ),
+        'compress_original_message': getattr(
+            settings,
+            'DJANGO_MAILBOX_COMPRESS_ORIGINAL_MESSAGE',
+            False
+        ),
+        'original_message_compression': getattr(
+            settings,
+            'DJANGO_MAILBOX_ORIGINAL_MESSAGE_COMPRESSION',
+            6
+        ),
         'default_charset': getattr(
             settings,
             'DJANGO_MAILBOX_default_charset',

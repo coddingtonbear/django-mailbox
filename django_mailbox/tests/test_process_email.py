@@ -1,15 +1,17 @@
+import gzip
 import os.path
 import sys
 
+import copy
 import mock
 import six
 
 from django_mailbox.models import Mailbox, Message
 from django_mailbox.utils import convert_header_to_unicode
+from django_mailbox import utils
 from django_mailbox.tests.base import EmailMessageTestCase
 from django.utils.encoding import force_text
 from django.core.mail import EmailMessage
-
 
 __all__ = ['TestProcessEmail']
 
@@ -410,3 +412,60 @@ class TestProcessEmail(EmailMessageTestCase):
 
         self.assertEqual(size,
                          len(force_text(msg.get_email_object().as_string())))
+
+    def test_message_saved(self):
+        message = self._get_email_object('generic_message.eml')
+
+        default_settings = utils.get_settings()
+
+        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+            altered = copy.deepcopy(default_settings)
+            altered['store_original_message'] = True
+            get_settings.return_value = altered
+
+            msg = self.mailbox.process_incoming_message(message)
+
+        actual_email_object = msg.get_email_object()
+
+        self.assertNotEquals(msg.eml, None)
+
+        self.assertTrue(msg.eml.name.endswith('.eml'))
+
+        with open(msg.eml.name, 'rb') as f:
+            self.assertEqual(f.read(),
+                             self._get_email_as_text('generic_message.eml'))
+
+    def test_message_saving_ignored(self):
+        message = self._get_email_object('generic_message.eml')
+
+        default_settings = utils.get_settings()
+
+        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+            altered = copy.deepcopy(default_settings)
+            altered['store_original_message'] = False
+            get_settings.return_value = altered
+
+            msg = self.mailbox.process_incoming_message(message)
+
+        self.assertEquals(msg.eml, None)
+
+    def test_message_compressed(self):
+        message = self._get_email_object('generic_message.eml')
+
+        default_settings = utils.get_settings()
+
+        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+            altered = copy.deepcopy(default_settings)
+            altered['compress_original_message'] = True
+            altered['store_original_message'] = True
+            get_settings.return_value = altered
+
+            msg = self.mailbox.process_incoming_message(message)
+
+        actual_email_object = msg.get_email_object()
+        print(msg.eml.name)
+        self.assertTrue(msg.eml.name.endswith('.eml.gz'))
+
+        with gzip.open(msg.eml.name, 'rb') as f:
+            self.assertEqual(f.read(),
+                             self._get_email_as_text('generic_message.eml'))
