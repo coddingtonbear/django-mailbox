@@ -463,7 +463,7 @@ class TestProcessEmail(EmailMessageTestCase):
             msg = self.mailbox.process_incoming_message(message)
 
         actual_email_object = msg.get_email_object()
-        print(msg.eml.name)
+
         self.assertTrue(msg.eml.name.endswith('.eml.gz'))
 
         with gzip.open(msg.eml.name, 'rb') as f:
