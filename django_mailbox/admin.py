@@ -10,6 +10,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from django_mailbox.models import MessageAttachment, Message, Mailbox
 from django_mailbox.signals import message_received
@@ -25,7 +26,7 @@ def get_new_mail(mailbox_admin, request, queryset):
         mailbox.get_new_mail()
 
 
-get_new_mail.short_description = 'Get new mail'
+get_new_mail.short_description = _('Get new mail')
 
 
 def resend_message_received_signal(message_admin, request, queryset):
@@ -35,7 +36,7 @@ def resend_message_received_signal(message_admin, request, queryset):
 
 
 resend_message_received_signal.short_description = (
-    'Re-send message received signal'
+    _('Re-send message received signal')
 )
 
 
@@ -64,6 +65,8 @@ class MessageAttachmentInline(admin.TabularInline):
 class MessageAdmin(admin.ModelAdmin):
     def attachment_count(self, msg):
         return msg.attachments.count()
+
+    attachment_count.short_description = _('Attachment count')
 
     def subject(self, msg):
         return convert_header_to_unicode(msg.subject)
