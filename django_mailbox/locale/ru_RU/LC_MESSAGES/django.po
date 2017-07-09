@@ -30,7 +30,7 @@ msgstr "Повторно отправить сигнал о получении"
 
 #: django_mailbox/admin.py:69
 msgid "Attachment count"
-msgstr "Кол-во вложений\t"
+msgstr "Кол-во вложений"
 
 #: django_mailbox/apps.py:7
 msgid "Mail Box"
@@ -56,7 +56,7 @@ msgstr ""
 "транспорт может быть 'imap' или 'pop3'; поддерживаются локальные файловые "
 "транспорты 'maildir', 'mbox', а также 'babyl', 'mh', and 'mmdf'. <br /><br /"
 ">Используйте urlencode, если имя пользователя или пароль содержат "
-"недопустипыесимволы (@, :, и т.д.)."
+"недопустипые символы (@, :, и т.д.)."
 
 #: django_mailbox/models.py:72
 msgid "From email"
@@ -100,9 +100,9 @@ msgid ""
 "The time of last successful polling for messages.It is blank for new "
 "mailboxes and is not set for mailboxes that only receive messages via a pipe."
 msgstr ""
-"Время последнего успешного опроса сообщений. Для нового почтового ящикане "
+"Время последнего успешного опроса сообщений. Для нового почтового ящика не "
 "установлено. Также не устанавливается для почтовых ящиков "
-"обнновляющихсообщения через pipe."
+"обновляющих сообщения через pipe."
 
 #: django_mailbox/models.py:409 django_mailbox/models.py:438
 msgid "Mailbox"
@@ -122,15 +122,15 @@ msgstr "Идентификатор сообщения"
 
 #: django_mailbox/models.py:456
 msgid "In reply to"
-msgstr "Ответ на"
+msgstr "В ответ на"
 
 #: django_mailbox/models.py:460
 msgid "From header"
-msgstr "Заголовок От(From)"
+msgstr "От(From)"
 
 #: django_mailbox/models.py:465
 msgid "To header"
-msgstr "Заголовок Кому(To)"
+msgstr "Кому(To)"
 
 #: django_mailbox/models.py:469
 msgid "Outgoing"
@@ -158,7 +158,7 @@ msgstr "Прочитано"
 
 #: django_mailbox/models.py:497
 msgid "Raw message contents"
-msgstr "Сырое содержимое сообщения"
+msgstr "Исходное содержимое сообщения"
 
 #: django_mailbox/models.py:500
 msgid "Original full content of message"
