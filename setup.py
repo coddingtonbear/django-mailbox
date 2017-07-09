@@ -1,16 +1,7 @@
-import sys
 from setuptools import find_packages, setup
-import os
 
 from django_mailbox import __version__ as version_string
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'django_mailbox.tests.settings'
-
-from django.core import management
-
-if len(sys.argv) > 1 and sys.argv[1] == 'test':
-    management.execute_from_command_line()
-    sys.exit()
 
 tests_require = [
     'django',
@@ -61,7 +52,7 @@ setup(
         'Topic :: Communications :: Email :: Email Clients (MUA)',
     ],
     packages=find_packages(),
-    include_package_data = True,
+    include_package_data=True,
     install_requires=[
         'six>=1.6.1'
     ]
