@@ -240,7 +240,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         success = True
         try:
-            msg = self.mailbox.process_incoming_message(email_object)
+            self.mailbox.process_incoming_message(email_object)
         except ValueError:
             success = False
 
@@ -259,7 +259,8 @@ class TestProcessEmail(EmailMessageTestCase):
         # this is the code of _process_message()
         msg = Message()
         # if STORE_ORIGINAL_MESSAGE:
-        #     msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message), save=False)
+        #     msg.eml.save('%s.eml' % uuid.uuid4(), ContentFile(message),
+        #                  save=False)
         msg.mailbox = self.mailbox
         if 'subject' in message:
             msg.subject = convert_header_to_unicode(message['subject'])[0:255]
@@ -273,7 +274,7 @@ class TestProcessEmail(EmailMessageTestCase):
             msg.to_header = convert_header_to_unicode(message['Delivered-To'])
         msg.save()
 
-        #here the message is ok
+        # here the message is ok
         str_msg = message.as_string()
         message = self.mailbox._get_dehydrated_message(message, msg)
         try:
@@ -385,7 +386,8 @@ class TestProcessEmail(EmailMessageTestCase):
         self.assertEqual(expected_from, actual_from)
 
     def test_message_reply(self):
-        email_object = EmailMessage('Test subject',  # subject
+        email_object = EmailMessage(
+            'Test subject',  # subject
             'Test body',  # body
             'username@example.com',  # from
             ['mr.test32@mail.ru'],  # to

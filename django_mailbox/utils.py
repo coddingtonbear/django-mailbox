@@ -89,7 +89,7 @@ def convert_header_to_unicode(header):
             header,
             default_charset,
         )
-        return unicode(header, default_charset, 'replace')
+        return header.decode(default_charset, 'replace')
 
 
 def get_body_from_message(message, maintype, subtype):
