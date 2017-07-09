@@ -4,7 +4,7 @@
 """
 Models declaration for application ``django_mailbox``.
 """
-
+import gzip
 from email.encoders import encode_base64
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
@@ -16,13 +16,14 @@ import mimetypes
 import os.path
 import sys
 import uuid
+from tempfile import NamedTemporaryFile
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
 
 import django
 from django.conf import settings as django_settings
-from django.core.files.base import ContentFile
+from django.core.files.base import ContentFile, File
 from django.core.mail.message import make_msgid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -345,11 +346,7 @@ class Mailbox(models.Model):
         settings = utils.get_settings()
 
         if settings['store_original_message']:
-            msg.eml.save(
-                '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string()),
-                save=False
-            )
+            self._process_save_original_message(message, msg)
         msg.mailbox = self
         if 'subject' in message:
             msg.subject = (
@@ -384,6 +381,25 @@ class Mailbox(models.Model):
                 pass
         msg.save()
         return msg
+
+    def _process_save_original_message(self, message, msg):
+        settings = utils.get_settings()
+        if settings['compress_original_message']:
+            with NamedTemporaryFile(suffix=".eml.gz") as fp_tmp:
+                with gzip.GzipFile(fileobj=fp_tmp, mode="w") as fp:
+                    fp.write(message.as_string().encode('utf-8'))
+                msg.eml.save(
+                    "%s.eml.gz" % (uuid.uuid4(), ),
+                    File(fp_tmp),
+                    save=False
+                )
+
+        else:
+            msg.eml.save(
+                '%s.eml' % uuid.uuid4(),
+                ContentFile(message.as_string()),
+                save=False
+            )
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
@@ -692,8 +708,12 @@ class Message(models.Model):
 
         """
         if self.eml:
-            self.eml.open()
-            body = self.eml.file.read()
+            if self.eml.name.endswith('.gz'):
+                body = gzip.GzipFile(fileobj=self.eml).read()
+            else:
+                self.eml.open()
+                body = self.eml.file.read()
+                self.eml.close()
         else:
             body = self.get_body()
         if six.PY3:
