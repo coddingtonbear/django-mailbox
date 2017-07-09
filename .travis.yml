@@ -6,7 +6,6 @@ python:
 - '3.6'
 env:
   matrix:
-  - DJANGO='>=1.4,<1.5'
   - DJANGO='>=1.7,<1.8'
   - DJANGO='>=1.8,<1.9'
   - DJANGO='>=1.9,<1.10'
@@ -19,14 +18,6 @@ env:
   - secure: mMa7UUt+CQDB52fGM1T3oRL67OzQzRIc+BQCOqUEUhBV7p5g7Y1Hv6NTdVZTvK16x3DsP+5kFNd1v7rsTFw2qzP3hOxIv2BtMPuSzZdnN85Zd/nGwnztxzj/rqw7TMBaYvIdEZZbpRF/K0p0Xr6LJK2s9UkPXPUaLqly7kNi360=
 matrix:
   exclude:
-  - env: DJANGO='>=1.4,<1.5'
-    python: '3.3'
-  - env: DJANGO='>=1.4,<1.5'
-    python: '3.4'
-  - env: DJANGO='>=1.4,<1.5'
-    python: '3.5'
-  - env: DJANGO='>=1.4,<1.5'
-    python: '3.6'
   - env: DJANGO='>=1.7,<1.8'
     python: '2.6'
   - env: DJANGO='>=1.7,<1.8'
