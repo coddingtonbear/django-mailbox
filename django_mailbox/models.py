@@ -26,6 +26,7 @@ from django.conf import settings as django_settings
 from django.core.files.base import ContentFile, File
 from django.core.mail.message import make_msgid
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils.encoding import python_2_unicode_compatible
