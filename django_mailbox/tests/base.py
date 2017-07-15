@@ -66,7 +66,7 @@ class EmailMessageTestCase(TestCase):
                 raise EmailIntegrationTimeout()
             messages = self.mailbox.get_new_mail(condition)
             if messages:
-                return messages
+                return list(messages)
             time.sleep(5)
 
     def _get_email_as_text(self, name):

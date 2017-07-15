@@ -408,17 +408,16 @@ class Mailbox(models.Model):
         new_mail = []
         connection = self.get_connection()
         if not connection:
-            return new_mail
+            return
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
             if not msg is None:
-                new_mail.append(msg)
+                yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
             self.save(update_fields=['last_polling'])
         else:
             self.save()
-        return new_mail
 
     def __str__(self):
         return self.name
