@@ -455,6 +455,7 @@ class Message(models.Model):
         Mailbox,
         related_name='messages',
         verbose_name=_(u'Mailbox'),
+        on_delete=models.CASCADE
     )
 
     subject = models.CharField(
@@ -473,6 +474,7 @@ class Message(models.Model):
         blank=True,
         null=True,
         verbose_name=_(u'In reply to'),
+        on_delete=models.CASCADE
     )
 
     from_header = models.CharField(
@@ -748,6 +750,7 @@ class MessageAttachment(models.Model):
         null=True,
         blank=True,
         verbose_name=_('Message'),
+        on_delete=models.CASCADE
     )
 
     headers = models.TextField(
