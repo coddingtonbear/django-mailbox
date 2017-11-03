@@ -16,6 +16,8 @@ One too many times, I'm sure.
 This small Django application will allow you to specify mailboxes that you would like consumed for incoming content; 
 the e-mail will be stored, and you can process it at will (or, if you're in a hurry, by subscribing to a signal).
 
+The Django-mailbox retrieves the e-mail messages by eg. IMAP, POP and then erases them to not download again the next time. Django-mailbox is not a typical mail program, and is a development library that makes it easy to process email messages in Django. A mailbox in that case plays the role of a message queue that needs to be processed. Messages processed from the queue are removed from the queue.
+
 Contents:
 
 .. toctree::
