@@ -43,6 +43,7 @@ resend_message_received_signal.short_description = (
 class MailboxAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'user',
         'uri',
         'from_email',
         'active',

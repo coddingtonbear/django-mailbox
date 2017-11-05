@@ -48,6 +48,13 @@ class ActiveMailboxManager(models.Manager):
 
 @python_2_unicode_compatible
 class Mailbox(models.Model):
+    user = models.ForeignKey(
+        django_settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        default=None
+    )
+
     name = models.CharField(
         _(u'Name'),
         max_length=255,
