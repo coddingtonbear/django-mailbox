@@ -37,8 +37,8 @@ class Migration(migrations.Migration):
                 ('encoded', models.BooleanField(default=False, help_text='True if the e-mail body is Base64 encoded', verbose_name='Encoded')),
                 ('processed', models.DateTimeField(auto_now_add=True, verbose_name='Processed')),
                 ('read', models.DateTimeField(default=None, null=True, verbose_name='Read', blank=True)),
-                ('in_reply_to', models.ForeignKey(related_name='replies', verbose_name='In reply to', blank=True, to='django_mailbox.Message', null=True)),
-                ('mailbox', models.ForeignKey(related_name='messages', verbose_name='Mailbox', to='django_mailbox.Mailbox')),
+                ('in_reply_to', models.ForeignKey(related_name='replies', verbose_name='In reply to', blank=True, to='django_mailbox.Message', null=True, on_delete=models.CASCADE)),
+                ('mailbox', models.ForeignKey(related_name='messages', verbose_name='Mailbox', to='django_mailbox.Mailbox', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('headers', models.TextField(null=True, verbose_name='Headers', blank=True)),
                 ('document', models.FileField(upload_to=b'mailbox_attachments/%Y/%m/%d/', verbose_name='Document')),
-                ('message', models.ForeignKey(related_name='attachments', verbose_name='Message', blank=True, to='django_mailbox.Message', null=True)),
+                ('message', models.ForeignKey(related_name='attachments', verbose_name='Message', blank=True, to='django_mailbox.Message', null=True, on_delete=models.CASCADE)),
             ],
             options={
             },
