@@ -346,7 +346,6 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         settings = utils.get_settings()
-
         if settings['store_original_message']:
             self._process_save_original_message(message, msg)
         msg.mailbox = self
@@ -386,10 +385,14 @@ class Mailbox(models.Model):
 
     def _process_save_original_message(self, message, msg):
         settings = utils.get_settings()
+        if six.PY3:
+            content = message.as_string().encode('ascii', 'surrogateescape')
+        else:
+            content = message.as_string()
         if settings['compress_original_message']:
             with NamedTemporaryFile(suffix=".eml.gz") as fp_tmp:
                 with gzip.GzipFile(fileobj=fp_tmp, mode="w") as fp:
-                    fp.write(message.as_string().encode('utf-8'))
+                    fp.write(content)
                 msg.eml.save(
                     "%s.eml.gz" % (uuid.uuid4(), ),
                     File(fp_tmp),
@@ -399,7 +402,7 @@ class Mailbox(models.Model):
         else:
             msg.eml.save(
                 '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string()),
+                ContentFile(content),
                 save=False
             )
 
