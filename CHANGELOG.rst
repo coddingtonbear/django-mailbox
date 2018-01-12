@@ -7,7 +7,7 @@ Changelog
 * Add Django 2.0 support
 
  - Add on_delete=models.CASCADE in models & migrations
- - Add Django 2.0 to tests matrixs
+ - Add Django 2.0 to tests matrices
 
 4.4
 ---
