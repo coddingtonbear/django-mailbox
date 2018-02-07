@@ -108,6 +108,8 @@ def get_body_from_message(message, maintype, subtype):
     """
     body = six.text_type('')
     for part in message.walk():
+        if part.get('content-disposition', '').startswith('attachment;'):
+            continue
         if part.get_content_maintype() == maintype and \
                 part.get_content_subtype() == subtype:
             charset = part.get_content_charset()
