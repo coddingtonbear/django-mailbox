@@ -401,6 +401,7 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.process_incoming_message(email_object)
 
         self.assertEqual(msg.attachments.all().count(), 1)
+        self.assertEqual('Has an attached text document, too!', msg.text)
 
     def test_message_with_long_content(self):
         email_object = self._get_email_object(
