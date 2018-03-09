@@ -16,8 +16,13 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Command(BaseCommand):
-    args = "<[Mailbox Name (optional)]>"
-    command = "Receive incoming mail via stdin"
+    help = "Receive incoming mail via stdin"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            'mailbox_name',
+            help="The name of the mailbox that will receive the message"
+        )
 
     def handle(self, mailbox_name=None, *args, **options):
         message = email.message_from_string(sys.stdin.read())
