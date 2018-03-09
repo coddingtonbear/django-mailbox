@@ -345,6 +345,7 @@ class Mailbox(models.Model):
 
     def _process_message(self, message):
         msg = Message()
+        msg._email_object = message
         settings = utils.get_settings()
 
         if settings['store_original_message']:
@@ -711,20 +712,22 @@ class Message(models.Model):
            (https://docs.python.org/2/library/email.message.html)
 
         """
-        if self.eml:
-            if self.eml.name.endswith('.gz'):
-                body = gzip.GzipFile(fileobj=self.eml).read()
+        if not hasattr(self, '_email_object'):  # Cache fill
+            if self.eml:
+                if self.eml.name.endswith('.gz'):
+                    body = gzip.GzipFile(fileobj=self.eml).read()
+                else:
+                    self.eml.open()
+                    body = self.eml.file.read()
+                    self.eml.close()
             else:
-                self.eml.open()
-                body = self.eml.file.read()
-                self.eml.close()
-        else:
-            body = self.get_body()
-        if six.PY3:
-            flat = email.message_from_bytes(body)
-        else:
-            flat = email.message_from_string(body)
-        return self._rehydrate(flat)
+                body = self.get_body()
+            if six.PY3:
+                flat = email.message_from_bytes(body)
+            else:
+                flat = email.message_from_string(body)
+            self._email_object = self._rehydrate(flat)
+        return self._email_object
 
     def delete(self, *args, **kwargs):
         """Delete this message and all stored attachments."""

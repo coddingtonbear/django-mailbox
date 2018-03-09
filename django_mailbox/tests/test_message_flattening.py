@@ -64,6 +64,7 @@ class TestMessageFlattening(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(incoming_email_object)
 
+        del msg._email_object  # Cache flush
         actual_email_object = msg.get_email_object()
 
         self.assertEqual(
@@ -89,6 +90,7 @@ class TestMessageFlattening(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(incoming_email_object)
 
+        del msg._email_object  # Cache flush
         actual_email_object = msg.get_email_object()
 
         self.assertEqual(
