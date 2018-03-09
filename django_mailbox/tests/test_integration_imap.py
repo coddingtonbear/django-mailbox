@@ -64,7 +64,8 @@ class TestImap(EmailMessageTestCase):
             self.mailbox,
             condition=lambda m: m['subject'] == self.arbitrary_identifier
         )
+        message = next(messages)
 
-        self.assertEqual(1, len(messages))
-        self.assertEqual(messages[0].subject, self.arbitrary_identifier)
-        self.assertEqual(messages[0].text, text_content)
+        self.assertEqual(message.subject, self.arbitrary_identifier)
+        self.assertEqual(message.text, text_content)
+        self.assertEqual(0, len(list(messages)))

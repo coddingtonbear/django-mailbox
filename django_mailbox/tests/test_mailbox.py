@@ -32,5 +32,5 @@ class TestMailbox(TestCase):
                 'generic_message.eml',
             ))
         self.assertEqual(mailbox.last_polling, None)
-        mailbox.get_new_mail()
+        list(mailbox.get_new_mail())
         self.assertNotEqual(mailbox.last_polling, None)

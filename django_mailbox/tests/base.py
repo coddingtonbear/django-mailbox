@@ -60,14 +60,24 @@ class EmailMessageTestCase(TestCase):
         super(EmailMessageTestCase, self).setUp()
 
     def _get_new_messages(self, mailbox, condition=None):
-        maximum_wait = time.time() + self.maximum_wait_seconds
-        while True:
-            if time.time() > maximum_wait:
-                raise EmailIntegrationTimeout()
+        start_time = time.time()
+        # wait until there is at least one message
+        while time.time() - start_time < self.maximum_wait_seconds:
+
             messages = self.mailbox.get_new_mail(condition)
-            if messages:
-                return messages
-            time.sleep(5)
+
+            try:
+                # check if generator contains at least one element
+                message = next(messages)
+                yield message
+                for message in messages:
+                    yield message
+                return
+
+            except StopIteration:
+                time.sleep(5)
+
+        raise EmailIntegrationTimeout()
 
     def _get_email_as_text(self, name):
         with open(
