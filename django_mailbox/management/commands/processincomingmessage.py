@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Command(BaseCommand):
+    args = "<[Mailbox Name (optional)]>"
     help = "Receive incoming mail via stdin"
 
     def add_arguments(self, parser):
