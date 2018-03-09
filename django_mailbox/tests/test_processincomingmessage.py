@@ -42,7 +42,7 @@ class CommandsTestCase(TestCase):
             args, kwargs = handle.call_args
             try:
                 self.assertEqual(kwargs['mailbox_name'], mailbox_name)
-            except KeyError:
+            except (AssertionError, KeyError):
                 # Handle Django 1.7
                 # It uses optparse instead of argparse, so instead of being
                 # in kwargs, mailbox_name is in args
@@ -53,6 +53,13 @@ class CommandsTestCase(TestCase):
         # Only perform this test for Django versions greater than 1.7.*. This
         # is because, with optparse, too many arguments doesn't result in an
         # error, which means this test is worthless anyway
-        if LooseVersion(django.get_version()) >= LooseVersion('1.8'):
+        # For the "compatibility" versions, unexpected arguments aren't handled
+        # very well, and result in a TypeError
+        if (LooseVersion(django.get_version()) >= LooseVersion('1.8') and
+                LooseVersion(django.get_version()) < LooseVersion('1.10')):
+            with self.assertRaises(TypeError):
+                call_command('processincomingmessage', 'foo_mailbox', 'invalid_arg')
+        # In 1.10 and later a proper CommandError should be raised
+        elif LooseVersion(django.get_version()) >= LooseVersion('1.10'):
             with self.assertRaises(CommandError):
                 call_command('processincomingmessage', 'foo_mailbox', 'invalid_arg')
