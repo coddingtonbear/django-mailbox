@@ -21,6 +21,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'mailbox_name',
+            nargs='?',
             help="The name of the mailbox that will receive the message"
         )
 
