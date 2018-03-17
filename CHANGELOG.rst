@@ -2,7 +2,7 @@ Changelog
 =========
 
 4.6.1
----
+-----
 
 * Add Django 2.0 support
 
