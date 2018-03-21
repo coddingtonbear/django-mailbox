@@ -2,13 +2,6 @@
 Getting incoming mail
 =====================
 
-If you are utilizing one of the polling methods above, 
-you will need to periodically poll the mailbox for messages using one of the
-below methods.
-If you are receiving mail directly from a mailserver via a pipe 
--- using the ``processincomingmessage`` management command -- 
-you need not concern yourself with this section.
-
 In your code
 ------------
 
