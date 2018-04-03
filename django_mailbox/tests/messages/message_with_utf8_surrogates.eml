@@ -1,0 +1,46 @@
+Return-path: <SRS0=HZOvtU=DM=REDACTED@porady.REDACTED>
+Envelope-to: sprawa-1418@porady.REDACTED
+Delivery-date: Sat, 16 Dec 2017 16:22:42 +0100
+Received: from mx1.wp.pl ([212.77.101.6])
+ by s50.hekko.net.pl with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+ (Exim 4.89) (envelope-from <REDACTED@wp.pl>) id 1eQEII-0005Fu-Cs
+ for sprawa-1418@porady.REDACTED; Sat, 16 Dec 2017 16:22:42 +0100
+Received: (wp-smtpd smtp.wp.pl 33592 invoked from network);
+ 16 Dec 2017 16:22:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+ t=1513437731; bh=6Ox0FVna7vMxBu5CbF0s6HvpkNalENwSSgDxNJ/Rsdc=;
+ h=From:To:Subject;
+ b=QnrdNDBDNLuENN9QS0Pvn85/bDE1Fc6jJrvKUdnApFrykwzbHxXxCG4qX7g3sS3Qj
+ xxHGNf8UXZh3zyCln2EZpUD03LgkppMpTbv3tLKA4HSnaT7txr6AWHq2y8A/YQo7EY
+ 2806CYWtFCKYoVolzDN9lctM2nEoZpD5jOVZqYsM=
+Received: from public-gprs394416.centertel.pl (HELO REDACTED)
+ (REDACTED@wp.pl@[37.47.171.241]) (envelope-sender <REDACTED@wp.pl>)
+ by smtp.wp.pl (WP-SMTPD) with SMTP
+ for <REDACTED@sejm.pl>; 16 Dec 2017 16:22:11 +0100
+Message-ID: <BD6D8EECA3A74E9A9ABD7A1EEA593F76@REDACTED>
+From: <REDACTED@wp.pl>
+To: <sprawa-1418@porady.REDACTED>
+Subject: =?windows-1250?Q?Do_czego_te=BF_s=B9_zdolni_Polscy_s=EAdziowie_..._?=
+Date: Sat, 16 Dec 2017 16:21:04 +0100
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="----=_NextPart_000_0018_01D37689.E058CEF0"
+X-Spam-Status: No, message_size=7331926 larger than 200K
+
+To jest wielocz�ciowa wiadomo�� w formacie MIME.
+
+------=_NextPart_000_0018_01D37689.E058CEF0
+Content-Type: multipart/alternative;
+ boundary="----=_NextPart_001_0019_01D37689.E058CEF0"
+
+
+------=_NextPart_001_0019_01D37689.E058CEF0
+Content-Type: text/plain;
+	charset="windows-1250"
+Content-Transfer-Encoding: quoted-printable
+
+REDACTED
+
+------=_NextPart_001_0019_01D37689.E058CEF0--
+
+------=_NextPart_000_0018_01D37689.E058CEF0--

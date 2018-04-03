@@ -147,6 +147,40 @@ class TestProcessEmail(EmailMessageTestCase):
             u'odpowied\u017a Burmistrza.jpg'
         )
 
+    def test_message_with_utf8_surrogates(self):
+        """Ensure that we properly handle UTF-8 surrogates
+
+        The problem observed in Python 3.5. It safes from regress of #159.
+        """
+
+        email_object = self._get_email_object(
+            'message_with_utf8_surrogates.eml',
+        )
+        mailbox = Mailbox.objects.create()
+        default_settings = utils.get_settings()
+        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+            altered = copy.deepcopy(default_settings)
+            altered['store_original_message'] = True
+
+            get_settings.return_value = altered
+
+            # This call throws the UnicodeEncodeError exception.
+            msg = mailbox.process_incoming_message(email_object)
+
+        self.assertEqual(
+            msg.subject,
+            u'Do czego te\u017c s\u0105 zdolni Polscy s\u0119dziowie ... '
+        )
+
+        self.assertEqual(
+            msg.attachments.count(),
+            0
+        )
+
+        with open(msg.eml.name, 'rb') as f:
+            self.assertEqual(f.read(),
+                             self._get_email_as_text('message_with_utf8_surrogates.eml'))
+
     def test_message_get_text_body(self):
         message = self._get_email_object('multipart_text.eml')
 
