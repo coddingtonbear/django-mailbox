@@ -12,3 +12,4 @@ dummy_project/*
 .cache/
 .tox/
 messages
+*.sqlite3
