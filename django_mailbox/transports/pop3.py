@@ -2,6 +2,8 @@ import six
 
 from poplib import POP3, POP3_SSL
 
+from django_mailbox import utils
+
 from .base import EmailTransport, MessageParseError
 
 
@@ -29,6 +31,8 @@ class Pop3Transport(EmailTransport):
         return '\r\n'.join(message_lines)
 
     def get_message(self, condition=None):
+        settings = utils.get_settings()
+
         message_count = len(self.server.list()[1])
         for i in range(message_count):
             try:
@@ -43,6 +47,8 @@ class Pop3Transport(EmailTransport):
                 yield message
             except MessageParseError:
                 continue
-            self.server.dele(i + 1)
+
+            if settings['delete_original_message']:
+                self.server.dele(i + 1)
         self.server.quit()
         return

@@ -68,6 +68,11 @@ def get_settings():
             settings,
             'DJANGO_MAILBOX_default_charset',
             'iso8859-1',
+        ),
+        'delete_original_message': getattr(
+            settings,
+            'DJANGO_MAILBOX_DELETE_ORIGINAL_MESSAGE',
+            True
         )
     }
 
