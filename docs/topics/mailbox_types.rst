@@ -100,7 +100,7 @@ For added security, Gmail supports using OAuth2 for authentication_.
 To handle the handshake and storing the credentials, use python-social-auth_.
 
 .. _authentication: https://developers.google.com/gmail/xoauth2_protocol
-.. _python-social-auth: http://psa.matiasaguirre.net/
+.. _python-social-auth: https://github.com/python-social-auth
 
 The Gmail Mailbox is also a regular IMAP mailbox,
 but the password you specify will be ignored if OAuth2 authentication succeeds.
