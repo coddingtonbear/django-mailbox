@@ -224,7 +224,9 @@ class Mailbox(models.Model):
             conn = MHTransport(self.location)
         elif self.type == 'mmdf':
             conn = MMDFTransport(self.location)
-        return registry[self.type].from_url(self.uri)
+        else:
+            conn = registry[self.type].from_url(self.uri)
+        return conn
 
     def process_incoming_message(self, message):
         """Process a message incoming to this mailbox."""
