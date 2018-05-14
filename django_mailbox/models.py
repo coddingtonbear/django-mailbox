@@ -35,7 +35,7 @@ from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
     MMDFTransport, GmailImapTransport
-from django_mailbox.transports.registry import transport_registry
+from django_mailbox.transports.registry import registry
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +224,7 @@ class Mailbox(models.Model):
             conn = MHTransport(self.location)
         elif self.type == 'mmdf':
             conn = MMDFTransport(self.location)
-        return transport_registry[self.type].from_url(self.uri)
+        return registry[self.type].from_url(self.uri)
 
     def process_incoming_message(self, message):
         """Process a message incoming to this mailbox."""

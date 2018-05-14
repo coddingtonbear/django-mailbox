@@ -1,8 +1,8 @@
-transport_registry = {}
+registry = {}
 
 
-def register_transport(transport_type):
+def register(transport_type):
     def decorator(f):
-        transport_registry[transport_type] = f
+        registry[transport_type] = f
         return f
     return decorator
