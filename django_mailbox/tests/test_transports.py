@@ -4,7 +4,7 @@ import six
 from django.test.utils import override_settings
 
 from django_mailbox.tests.base import EmailMessageTestCase, get_email_as_text
-from django_mailbox.transports import ImapTransport, Pop3Transport
+from django_mailbox.transports import ImapTransport, Pop3Transport, SMTPTransport
 
 FAKE_UID_SEARCH_ANSWER = (
     'OK',
@@ -168,3 +168,25 @@ class TestPop3Transport(EmailMessageTestCase):
         expected_message = self._get_email_object('generic_message.eml')
 
         self.assertEqual(expected_message, actual_message)
+
+
+class TestSMTPTransport(EmailMessageTestCase):
+    class TestSMTPTransport(EmailMessageTestCase):
+        def setUp(self):
+            self.arbitrary_hostname = ''
+            self.arbitrary_port = 465
+            self.ssl = True
+            self.transport = SMTPTransport(
+                self.arbitrary_hostname,
+                self.arbitrary_port,
+                self.ssl
+            )
+
+        def test_sending_messages(self):
+            with mock.patch('SMTPTransport') as mock_smtp:
+                from_address = 'from@domain.com'
+                to_address = 'to@domain.com'
+
+                smtp = mock_smtp('smtp.domain.com')
+
+                smtp.send_message(from_address, [to_address], 'subject', 'message')

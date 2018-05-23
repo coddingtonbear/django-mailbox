@@ -34,7 +34,7 @@ from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport
+    MMDFTransport, GmailImapTransport, SMTPTransport
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +211,14 @@ class Mailbox(models.Model):
                 self.location,
                 port=self.port if self.port else None,
                 ssl=self.use_ssl
+            )
+            conn.connect(self.username, self.password)
+        elif self.type == 'smtp':
+            conn = SMTPTransport(
+                self.location,
+                port=self.port if self.port else None,
+                ssl=self.use_ssl,
+                tls=self.use_tls
             )
             conn.connect(self.username, self.password)
         elif self.type == 'maildir':
@@ -419,6 +427,14 @@ class Mailbox(models.Model):
             self.save(update_fields=['last_polling'])
         else:
             self.save()
+
+    def send_mail(self, subject, to, body):
+        connection = self.get_connection()
+        if not connection:
+            return
+        connection.connect(self.username, self.password)
+        connection.send_message(subject, body, self.username, to)
+        return 'Success'
 
     def __str__(self):
         return self.name
@@ -821,3 +837,4 @@ class MessageAttachment(models.Model):
     class Meta:
         verbose_name = _('Message attachment')
         verbose_name_plural = _('Message attachments')
+
