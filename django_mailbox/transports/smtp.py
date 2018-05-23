@@ -1,10 +1,8 @@
-import smtplib
+from smtplib import SMTP, SMTP_SSL
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-# from django.conf import settings
-# from django.core.mail import EmailMessage
+from email.mime.image import MIMEImage
 
 from django_mailbox.transports.base import EmailTransport
 
@@ -18,11 +16,11 @@ class SMTPTransport(EmailTransport):
         self.server = None
 
         if ssl:
-            self.transport = smtplib.SMTP_SSL
+            self.transport = SMTP_SSL
             if not self.port:
                 self.port = 465
         else:
-            self.transport = smtplib.SMTP
+            self.transport = SMTP
             if not self.port:
                 self.port = 25
 
@@ -33,11 +31,15 @@ class SMTPTransport(EmailTransport):
 
         _ = self.server.login(user=username, password=password)
 
-    # TODO Add abilities for html, image sending.
-    def send_message(self, subject, message, from_email, recipient_list):
-        msg = MIMEMultipart(message)
+    def send_message(self, subject, message, from_email, recipient_list, img=None, html=False):
+        msg = MIMEMultipart()
 
-        msg_text = MIMEText(message, 'plain')
+        msg_text = MIMEText(message, 'plain' if not html else 'html')
+
+        if img:
+            with open(img, 'rb') as fp:
+                msg_img = MIMEImage(fp.read())
+            msg.attach(msg_img)
 
         msg.attach(msg_text)
 
