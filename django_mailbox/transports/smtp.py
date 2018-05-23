@@ -6,15 +6,16 @@ from email.mime.text import MIMEText
 # from django.conf import settings
 # from django.core.mail import EmailMessage
 
-from django_mailbox.transports.base import EmailTransport, MessageParseError
+from django_mailbox.transports.base import EmailTransport
 
 
 class SMTPTransport(EmailTransport):
-    def __init__(self,
-                 hostname, port=None, ssl=False, tls=False):
+    def __init__(self, hostname, port=None,
+                 ssl=False, tls=False):
         self.hostname = hostname
         self.port = port
         self.tls = tls
+        self.server = None
 
         if ssl:
             self.transport = smtplib.SMTP_SSL
@@ -30,7 +31,7 @@ class SMTPTransport(EmailTransport):
         if self.tls:
             self.server.starttls()
 
-        typ, msg = self.server.login(user=username, password=password)
+        _ = self.server.login(user=username, password=password)
 
     # TODO Add abilities for html, image sending.
     def send_message(self, subject, message, from_email, recipient_list):
@@ -46,4 +47,3 @@ class SMTPTransport(EmailTransport):
 
         self.server.sendmail(msg['From'], msg['To'], msg.as_string())
         self.server.quit()
-
