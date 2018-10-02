@@ -107,6 +107,13 @@ class MessageAdmin(admin.ModelAdmin):
         'html',
     )
     actions = [resend_message_received_signal]
+    search_fields = (
+        'subject',
+        'message_id',
+        'from_header',
+        'to_header',
+        'text'
+    )
 
 
 if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
