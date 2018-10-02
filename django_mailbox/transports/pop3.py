@@ -45,7 +45,8 @@ class Pop3Transport(EmailTransport):
                     continue
 
                 yield message
-            except MessageParseError:
+            except Exception as e:
+                print(e.message)
                 continue
 
             if settings['delete_original_message']:
