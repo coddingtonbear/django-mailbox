@@ -66,7 +66,7 @@ def get_settings():
         ),
         'default_charset': getattr(
             settings,
-            'DJANGO_MAILBOX_default_charset',
+            'DJANGO_MAILBOX_DEFAULT_CHARSET',
             'iso8859-1',
         )
     }
