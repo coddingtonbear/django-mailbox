@@ -353,7 +353,7 @@ class Mailbox(models.Model):
         msg.mailbox = self
         if 'subject' in message:
             msg.subject = (
-                utils.convert_header_to_unicode(message['subject'])[0:255]
+                utils.convert_header_to_unicode(unicode(message['subject']).decode('utf-8'))[0:255]
             )
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255].strip()
