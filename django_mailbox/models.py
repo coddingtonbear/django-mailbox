@@ -351,10 +351,12 @@ class Mailbox(models.Model):
         if settings['store_original_message']:
             self._process_save_original_message(message, msg)
         msg.mailbox = self
+        # Fix to accept subject emojis in utf-8
         if 'subject' in message:
             msg.subject = (
                 utils.convert_header_to_unicode(unicode(message['subject']).decode('utf-8'))[0:255]
             )
+            msg.subject = repr(email.header.decode_header(msg.subject)[0][0])
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
