@@ -356,7 +356,7 @@ class Mailbox(models.Model):
             msg.subject = (
                 utils.convert_header_to_unicode(unicode(message['subject']).decode('utf-8'))[0:255]
             )
-            msg.subject = repr(email.header.decode_header(msg.subject)[0][0])
+            msg.subject = repr(email.header.decode_header(msg.subject)[0][0]).replace("'", "")
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
