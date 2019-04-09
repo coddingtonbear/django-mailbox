@@ -8,6 +8,7 @@ console.
 
 import logging
 
+from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -39,8 +40,15 @@ resend_message_received_signal.short_description = (
     _('Re-send message received signal')
 )
 
+class MailboxForm(forms.ModelForm):
+    uri = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = Mailbox
+        fields = ('name', 'uri', 'from_email', 'active',)
 
 class MailboxAdmin(admin.ModelAdmin):
+    form = MailboxForm
     list_display = (
         'name',
         'uri',
@@ -51,6 +59,10 @@ class MailboxAdmin(admin.ModelAdmin):
     readonly_fields = ['last_polling', ]
     actions = [get_new_mail]
 
+    def save_model(self, request, obj, form, change):
+        if request:
+            obj.uri = obj.encrypt_uri()
+        obj.save()
 
 class MessageAttachmentAdmin(admin.ModelAdmin):
     raw_id_fields = ('message', )
