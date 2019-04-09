@@ -41,7 +41,19 @@ resend_message_received_signal.short_description = (
 )
 
 class MailboxForm(forms.ModelForm):
-    uri = forms.CharField(widget=forms.PasswordInput)
+    uri = forms.CharField(widget=forms.PasswordInput,
+                          help_text="For security, the URI will not be shown and will "
+                                    "be encrypted in database "
+                                    "<br />"
+                                    "Example: imap+ssl://myusername:mypassword@someserver <br />"
+                                    "<br />"
+                                    "Internet transports include 'imap' and 'pop3'; "
+                                    "common local file transports include 'maildir', 'mbox', "
+                                    "and less commonly 'babyl', 'mh', and 'mmdf'. <br />"
+                                    "<br />"
+                                    "Be sure to urlencode your username and password should they "
+                                    "contain illegal characters (like @, :, etc)."
+                          )
 
     class Meta:
         model = Mailbox
