@@ -1,2 +1,3 @@
 django>=1.9,<1.10
 six
+pycrypto==2.6.1
