@@ -17,6 +17,7 @@ import os.path
 import sys
 import uuid
 from tempfile import NamedTemporaryFile
+from Crypto.Cipher import AES
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -113,6 +114,33 @@ class Mailbox(models.Model):
     objects = models.Manager()
     active_mailboxes = ActiveMailboxManager()
 
+    def pad(self, key):
+        length = 32 - (len(key) % 32)
+        return key + chr(length).encode('utf-8') * length
+
+    def unpad(self, key):
+        return key[0:-ord(key[-1])]
+
+    def encrypt_uri(self):
+        secret_key = self.pad(django_settings.SECRET_KEY)
+        self.uri = unicode(self.pad(self.uri)).encode('utf-8')
+
+        cipher = AES.new(secret_key)
+        self.uri = cipher.encrypt(self.uri)
+        self.uri = base64.b64encode(self.uri)
+
+        return self.uri
+
+    def decrypt_uri(self):
+        secret_key = self.pad(django_settings.SECRET_KEY)
+        self.uri = self.pad(self.uri)
+
+        cipher = AES.new(secret_key)
+        self.uri = base64.b64decode(self.uri)
+        self.uri = cipher.decrypt(self.uri)
+
+        return self.unpad(self.uri)
+    
     @property
     def _protocol_info(self):
         return urlparse(self.uri)
