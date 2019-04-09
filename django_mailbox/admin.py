@@ -51,7 +51,6 @@ class MailboxAdmin(admin.ModelAdmin):
     form = MailboxForm
     list_display = (
         'name',
-        'uri',
         'from_email',
         'active',
         'last_polling',
