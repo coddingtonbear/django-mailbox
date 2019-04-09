@@ -143,6 +143,7 @@ class Mailbox(models.Model):
     
     @property
     def _protocol_info(self):
+        self.uri = self.decrypt_uri()
         return urlparse(self.uri)
 
     @property
