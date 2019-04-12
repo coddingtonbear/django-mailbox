@@ -133,18 +133,20 @@ class Mailbox(models.Model):
 
     def decrypt_uri(self):
         secret_key = self.pad(django_settings.SECRET_KEY)
-        self.uri = self.pad(self.uri)
+        uri = self.uri
+        uri = self.pad(uri)
+        uri = base64.b64decode(uri)
 
         cipher = AES.new(secret_key)
-        self.uri = base64.b64decode(self.uri)
-        self.uri = cipher.decrypt(self.uri)
+        uri = cipher.decrypt(uri)
 
-        return self.unpad(self.uri)
-    
+        return self.unpad(uri)
+
     @property
     def _protocol_info(self):
-        self.uri = self.decrypt_uri()
-        return urlparse(self.uri)
+        uri = self.uri
+        uri = self.decrypt_uri()
+        return urlparse(uri)
 
     @property
     def _query_string(self):
