@@ -28,7 +28,7 @@ class Command(BaseCommand):
                 name=' '.join(args)
             )
         for mailbox in mailboxes:
-            if logging
+            if logging:
                 logger.info(
                     'Gathering messages for %s',
                     mailbox.name
