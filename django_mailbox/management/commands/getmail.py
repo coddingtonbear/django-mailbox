@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         mailboxes = Mailbox.active_mailboxes.all()
         logging = True
-        if option['nologs']:
+        if options['nologs']:
             logging = False        
 
         if args:
