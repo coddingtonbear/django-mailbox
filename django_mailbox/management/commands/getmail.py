@@ -14,24 +14,28 @@ class Command(BaseCommand):
     help = ""
 
     def add_arguments(self, parser):
-        parser.add_argument('--logging', type=bool, default=True, dest='logging',
-                            help='Enable logging (default true)')
+        parser.add_argument('-nl', '--nologs', action='store_true', default=False, dest='nologs',
+                            help='Disable logging (default False)')
 
     def handle(self, *args, **options):
         mailboxes = Mailbox.active_mailboxes.all()
+        logging = True
+        if option['nologs']:
+            logging = False        
+
         if args:
             mailboxes = mailboxes.filter(
                 name=' '.join(args)
             )
         for mailbox in mailboxes:
-            if options['logging']:
+            if logging
                 logger.info(
                     'Gathering messages for %s',
                     mailbox.name
                 )
             messages = mailbox.get_new_mail()
             for message in messages:
-                if options['logging']:
+                if logging:
                     logger.info(
                         'Received %s (from %s)',
                         message.subject,
