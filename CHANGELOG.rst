@@ -1,6 +1,14 @@
 Changelog
 =========
 
+4.8.0
+-----
+
+* ```django_mailbox.models.Mailbox.get_new_mail``` become generator
+* Added to ```django_mailbox.models.Message.mailbox``` in-memory caches of result
+* Added to command ```processincomingmessage``` argument to pass mailbox name
+* Improved tests, especially different Django & Python version
+
 4.6.1
 -----
 
@@ -33,7 +41,7 @@ Changelog
 4.0
 ---
 
-* Adds ``html`` property returning the HTML contents of 
+* Adds ``html`` property returning the HTML contents of
   ``django_mailbox.models.Message`` instances.
   Thanks `@ariel17 <https://github.com/ariel17>`_!
 * Adds translation support.
