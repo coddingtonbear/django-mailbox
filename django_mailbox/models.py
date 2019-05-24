@@ -385,7 +385,7 @@ class Mailbox(models.Model):
         # Fix to accept subject emojis in utf-8
         if 'subject' in message:
             msg.subject = (
-                utils.convert_header_to_unicode(message['subject']).encode('raw-unicode-escape'))[0:255]
+                utils.convert_header_to_unicode(message['subject'].encode('raw-unicode-escape'))[0:255]
             )
             msg.subject = unicode(email.header.decode_header(msg.subject)[0][0]), errors='ignore')
         if 'message-id' in message:
