@@ -17,6 +17,7 @@ import os.path
 import sys
 import uuid
 from tempfile import NamedTemporaryFile
+from Crypto.Cipher import AES
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -113,9 +114,39 @@ class Mailbox(models.Model):
     objects = models.Manager()
     active_mailboxes = ActiveMailboxManager()
 
+    def pad(self, key):
+        length = 32 - (len(key) % 32)
+        return key + chr(length).encode('utf-8') * length
+
+    def unpad(self, key):
+        return key[0:-ord(key[-1])]
+
+    def encrypt_uri(self):
+        secret_key = self.pad(django_settings.SECRET_KEY)
+        self.uri = unicode(self.pad(self.uri)).encode('utf-8')
+
+        cipher = AES.new(secret_key)
+        self.uri = cipher.encrypt(self.uri)
+        self.uri = base64.b64encode(self.uri)
+
+        return self.uri
+
+    def decrypt_uri(self):
+        secret_key = self.pad(django_settings.SECRET_KEY)
+        uri = self.uri
+        uri = self.pad(uri)
+        uri = base64.b64decode(uri)
+
+        cipher = AES.new(secret_key)
+        uri = cipher.decrypt(uri)
+
+        return self.unpad(uri)
+
     @property
     def _protocol_info(self):
-        return urlparse(self.uri)
+        uri = self.uri
+        uri = self.decrypt_uri()
+        return urlparse(uri)
 
     @property
     def _query_string(self):
@@ -351,10 +382,12 @@ class Mailbox(models.Model):
         if settings['store_original_message']:
             self._process_save_original_message(message, msg)
         msg.mailbox = self
+        # Fix to accept subject emojis in utf-8
         if 'subject' in message:
             msg.subject = (
-                utils.convert_header_to_unicode(message['subject'])[0:255]
+                utils.convert_header_to_unicode(message['subject'].decode('raw-unicode-escape'))[0:255]
             )
+            msg.subject = unicode(email.header.decode_header(msg.subject)[0][0], errors='ignore')
         if 'message-id' in message:
             msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
