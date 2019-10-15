@@ -1,5 +1,5 @@
 from distutils.version import LooseVersion
-import mock
+from unittest import mock
 
 from django.core.management import call_command, CommandError
 from django.test import TestCase

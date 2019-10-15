@@ -1,6 +1,6 @@
 import copy
 
-import mock
+from unittest import mock
 
 from django_mailbox import models, utils
 from django_mailbox.models import Message

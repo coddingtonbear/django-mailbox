@@ -88,7 +88,7 @@ class ImapTransport(EmailTransport):
                     safe_message_ids.append(uid)
             except ValueError as e:
                 logger.warning(
-                    "ValueError: %s working on %s" % (e, each_msg[0])
+                    "ValueError: {} working on {}".format(e, each_msg[0])
                 )
                 pass
         return safe_message_ids

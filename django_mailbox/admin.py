@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Model configuration in application ``django_mailbox`` for administration
@@ -10,7 +9,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_mailbox.models import MessageAttachment, Message, Mailbox
 from django_mailbox.signals import message_received
@@ -74,7 +73,7 @@ class MessageAdmin(admin.ModelAdmin):
     def envelope_headers(self, msg):
         email = msg.get_email_object()
         return '\n'.join(
-            [('%s: %s' % (h, v)) for h, v in email.items()]
+            [('{}: {}'.format(h, v)) for h, v in email.items()]
         )
 
     inlines = [
