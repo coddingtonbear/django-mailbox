@@ -1,6 +1,11 @@
 Changelog
 =========
 
+4.8.1
+-----
+
+* Add missing migration
+
 4.8.0
 -----
 
