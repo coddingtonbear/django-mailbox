@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Model configuration in application ``django_mailbox`` for administration
@@ -74,7 +73,7 @@ class MessageAdmin(admin.ModelAdmin):
     def envelope_headers(self, msg):
         email = msg.get_email_object()
         return '\n'.join(
-            [('%s: %s' % (h, v)) for h, v in email.items()]
+            [('{}: {}'.format(h, v)) for h, v in email.items()]
         )
 
     inlines = [
