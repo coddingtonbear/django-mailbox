@@ -56,7 +56,7 @@ SSL) and you would like to fetch new emails from folder named `Myfolder` and arc
 into a folder named ``Archived``, you
 would enter the following as your URI::
 
-    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived&folder=Myfolder
 
 Additional IMAP Mailbox Features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
