@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # django-mailbox documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 22 20:29:12 2013.
@@ -40,8 +39,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'django-mailbox'
-copyright = u'2014, Adam Coddington'
+project = 'django-mailbox'
+copyright = '2014, Adam Coddington'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -183,8 +182,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'django-mailbox.tex', u'django-mailbox Documentation',
-   u'Adam Coddington', 'manual'),
+  ('index', 'django-mailbox.tex', 'django-mailbox Documentation',
+   'Adam Coddington', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -213,8 +212,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'django-mailbox', u'django-mailbox Documentation',
-     [u'Adam Coddington'], 1)
+    ('index', 'django-mailbox', 'django-mailbox Documentation',
+     ['Adam Coddington'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -227,8 +226,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'django-mailbox', u'django-mailbox Documentation',
-   u'Adam Coddington', 'django-mailbox', 'One line description of project.',
+  ('index', 'django-mailbox', 'django-mailbox Documentation',
+   'Adam Coddington', 'django-mailbox', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -275,18 +274,18 @@ def process_docstring(app, what, name, obj, options, lines):
             if help_text:
                 # Add the model field to the end of the docstring as a param
                 # using the help text as the description
-                lines.append(u':param %s: %s' % (field.attname, help_text))
+                lines.append(':param {}: {}'.format(field.attname, help_text))
             else:
                 # Add the model field to the end of the docstring as a param
                 # using the verbose name as the description
-                lines.append(u':param %s: %s' % (field.attname, verbose_name))
+                lines.append(':param {}: {}'.format(field.attname, verbose_name))
 
             # Add the field's type to the docstring
             if isinstance(field, models.ForeignKey):
                 to = field.rel.to
-                lines.append(u':type %s: %s to :class:`~%s.%s`' % (field.attname, type(field).__name__, to.__module__, to.__name__))
+                lines.append(':type {}: {} to :class:`~{}.{}`'.format(field.attname, type(field).__name__, to.__module__, to.__name__))
             else:
-                lines.append(u':type %s: %s' % (field.attname, type(field).__name__))
+                lines.append(':type {}: {}'.format(field.attname, type(field).__name__))
 
     # Return the extended docstring
     return lines

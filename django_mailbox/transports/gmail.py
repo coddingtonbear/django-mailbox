@@ -48,7 +48,7 @@ class GmailImapTransport(ImapTransport):
                     )
                 )
 
-        auth_string = 'user=%s\1auth=Bearer %s\1\1' % (
+        auth_string = 'user={}\1auth=Bearer {}\1\1'.format(
             google_email_address,
             access_token
         )
