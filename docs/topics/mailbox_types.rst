@@ -93,6 +93,10 @@ after processing, add ``?archive=myarchivefolder`` to the end of the URI::
 
 .. _gmail-oauth:
 
+If you want to specifying both folder use ``&``::
+
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=myarchivefolder&folder=MyFolder
+
 Gmail IMAP with Oauth2 authentication
 -------------------------------------
 
