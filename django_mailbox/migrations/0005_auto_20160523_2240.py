@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='messageattachment',
             name='document',
-            field=models.FileField(upload_to=django_mailbox.utils.get_attachment_save_path, verbose_name='Document'),
+            field=models.FileField(upload_to=django_mailbox.utils.get_save_path(setting='attachment_upload_to'), verbose_name='Document'),
         ),
     ]
