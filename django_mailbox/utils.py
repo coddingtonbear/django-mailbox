@@ -66,7 +66,13 @@ def get_settings():
             settings,
             'DJANGO_MAILBOX_default_charset',
             'iso8859-1',
+        ),
+        'message_upload_to': getattr(
+            settings,
+            'DJANGO_MAILBOX_MESSAGE_UPLOAD_TO',
+            'messages/'
         )
+
     }
 
 
@@ -138,10 +144,10 @@ def get_body_from_message(message, maintype, subtype):
     return body
 
 
-def get_attachment_save_path(instance, filename):
+def get_save_path(instance, filename, setting):
     settings = get_settings()
 
-    path = settings['attachment_upload_to']
+    path = settings[setting]
     if '%' in path:
         path = datetime.datetime.utcnow().strftime(path)
 

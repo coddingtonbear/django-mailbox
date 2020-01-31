@@ -512,7 +512,7 @@ class Message(models.Model):
     eml = models.FileField(
         _('Raw message contents'),
         null=True,
-        upload_to="messages",
+        upload_to=utils.get_save_path(setting='message_upload_to'),
         help_text=_('Original full content of message')
     )
     objects = models.Manager()
@@ -752,7 +752,7 @@ class MessageAttachment(models.Model):
 
     document = models.FileField(
         _('Document'),
-        upload_to=utils.get_attachment_save_path,
+        upload_to=utils.get_save_path(setting='attachment_upload_to'),
     )
 
     def delete(self, *args, **kwargs):
