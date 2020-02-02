@@ -1,6 +1,14 @@
 Changelog
 =========
 
+5.0.0
+-----
+
+* Drop support Python EOL-versions
+* Drop support Django<1.11
+* Add support for Python 3.8
+* Add support for Django 3.x
+
 4.8.1
 -----
 
@@ -10,7 +18,8 @@ Changelog
 -----
 
 * ```django_mailbox.models.Mailbox.get_new_mail``` become generator
-* Added to ```django_mailbox.models.Message.mailbox``` in-memory caches of result
+* Added to ```django_mailbox.models.Message.mailbox``` in-memory caches
+  of result
 * Added to command ```processincomingmessage``` argument to pass mailbox name
 * Improved tests, especially different Django & Python version
 
