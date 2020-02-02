@@ -29,7 +29,7 @@ jobs:
     python: 3.6
   - env: TOX_ENV=django22-py37
     python: 3.7
-  # Django 3.0 (beta) support Python 3.6, 3.7, 3.8
+  # Django 3.0 support Python 3.6, 3.7, 3.8
   - env: TOX_ENV=django30-py36
     python: 3.6
   - env: TOX_ENV=django30-py37
