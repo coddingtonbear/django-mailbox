@@ -10,6 +10,7 @@ from email.utils import formatdate, parseaddr
 from urllib.parse import parse_qs, unquote, urlparse
 from quopri import encode as encode_quopri
 from io import BytesIO
+from functools import partial
 import base64
 import email
 import logging
@@ -254,8 +255,8 @@ class Mailbox(models.Model):
                     self._get_dehydrated_message(part, record)
                 )
         elif (
-            settings['strip_unallowed_mimetypes']
-            and not msg.get_content_type() in settings['allowed_mimetypes']
+                settings['strip_unallowed_mimetypes']
+                and not msg.get_content_type() in settings['allowed_mimetypes']
         ):
             for header, value in msg.items():
                 new[header] = value
@@ -263,16 +264,16 @@ class Mailbox(models.Model):
             # payload, it will be expecting a body for this.
             del new['Content-Transfer-Encoding']
             new[settings['altered_message_header']] = (
-                'Stripped; Content type %s not allowed' % (
-                    msg.get_content_type()
-                )
+                    'Stripped; Content type %s not allowed' % (
+                msg.get_content_type()
+            )
             )
             new.set_payload('')
         elif (
-            (
-                msg.get_content_type() not in settings['text_stored_mimetypes']
-            ) or
-            ('attachment' in msg.get('Content-Disposition', ''))
+                (
+                        msg.get_content_type() not in settings['text_stored_mimetypes']
+                ) or
+                ('attachment' in msg.get('Content-Disposition', ''))
         ):
             filename = None
             raw_filename = msg.get_filename()
@@ -368,7 +369,7 @@ class Mailbox(models.Model):
         except KeyError as exc:
             # email.message.replace_header may raise 'KeyError' if the header
             # 'content-transfer-encoding' is missing
-            logger.warning("Failed to parse message: %s", exc,)
+            logger.warning("Failed to parse message: %s", exc, )
             return None
         msg.set_body(body)
         if message['in-reply-to']:
@@ -512,7 +513,7 @@ class Message(models.Model):
     eml = models.FileField(
         _('Raw message contents'),
         null=True,
-        upload_to=utils.get_save_path(setting='message_upload_to'),
+        upload_to=partial(utils.get_save_path, setting='message_upload_to'),
         help_text=_('Original full content of message')
     )
     objects = models.Manager()
@@ -651,9 +652,9 @@ class Message(models.Model):
                     encode_base64(new)
             except MessageAttachment.DoesNotExist:
                 new[settings['altered_message_header']] = (
-                    'Missing; Attachment %s not found' % (
-                        msg[settings['attachment_interpolation_header']]
-                    )
+                        'Missing; Attachment %s not found' % (
+                    msg[settings['attachment_interpolation_header']]
+                )
                 )
                 new.set_payload('')
         else:
@@ -752,7 +753,7 @@ class MessageAttachment(models.Model):
 
     document = models.FileField(
         _('Document'),
-        upload_to=utils.get_save_path(setting='attachment_upload_to'),
+        upload_to=partial(utils.get_save_path, setting='attachment_upload_to'),
     )
 
     def delete(self, *args, **kwargs):

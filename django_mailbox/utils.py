@@ -3,6 +3,7 @@ import email.header
 import logging
 import os
 
+from django.utils.deconstruct import deconstructible
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -143,16 +144,14 @@ def get_body_from_message(message, maintype, subtype):
     return body
 
 
-def get_save_path(setting):
-    def _tmp(instance, filename):
-        settings = get_settings()
+def get_save_path(instance, filename, setting):
+    settings = get_settings()
 
-        path = settings[setting]
-        if '%' in path:
-            path = datetime.datetime.utcnow().strftime(path)
+    path = settings[setting]
+    if '%' in path:
+        path = datetime.datetime.utcnow().strftime(path)
 
-        return os.path.join(
-            path,
-            filename,
-        )
-    return _tmp
+    return os.path.join(
+        path,
+        filename,
+    )
