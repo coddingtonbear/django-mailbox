@@ -20,9 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_new_mail(mailbox_admin, request, queryset):
+    count = 0
     for mailbox in queryset.all():
         logger.debug('Receiving mail for %s' % mailbox)
-        mailbox.get_new_mail()
+        count += sum(1 for i in mailbox.get_new_mail())
+    logger.debug('Received %d %s.', count, 'mails' if count != 1 else 'mail')
 
 
 get_new_mail.short_description = _('Get new mail')
