@@ -50,9 +50,9 @@ class MailboxManager(models.Manager):
         return MailboxQuerySet(self.model, using=self._db)
 
 
-class ActiveMailboxManager(models.Manager):
+class ActiveMailboxManager(MailboxManager):
     def get_queryset(self):
-        return MailboxQuerySet(self.model, using=self._db).filter(
+        return super().get_queryset().filter(
             active=True,
         )
 
