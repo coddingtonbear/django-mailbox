@@ -36,9 +36,23 @@ from django_mailbox.transports import Pop3Transport, ImapTransport, \
 logger = logging.getLogger(__name__)
 
 
+class MailboxQuerySet(models.QuerySet):
+    def get_new_mail(self):
+        count = 0
+        for mailbox in self.all():
+            logger.debug('Receiving mail for %s' % mailbox)
+            count += sum(1 for i in mailbox.get_new_mail())
+        logger.debug('Received %d %s.', count, 'mails' if count != 1 else 'mail')
+
+
+class MailboxManager(models.Manager):
+    def get_queryset(self):
+        return MailboxQuerySet(self.model, using=self._db)
+
+
 class ActiveMailboxManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(
+        return MailboxQuerySet(self.model, using=self._db).filter(
             active=True,
         )
 
@@ -106,7 +120,7 @@ class Mailbox(models.Model):
         null=True
     )
 
-    objects = models.Manager()
+    objects = MailboxManager()
     active_mailboxes = ActiveMailboxManager()
 
     @property

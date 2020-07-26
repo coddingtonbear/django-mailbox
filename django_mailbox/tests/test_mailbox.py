@@ -34,3 +34,13 @@ class TestMailbox(TestCase):
         self.assertEqual(mailbox.last_polling, None)
         list(mailbox.get_new_mail())
         self.assertNotEqual(mailbox.last_polling, None)
+
+    def test_queryset_get_new_mail(self):
+        mailbox = Mailbox.objects.create(uri="mbox://" + os.path.join(
+                os.path.dirname(__file__),
+                'messages',
+                'generic_message.eml',
+            ))
+        Mailbox.objects.filter(pk=mailbox.pk).get_new_mail()
+        mailbox.refresh_from_db()
+        self.assertNotEqual(mailbox.last_polling, None)
