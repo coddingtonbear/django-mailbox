@@ -82,8 +82,14 @@ class ImapTransport(EmailTransport):
         for each_msg in data:
             each_msg = each_msg.decode()
             try:
-                uid = each_msg.split(' ')[2]
-                size = each_msg.split(' ')[4].rstrip(')')
+                stripped_msg = each_msg.replace('(', '').replace(')', '')
+                split_msg = stripped_msg.split(' ')
+                for i, s in enumerate(split_msg):
+                    if s == 'UID':
+                        uid = split_msg[i + 1]
+                    elif s == 'RFC822.SIZE':
+                        size = split_msg[i + 1]
+
                 if int(size) <= int(self.max_message_size):
                     safe_message_ids.append(uid)
             except ValueError as e:
