@@ -43,7 +43,7 @@ def get_google_account(email, key=None):
             me = UserSocialAuth.objects.get(uid=email, provider="google-oauth2")
         return me.extra_data[key] if key else me
     except (UserSocialAuth.DoesNotExist, SocialAccount.DoesNotExist, KeyError):
-        raise AccessTokenNotFound
+        raise RefreshTokenNotFound if key == 'refresh_token' else AccessTokenNotFound
 
 
 def get_google_access_token(email):
@@ -58,11 +58,7 @@ def update_google_extra_data(email, extra_data):
 
 
 def get_google_refresh_token(email):
-    try:
-        me = get_google_account(email)
-        return me.extra_data['refresh_token']
-    except (UserSocialAuth.DoesNotExist, KeyError):
-        raise RefreshTokenNotFound
+    return get_google_account(email, key='refresh_token')
 
 
 def google_api_get(email, url):
