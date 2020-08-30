@@ -3,7 +3,10 @@ import logging
 from django.conf import settings
 import requests
 from social.apps.django_app.default.models import UserSocialAuth
-
+try:
+    from allauth.socialaccount.models import SocialAccount, SocialApp
+except ImportError:
+    SocialAccount, SocialApp = None, None
 
 logger = logging.getLogger(__name__)
 
@@ -17,34 +20,46 @@ class RefreshTokenNotFound(Exception):
 
 
 def get_google_consumer_key():
+    if SocialApp:
+        app = SocialApp.objects.filter(provider='google').first()
+        if app:
+            return app.client_id
     return settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
 
 
 def get_google_consumer_secret():
+    if SocialApp:
+        app = SocialApp.objects.filter(provider='google').first()
+        if app:
+            return app.secret
     return settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+
+
+def get_google_account(email, key=None):
+    try:
+        if SocialAccount:
+            me = SocialAccount.objects.get(uid=email, provider='google')
+        else:
+            me = UserSocialAuth.objects.get(uid=email, provider="google-oauth2")
+        return me.extra_data[key] if key else me
+    except (UserSocialAuth.DoesNotExist, SocialAccount.DoesNotExist, KeyError):
+        raise AccessTokenNotFound
 
 
 def get_google_access_token(email):
     # TODO: This should be cacheable
-    try:
-        me = UserSocialAuth.objects.get(uid=email, provider="google-oauth2")
-        return me.extra_data['access_token']
-    except (UserSocialAuth.DoesNotExist, KeyError):
-        raise AccessTokenNotFound
+    return get_google_account(email, key='access_token')
 
 
 def update_google_extra_data(email, extra_data):
-    try:
-        me = UserSocialAuth.objects.get(uid=email, provider="google-oauth2")
-        me.extra_data = extra_data
-        me.save()
-    except (UserSocialAuth.DoesNotExist, KeyError):
-        raise AccessTokenNotFound
+    me = get_google_account(email)
+    me.extra_data = extra_data
+    me.save()
 
 
 def get_google_refresh_token(email):
     try:
-        me = UserSocialAuth.objects.get(uid=email, provider="google-oauth2")
+        me = get_google_account(email)
         return me.extra_data['refresh_token']
     except (UserSocialAuth.DoesNotExist, KeyError):
         raise RefreshTokenNotFound
