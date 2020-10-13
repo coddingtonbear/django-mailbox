@@ -3,6 +3,8 @@ os: linux
 language: python
 
 jobs:
+  - env: TOX_ENV=docs
+    python: 3.8
   # sort by django version, next to by python version
   # Django 1.11 support all supported Python interpreter
   - env: TOX_ENV=django111-py35

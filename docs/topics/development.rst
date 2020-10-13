@@ -44,7 +44,7 @@ To enroll a new release you should perform the following task:
 * Push a new release to PyPI - ``python setup.py sdist bdist_wheel upload``.
 
 How to add support for a new Django version?
-------------------------------------------
+--------------------------------------------
 
 Changes are only necessary for new minor or major Django versions.
 
