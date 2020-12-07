@@ -42,14 +42,6 @@ class EmailMessageTestCase(TestCase):
 
         self.mailbox = Mailbox.objects.create(from_email='from@example.com')
 
-        integration_testing_enabled = os.environ.get('INTEGRATION')
-        if not (
-            integration_testing_enabled and int(integration_testing_enabled)
-        ):
-            self.skipTest(
-                "Integration tests skipped; to enable, set INTEGRATION=1"
-            )
-
         self.test_account = os.environ.get('EMAIL_ACCOUNT')
         self.test_password = os.environ.get('EMAIL_PASSWORD')
         self.test_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
