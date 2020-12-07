@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'django-mailbox'
-copyright = '2014, Adam Coddington'
+copyright = '2020, Adam Coddington'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -119,7 +119,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -282,7 +282,7 @@ def process_docstring(app, what, name, obj, options, lines):
 
             # Add the field's type to the docstring
             if isinstance(field, models.ForeignKey):
-                to = field.rel.to
+                to = field.related_model
                 lines.append(':type {}: {} to :class:`~{}.{}`'.format(field.attname, type(field).__name__, to.__module__, to.__name__))
             else:
                 lines.append(':type {}: {}'.format(field.attname, type(field).__name__))

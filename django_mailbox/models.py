@@ -701,11 +701,11 @@ class Message(models.Model):
         self.body = base64.b64encode(body.encode('utf-8')).decode('ascii')
 
     def get_email_object(self):
-        """Returns an `email.message.Message` instance representing the
+        """Returns an `email.message.EmailMessage` instance representing the
         contents of this message and all attachments.
 
-        See [email.Message.Message]_ for more information as to what methods
-        and properties are available on `email.message.Message` instances.
+        See [email.message.EmailMessage]_ for more information as to what methods
+        and properties are available on `email.message.EmailMessage` instances.
 
         .. note::
 
@@ -715,8 +715,8 @@ class Message(models.Model):
            using stored attachments, or read the message contents stored
            on-disk.
 
-        .. [email.Message.Message]: Python's `email.message.Message` docs
-           (https://docs.python.org/2/library/email.message.html)
+        .. [email.message.EmailMessage] Python's `email.message.EmailMessage` docs
+           (https://docs.python.org/3/library/email.message.html)
 
         """
         if not hasattr(self, '_email_object'):  # Cache fill
