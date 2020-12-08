@@ -9,3 +9,10 @@ class EmailTransport:
         message = email.message_from_bytes(contents)
 
         return message
+
+
+class PluggableEmailTransport(EmailTransport):
+    @classmethod
+    def from_uri(cls, uri):
+        raise NotImplemented("The class does not implement {0}.from_uri, and it should. "
+                             "Overwrite {0}.from_uri.".format(cls.__name__))
