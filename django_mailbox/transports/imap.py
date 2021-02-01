@@ -31,6 +31,11 @@ class ImapTransport(EmailTransport):
             'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
             None
         )
+        self.delete_message_from_server = getattr(
+            settings,
+            'DJANGO_MAILBOX_DELETE_MESSAGE_FROM_SERVER',
+            True
+        )
         self.hostname = hostname
         self.port = port
         self.archive = archive
@@ -131,7 +136,7 @@ class ImapTransport(EmailTransport):
 
             if self.archive:
                 self.server.uid('copy', uid, self.archive)
-
-            self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
+            self.delete_message_from_server:
+                self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
         self.server.expunge()
         return
