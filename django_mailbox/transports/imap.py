@@ -38,7 +38,7 @@ class ImapTransport(EmailTransport):
         )
         self.delete_message_store = getattr(
             settings,
-            'DJANGO_MAILBOX_DELETE_MESSAGE_STORE',
+            'DJANGO_MAILBOX_DELETE_MESSAGE_ID_STORE',
             "/tmp/store.json"
         )
         self.hostname = hostname
