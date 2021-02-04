@@ -7,20 +7,20 @@ from django_mailbox.models import Message
 from django_mailbox.tests.base import EmailMessageTestCase
 
 
-__all__ = ['TestMessageFlattening']
+__all__ = ["TestMessageFlattening"]
 
 
 class TestMessageFlattening(EmailMessageTestCase):
     def test_quopri_message_is_properly_rehydrated(self):
         incoming_email_object = self._get_email_object(
-            'message_with_many_multiparts.eml',
+            "message_with_many_multiparts.eml",
         )
         # Note: this is identical to the above, but it appears that
         # while reading-in an e-mail message, we do alter it slightly
         expected_email_object = self._get_email_object(
-            'message_with_many_multiparts.eml',
+            "message_with_many_multiparts.eml",
         )
-        models.TEXT_STORED_MIMETYPES = ['text/plain']
+        models.TEXT_STORED_MIMETYPES = ["text/plain"]
 
         msg = self.mailbox.process_incoming_message(incoming_email_object)
 
@@ -33,12 +33,12 @@ class TestMessageFlattening(EmailMessageTestCase):
 
     def test_base64_message_is_properly_rehydrated(self):
         incoming_email_object = self._get_email_object(
-            'message_with_attachment.eml',
+            "message_with_attachment.eml",
         )
         # Note: this is identical to the above, but it appears that
         # while reading-in an e-mail message, we do alter it slightly
         expected_email_object = self._get_email_object(
-            'message_with_attachment.eml',
+            "message_with_attachment.eml",
         )
 
         msg = self.mailbox.process_incoming_message(incoming_email_object)
@@ -52,10 +52,10 @@ class TestMessageFlattening(EmailMessageTestCase):
 
     def test_message_handles_rehydration_problems(self):
         incoming_email_object = self._get_email_object(
-            'message_with_defective_attachment_association.eml',
+            "message_with_defective_attachment_association.eml",
         )
         expected_email_object = self._get_email_object(
-            'message_with_defective_attachment_association_result.eml',
+            "message_with_defective_attachment_association_result.eml",
         )
         # Note: this is identical to the above, but it appears that
         # while reading-in an e-mail message, we do alter it slightly
@@ -74,17 +74,17 @@ class TestMessageFlattening(EmailMessageTestCase):
 
     def test_message_content_type_stripping(self):
         incoming_email_object = self._get_email_object(
-            'message_with_many_multiparts.eml',
+            "message_with_many_multiparts.eml",
         )
         expected_email_object = self._get_email_object(
-            'message_with_many_multiparts_stripped_html.eml',
+            "message_with_many_multiparts_stripped_html.eml",
         )
         default_settings = utils.get_settings()
 
-        with mock.patch('django_mailbox.utils.get_settings') as get_settings:
+        with mock.patch("django_mailbox.utils.get_settings") as get_settings:
             altered = copy.deepcopy(default_settings)
-            altered['strip_unallowed_mimetypes'] = True
-            altered['allowed_mimetypes'] = ['text/plain']
+            altered["strip_unallowed_mimetypes"] = True
+            altered["allowed_mimetypes"] = ["text/plain"]
 
             get_settings.return_value = altered
 
@@ -100,7 +100,7 @@ class TestMessageFlattening(EmailMessageTestCase):
 
     def test_message_processing_unknown_encoding(self):
         incoming_email_object = self._get_email_object(
-            'message_with_invalid_encoding.eml',
+            "message_with_invalid_encoding.eml",
         )
 
         msg = self.mailbox.process_incoming_message(incoming_email_object)

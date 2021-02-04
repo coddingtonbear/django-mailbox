@@ -8,16 +8,14 @@ from django_mailbox.models import Mailbox
 from django_mailbox.tests.base import EmailMessageTestCase
 
 
-__all__ = ['TestImap']
+__all__ = ["TestImap"]
 
 
 class TestImap(EmailMessageTestCase):
     def setUp(self):
         super().setUp()
 
-        self.test_imap_server = (
-            os.environ.get('EMAIL_IMAP_SERVER')
-        )
+        self.test_imap_server = os.environ.get("EMAIL_IMAP_SERVER")
 
         required_settings = [
             self.test_imap_server,
@@ -35,8 +33,7 @@ class TestImap(EmailMessageTestCase):
             )
 
         self.mailbox = Mailbox.objects.create(
-            name='Integration Test Imap',
-            uri=self.get_connection_string()
+            name="Integration Test Imap", uri=self.get_connection_string()
         )
         self.arbitrary_identifier = str(uuid.uuid4())
 
@@ -48,20 +45,19 @@ class TestImap(EmailMessageTestCase):
         )
 
     def test_get_imap_message(self):
-        text_content = 'This is some content'
+        text_content = "This is some content"
         msg = EmailMultiAlternatives(
             self.arbitrary_identifier,
             text_content,
             self.test_from_email,
             [
                 self.test_account,
-            ]
+            ],
         )
         msg.send()
 
         messages = self._get_new_messages(
-            self.mailbox,
-            condition=lambda m: m['subject'] == self.arbitrary_identifier
+            self.mailbox, condition=lambda m: m["subject"] == self.arbitrary_identifier
         )
         message = next(messages)
 

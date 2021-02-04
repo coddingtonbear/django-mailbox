@@ -6,20 +6,26 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('django_mailbox', '0006_mailbox_last_polling'),
+        ("django_mailbox", "0006_mailbox_last_polling"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mailbox',
-            options={'verbose_name': 'Mailbox', 'verbose_name_plural': 'Mailboxes'},
+            name="mailbox",
+            options={"verbose_name": "Mailbox", "verbose_name_plural": "Mailboxes"},
         ),
         migrations.AlterModelOptions(
-            name='message',
-            options={'verbose_name': 'E-mail message', 'verbose_name_plural': 'E-mail messages'},
+            name="message",
+            options={
+                "verbose_name": "E-mail message",
+                "verbose_name_plural": "E-mail messages",
+            },
         ),
         migrations.AlterModelOptions(
-            name='messageattachment',
-            options={'verbose_name': 'Message attachment', 'verbose_name_plural': 'Message attachments'},
+            name="messageattachment",
+            options={
+                "verbose_name": "Message attachment",
+                "verbose_name_plural": "Message attachments",
+            },
         ),
     ]

@@ -1,2 +1,4 @@
 [flake8]
-exclude = django_mailbox/migrations, django_mailbox/south_migrations
+max-line-length = 200
+exclude = docs, django_mailbox/migrations, django_mailbox/south_migrations
+ignore = E231,W503

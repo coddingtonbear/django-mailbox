@@ -23,35 +23,38 @@ def get_new_mail(mailbox_admin, request, queryset):
     queryset.get_new_mail()
 
 
-get_new_mail.short_description = _('Get new mail')
+get_new_mail.short_description = _("Get new mail")
 
 
 def resend_message_received_signal(message_admin, request, queryset):
     for message in queryset.all():
-        logger.debug('Resending \'message_received\' signal for %s' % message)
+        logger.debug("Resending 'message_received' signal for %s" % message)
         message_received.send(sender=message_admin, message=message)
 
 
-resend_message_received_signal.short_description = (
-    _('Re-send message received signal')
-)
+resend_message_received_signal.short_description = _("Re-send message received signal")
 
 
 class MailboxAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
-        'uri',
-        'from_email',
-        'active',
-        'last_polling',
+        "name",
+        "uri",
+        "from_email",
+        "active",
+        "last_polling",
     )
-    readonly_fields = ['last_polling', ]
+    readonly_fields = [
+        "last_polling",
+    ]
     actions = [get_new_mail]
 
 
 class MessageAttachmentAdmin(admin.ModelAdmin):
-    raw_id_fields = ('message', )
-    list_display = ('message', 'document',)
+    raw_id_fields = ("message",)
+    list_display = (
+        "message",
+        "document",
+    )
 
 
 class MessageAttachmentInline(admin.TabularInline):
@@ -63,50 +66,44 @@ class MessageAdmin(admin.ModelAdmin):
     def attachment_count(self, msg):
         return msg.attachments.count()
 
-    attachment_count.short_description = _('Attachment count')
+    attachment_count.short_description = _("Attachment count")
 
     def subject(self, msg):
         return convert_header_to_unicode(msg.subject)
 
     def envelope_headers(self, msg):
         email = msg.get_email_object()
-        return '\n'.join(
-            [('{}: {}'.format(h, v)) for h, v in email.items()]
-        )
+        return "\n".join([("{}: {}".format(h, v)) for h, v in email.items()])
 
     inlines = [
         MessageAttachmentInline,
     ]
     list_display = (
-        'subject',
-        'processed',
-        'read',
-        'mailbox',
-        'outgoing',
-        'attachment_count',
+        "subject",
+        "processed",
+        "read",
+        "mailbox",
+        "outgoing",
+        "attachment_count",
     )
-    ordering = ['-processed']
+    ordering = ["-processed"]
     list_filter = (
-        'mailbox',
-        'outgoing',
-        'processed',
-        'read',
+        "mailbox",
+        "outgoing",
+        "processed",
+        "read",
     )
-    exclude = (
-        'body',
-    )
-    raw_id_fields = (
-        'in_reply_to',
-    )
+    exclude = ("body",)
+    raw_id_fields = ("in_reply_to",)
     readonly_fields = (
-        'envelope_headers',
-        'text',
-        'html',
+        "envelope_headers",
+        "text",
+        "html",
     )
     actions = [resend_message_received_signal]
 
 
-if getattr(settings, 'DJANGO_MAILBOX_ADMIN_ENABLED', True):
+if getattr(settings, "DJANGO_MAILBOX_ADMIN_ENABLED", True):
     admin.site.register(Message, MessageAdmin)
     admin.site.register(MessageAttachment, MessageAttachmentAdmin)
     admin.site.register(Mailbox, MailboxAdmin)

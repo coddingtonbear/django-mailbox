@@ -1,6 +1,7 @@
 import imaplib
 import logging
-
+from os.path import exists
+import json
 from django.conf import settings
 
 from .base import EmailTransport, MessageParseError
@@ -18,28 +19,25 @@ logger = logging.getLogger(__name__)
 
 class ImapTransport(EmailTransport):
     def __init__(
-        self, hostname, port=None, ssl=False, tls=False,
-        archive='', folder=None,
+        self,
+        hostname,
+        port=None,
+        ssl=False,
+        tls=False,
+        archive="",
+        folder=None,
     ):
         self.max_message_size = getattr(
-            settings,
-            'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
-            False
+            settings, "DJANGO_MAILBOX_MAX_MESSAGE_SIZE", False
         )
         self.integration_testing_subject = getattr(
-            settings,
-            'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
-            None
+            settings, "DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT", None
         )
         self.delete_message_from_server = getattr(
-            settings,
-            'DJANGO_MAILBOX_DELETE_MESSAGE_FROM_SERVER',
-            True
+            settings, "DJANGO_MAILBOX_DELETE_MESSAGE_FROM_SERVER", True
         )
         self.delete_message_store = getattr(
-            settings,
-            'DJANGO_MAILBOX_DELETE_MESSAGE_STORE',
-            "/tmp/store.json"
+            settings, "DJANGO_MAILBOX_DELETE_MESSAGE_ID_STORE", "/tmp/store.json"
         )
         self.hostname = hostname
         self.port = port
@@ -68,13 +66,13 @@ class ImapTransport(EmailTransport):
 
     def _get_all_message_ids(self):
         # Fetch all the message uids
-        response, message_ids = self.server.uid('search', None, 'ALL')
+        response, message_ids = self.server.uid("search", None, "ALL")
         message_id_string = message_ids[0].strip()
         # Usually `message_id_string` will be a list of space-separated
         # ids; we must make sure that it isn't an empty string before
         # splitting into individual UIDs.
         if message_id_string:
-            return message_id_string.decode().split(' ')
+            return message_id_string.decode().split(" ")
         return []
 
     def _get_small_message_ids(self, message_ids):
@@ -83,23 +81,17 @@ class ImapTransport(EmailTransport):
         # limit
         safe_message_ids = []
 
-        status, data = self.server.uid(
-            'fetch',
-            ','.join(message_ids),
-            '(RFC822.SIZE)'
-        )
+        status, data = self.server.uid("fetch", ",".join(message_ids), "(RFC822.SIZE)")
 
         for each_msg in data:
             each_msg = each_msg.decode()
             try:
-                uid = each_msg.split(' ')[2]
-                size = each_msg.split(' ')[4].rstrip(')')
+                uid = each_msg.split(" ")[2]
+                size = each_msg.split(" ")[4].rstrip(")")
                 if int(size) <= int(self.max_message_size):
                     safe_message_ids.append(uid)
             except ValueError as e:
-                logger.warning(
-                    "ValueError: {} working on {}".format(e, each_msg[0])
-                )
+                logger.warning("ValueError: {} working on {}".format(e, each_msg[0]))
                 pass
         return safe_message_ids
 
@@ -120,30 +112,29 @@ class ImapTransport(EmailTransport):
                 self.server.create(self.archive)
 
         # PoC of alternative method of storing email
-        if not self.delete_from_server:
-            j = {"uids":[]}
-            if os.path.exists("store.json"):
-               with open("store.json","r") as f:
-                  j = json.load(f)
+        if not self.delete_message_from_server:
+            j = {"uids": []}
+            if exists("store.json"):
+                with open("store.json", "r") as f:
+                    j = json.load(f)
             else:
-               with open("store.json","w") as f:
-                  json.dump(j,f)
+                with open("store.json", "w") as f:
+                    json.dump(j, f)
         # PoC of alternative method of storing email
-
 
         for uid in message_ids:
             # PoC of alternative method of storing email
-            if not self.delete_from_server:
-               if uid in j["uids"]:
-                  continue
-               else:
-                  j["uids"].append(uid)
-                  with open("store.json","w") as f:
-                      json.dump(j,f)
+            if not self.delete_message_from_server:
+                if uid in j["uids"]:
+                    continue
+                else:
+                    j["uids"].append(uid)
+                    with open("store.json", "w") as f:
+                        json.dump(j, f)
             # PoC of alternative method of storing email
 
             try:
-                typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
+                typ, msg_contents = self.server.uid("fetch", uid, "(RFC822)")
                 if not msg_contents:
                     continue
                 try:
@@ -162,8 +153,9 @@ class ImapTransport(EmailTransport):
                 continue
 
             if self.archive:
-                self.server.uid('copy', uid, self.archive)
-            self.delete_message_from_server:
-                self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
+                self.server.uid("copy", uid, self.archive)
+
+            if self.delete_message_from_server:
+                self.server.uid("store", uid, "+FLAGS", "(\\Deleted)")
         self.server.expunge()
         return

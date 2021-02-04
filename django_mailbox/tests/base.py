@@ -17,39 +17,37 @@ def get_email_as_text(name):
     with open(
         os.path.join(
             os.path.dirname(__file__),
-            'messages',
+            "messages",
             name,
         ),
-        'rb'
+        "rb",
     ) as f:
         return f.read()
 
 
 class EmailMessageTestCase(TestCase):
     ALLOWED_EXTRA_HEADERS = [
-        'MIME-Version',
-        'Content-Transfer-Encoding',
+        "MIME-Version",
+        "Content-Transfer-Encoding",
     ]
 
     def setUp(self):
         dm_settings = utils.get_settings()
 
-        self._ALLOWED_MIMETYPES = dm_settings['allowed_mimetypes']
-        self._STRIP_UNALLOWED_MIMETYPES = (
-            dm_settings['strip_unallowed_mimetypes']
-        )
-        self._TEXT_STORED_MIMETYPES = dm_settings['text_stored_mimetypes']
+        self._ALLOWED_MIMETYPES = dm_settings["allowed_mimetypes"]
+        self._STRIP_UNALLOWED_MIMETYPES = dm_settings["strip_unallowed_mimetypes"]
+        self._TEXT_STORED_MIMETYPES = dm_settings["text_stored_mimetypes"]
 
-        self.mailbox = Mailbox.objects.create(from_email='from@example.com')
+        self.mailbox = Mailbox.objects.create(from_email="from@example.com")
 
-        self.test_account = os.environ.get('EMAIL_ACCOUNT')
-        self.test_password = os.environ.get('EMAIL_PASSWORD')
-        self.test_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
-        self.test_from_email = 'nobody@nowhere.com'
+        self.test_account = os.environ.get("EMAIL_ACCOUNT")
+        self.test_password = os.environ.get("EMAIL_PASSWORD")
+        self.test_smtp_server = os.environ.get("EMAIL_SMTP_SERVER")
+        self.test_from_email = "nobody@nowhere.com"
 
         self.maximum_wait_seconds = 60 * 5
 
-        settings.EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+        settings.EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
         settings.EMAIL_HOST = self.test_smtp_server
         settings.EMAIL_PORT = 587
         settings.EMAIL_HOST_USER = self.test_account
@@ -80,10 +78,10 @@ class EmailMessageTestCase(TestCase):
         with open(
             os.path.join(
                 os.path.dirname(__file__),
-                'messages',
+                "messages",
                 name,
             ),
-            'rb'
+            "rb",
         ) as f:
             return f.read()
 
@@ -92,26 +90,26 @@ class EmailMessageTestCase(TestCase):
         return email.message_from_bytes(copy)
 
     def _headers_identical(self, left, right, header=None):
-        """ Check if headers are (close enough to) identical.
+        """Check if headers are (close enough to) identical.
 
-         * This is particularly tricky because Python 2.6, Python 2.7 and
-           Python 3 each handle header strings slightly differently.  This
-           should mash away all of the differences, though.
-         * This also has a small loophole in that when re-writing e-mail
-           payload encodings, we re-build the Content-Type header, so if the
-           header was originally unquoted, it will be quoted when rehydrating
-           the e-mail message.
+        * This is particularly tricky because Python 2.6, Python 2.7 and
+          Python 3 each handle header strings slightly differently.  This
+          should mash away all of the differences, though.
+        * This also has a small loophole in that when re-writing e-mail
+          payload encodings, we re-build the Content-Type header, so if the
+          header was originally unquoted, it will be quoted when rehydrating
+          the e-mail message.
 
         """
-        if header.lower() == 'content-type':
+        if header.lower() == "content-type":
             # Special case; given that we re-write the header, we'll be quoting
             # the new content type; we need to make sure that doesn't cause
             # this comparison to fail.  Also, the case of the encoding could
             # be changed, etc. etc. etc.
-            left = left.replace('"', '').upper()
-            right = right.replace('"', '').upper()
-        left = left.replace('\n\t', ' ').replace('\n ', ' ')
-        right = right.replace('\n\t', ' ').replace('\n ', ' ')
+            left = left.replace('"', "").upper()
+            right = right.replace('"', "").upper()
+        left = left.replace("\n\t", " ").replace("\n ", " ")
+        right = right.replace("\n\t", " ").replace("\n ", " ")
         if right != left:
             return False
         return True
@@ -152,10 +150,7 @@ class EmailMessageTestCase(TestCase):
             if len(left_payloads) != len(right_payloads):
                 self._raise_mismatched(left, right)
             for n in range(len(left_payloads)):
-                self.compare_email_objects(
-                    left_payloads[n],
-                    right_payloads[n]
-                )
+                self.compare_email_objects(left_payloads[n], right_payloads[n])
         else:
             if left.get_payload() is None or right.get_payload() is None:
                 if left.get_payload() is None:
@@ -170,8 +165,7 @@ class EmailMessageTestCase(TestCase):
     def _raise_mismatched(self, left, right):
         raise AssertionError(
             "Message payloads do not match:\n{}\n{}".format(
-                left.as_string(),
-                right.as_string()
+                left.as_string(), right.as_string()
             )
         )
 
