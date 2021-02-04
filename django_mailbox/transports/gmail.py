@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class GmailImapTransport(ImapTransport):
-
     def connect(self, username, password):
         # Try to use oauth2 first.  It's much safer
         try:
@@ -28,30 +27,25 @@ class GmailImapTransport(ImapTransport):
                 AccessTokenNotFound,
             )
         except ImportError:
-            raise ValueError(
-                "Install python-social-auth to use oauth2 auth for gmail"
-            )
+            raise ValueError("Install python-social-auth to use oauth2 auth for gmail")
 
         access_token = None
         while access_token is None:
             try:
                 access_token = get_google_access_token(username)
-                google_email_address = fetch_user_info(username)['email']
+                google_email_address = fetch_user_info(username)["email"]
             except TypeError:
                 # This means that the google process took too long
                 # Trying again is the right thing to do
                 pass
             except AccessTokenNotFound:
                 raise ValueError(
-                    "No Token available in python-social-auth for %s" % (
-                        username
-                    )
+                    "No Token available in python-social-auth for %s" % (username)
                 )
 
-        auth_string = 'user={}\1auth=Bearer {}\1\1'.format(
-            google_email_address,
-            access_token
+        auth_string = "user={}\1auth=Bearer {}\1\1".format(
+            google_email_address, access_token
         )
         self.server = self.transport(self.hostname, self.port)
-        self.server.authenticate('XOAUTH2', lambda x: auth_string)
+        self.server.authenticate("XOAUTH2", lambda x: auth_string)
         self.server.select()

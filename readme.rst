@@ -1,3 +1,7 @@
+Django Mailbox2
+===============
+
+This is a modified version of the original.
 
 Easily ingest messages from POP3, IMAP, or local mailboxes into your Django application. 
 

@@ -16,3 +16,4 @@ messages
 manage.py
 old/
 poetry.lock
+websrv

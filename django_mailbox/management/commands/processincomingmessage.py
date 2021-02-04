@@ -1,6 +1,7 @@
 import email
 import logging
 import sys
+
 try:
     from email import utils
 except ImportError:
@@ -21,9 +22,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'mailbox_name',
-            nargs='?',
-            help="The name of the mailbox that will receive the message"
+            "mailbox_name",
+            nargs="?",
+            help="The name of the mailbox that will receive the message",
         )
 
     def handle(self, mailbox_name=None, *args, **options):
@@ -34,10 +35,7 @@ class Command(BaseCommand):
             else:
                 mailbox = self.get_mailbox_for_message(message)
             mailbox.process_incoming_message(message)
-            logger.info(
-                "Message received from %s",
-                message['from']
-            )
+            logger.info("Message received from %s", message["from"])
         else:
             logger.warning("Message not processable.")
 
@@ -48,5 +46,5 @@ class Command(BaseCommand):
         return mailbox
 
     def get_mailbox_for_message(self, message):
-        email_address = utils.parseaddr(message['to'])[1][0:255]
+        email_address = utils.parseaddr(message["to"])[1][0:255]
         return self.get_mailbox_by_name(email_address)

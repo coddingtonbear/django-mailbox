@@ -1,4 +1,4 @@
-import sys
+# import sys
 
 from .base import EmailTransport
 

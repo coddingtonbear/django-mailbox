@@ -22,15 +22,13 @@ class Pop3Transport(EmailTransport):
         self.server.pass_(password)
 
     def get_message_body(self, message_lines):
-        return bytes('\r\n', 'ascii').join(message_lines)
+        return bytes("\r\n", "ascii").join(message_lines)
 
     def get_message(self, condition=None):
         message_count = len(self.server.list()[1])
         for i in range(message_count):
             try:
-                msg_contents = self.get_message_body(
-                    self.server.retr(i + 1)[1]
-                )
+                msg_contents = self.get_message_body(self.server.retr(i + 1)[1])
                 message = self.get_email_from_bytes(msg_contents)
 
                 if condition and not condition(message):

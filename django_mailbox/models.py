@@ -15,7 +15,8 @@ import email
 import logging
 import mimetypes
 import os.path
-import sys
+
+# import sys
 import uuid
 from tempfile import NamedTemporaryFile
 
@@ -29,9 +30,16 @@ from django.utils.timezone import now
 
 from django_mailbox import utils
 from django_mailbox.signals import message_received
-from django_mailbox.transports import Pop3Transport, ImapTransport, \
-    MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport
+from django_mailbox.transports import (
+    Pop3Transport,
+    ImapTransport,
+    MaildirTransport,
+    MboxTransport,
+    BabylTransport,
+    MHTransport,
+    MMDFTransport,
+    GmailImapTransport,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +48,9 @@ class MailboxQuerySet(models.QuerySet):
     def get_new_mail(self):
         count = 0
         for mailbox in self.all():
-            logger.debug('Receiving mail for %s' % mailbox)
+            logger.debug("Receiving mail for %s" % mailbox)
             count += sum(1 for i in mailbox.get_new_mail())
-        logger.debug('Received %d %s.', count, 'mails' if count != 1 else 'mail')
+        logger.debug("Received %d %s.", count, "mails" if count != 1 else "mail")
 
 
 class MailboxManager(models.Manager):
@@ -52,72 +60,86 @@ class MailboxManager(models.Manager):
 
 class ActiveMailboxManager(MailboxManager):
     def get_queryset(self):
-        return super().get_queryset().filter(
-            active=True,
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                active=True,
+            )
         )
 
 
 class Mailbox(models.Model):
     name = models.CharField(
-        _('Name'),
+        _("Name"),
         max_length=255,
     )
 
     uri = models.CharField(
-        _('URI'),
+        _("URI"),
         max_length=255,
-        help_text=(_(
-            "Example: imap+ssl://myusername:mypassword@someserver <br />"
-            "<br />"
-            "Internet transports include 'imap' and 'pop3'; "
-            "common local file transports include 'maildir', 'mbox', "
-            "and less commonly 'babyl', 'mh', and 'mmdf'. <br />"
-            "<br />"
-            "Be sure to urlencode your username and password should they "
-            "contain illegal characters (like @, :, etc)."
-        )),
+        help_text=(
+            _(
+                "Example: imap+ssl://myusername:mypassword@someserver <br />"
+                "<br />"
+                "Internet transports include 'imap' and 'pop3'; "
+                "common local file transports include 'maildir', 'mbox', "
+                "and less commonly 'babyl', 'mh', and 'mmdf'. <br />"
+                "<br />"
+                "Be sure to urlencode your username and password should they "
+                "contain illegal characters (like @, :, etc)."
+            )
+        ),
         blank=True,
         null=True,
         default=None,
     )
 
     from_email = models.CharField(
-        _('From email'),
+        _("From email"),
         max_length=255,
-        help_text=(_(
-            "Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />"
-            "'From' header to set for outgoing email.<br />"
-            "<br />"
-            "If you do not use this e-mail inbox for outgoing mail, this "
-            "setting is unnecessary.<br />"
-            "If you send e-mail without setting this, your 'From' header will'"
-            "be set to match the setting `DEFAULT_FROM_EMAIL`."
-        )),
+        help_text=(
+            _(
+                "Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />"
+                "'From' header to set for outgoing email.<br />"
+                "<br />"
+                "If you do not use this e-mail inbox for outgoing mail, this "
+                "setting is unnecessary.<br />"
+                "If you send e-mail without setting this, your 'From' header will'"
+                "be set to match the setting `DEFAULT_FROM_EMAIL`."
+            )
+        ),
         blank=True,
         null=True,
         default=None,
     )
 
     active = models.BooleanField(
-        _('Active'),
-        help_text=(_(
-            "Check this e-mail inbox for new e-mail messages during polling "
-            "cycles.  This checkbox does not have an effect upon whether "
-            "mail is collected here when this mailbox receives mail from a "
-            "pipe, and does not affect whether e-mail messages can be "
-            "dispatched from this mailbox. "
-        )),
+        _("Active"),
+        help_text=(
+            _(
+                "Check this e-mail inbox for new e-mail messages during polling "
+                "cycles.  This checkbox does not have an effect upon whether "
+                "mail is collected here when this mailbox receives mail from a "
+                "pipe, and does not affect whether e-mail messages can be "
+                "dispatched from this mailbox. "
+            )
+        ),
         blank=True,
         default=True,
     )
 
     last_polling = models.DateTimeField(
         _("Last polling"),
-        help_text=(_("The time of last successful polling for messages."
-                     "It is blank for new mailboxes and is not set for "
-                     "mailboxes that only receive messages via a pipe.")),
+        help_text=(
+            _(
+                "The time of last successful polling for messages."
+                "It is blank for new mailboxes and is not set for "
+                "mailboxes that only receive messages via a pipe."
+            )
+        ),
         blank=True,
-        null=True
+        null=True,
     )
 
     objects = MailboxManager()
@@ -153,30 +175,30 @@ class Mailbox(models.Model):
     @property
     def location(self):
         """Returns the location (domain and path) of messages."""
-        return self._domain if self._domain else '' + self._protocol_info.path
+        return self._domain if self._domain else "" + self._protocol_info.path
 
     @property
     def type(self):
         """Returns the 'transport' name for this mailbox."""
         scheme = self._protocol_info.scheme.lower()
-        if '+' in scheme:
-            return scheme.split('+')[0]
+        if "+" in scheme:
+            return scheme.split("+")[0]
         return scheme
 
     @property
     def use_ssl(self):
         """Returns whether or not this mailbox's connection uses SSL."""
-        return '+ssl' in self._protocol_info.scheme.lower()
+        return "+ssl" in self._protocol_info.scheme.lower()
 
     @property
     def use_tls(self):
         """Returns whether or not this mailbox's connection uses STARTTLS."""
-        return '+tls' in self._protocol_info.scheme.lower()
+        return "+tls" in self._protocol_info.scheme.lower()
 
     @property
     def archive(self):
         """Returns (if specified) the folder to archive messages to."""
-        archive_folder = self._query_string.get('archive', None)
+        archive_folder = self._query_string.get("archive", None)
         if not archive_folder:
             return None
         return archive_folder[0]
@@ -184,7 +206,7 @@ class Mailbox(models.Model):
     @property
     def folder(self):
         """Returns (if specified) the folder to fetch mail from."""
-        folder = self._query_string.get('folder', None)
+        folder = self._query_string.get("folder", None)
         if not folder:
             return None
         return folder[0]
@@ -198,40 +220,38 @@ class Mailbox(models.Model):
         """
         if not self.uri:
             return None
-        elif self.type == 'imap':
+        elif self.type == "imap":
             conn = ImapTransport(
                 self.location,
                 port=self.port if self.port else None,
                 ssl=self.use_ssl,
                 tls=self.use_tls,
                 archive=self.archive,
-                folder=self.folder
+                folder=self.folder,
             )
             conn.connect(self.username, self.password)
-        elif self.type == 'gmail':
+        elif self.type == "gmail":
             conn = GmailImapTransport(
                 self.location,
                 port=self.port if self.port else None,
                 ssl=True,
-                archive=self.archive
+                archive=self.archive,
             )
             conn.connect(self.username, self.password)
-        elif self.type == 'pop3':
+        elif self.type == "pop3":
             conn = Pop3Transport(
-                self.location,
-                port=self.port if self.port else None,
-                ssl=self.use_ssl
+                self.location, port=self.port if self.port else None, ssl=self.use_ssl
             )
             conn.connect(self.username, self.password)
-        elif self.type == 'maildir':
+        elif self.type == "maildir":
             conn = MaildirTransport(self.location)
-        elif self.type == 'mbox':
+        elif self.type == "mbox":
             conn = MboxTransport(self.location)
-        elif self.type == 'babyl':
+        elif self.type == "babyl":
             conn = BabylTransport(self.location)
-        elif self.type == 'mh':
+        elif self.type == "mh":
             conn = MHTransport(self.location)
-        elif self.type == 'mmdf':
+        elif self.type == "mmdf":
             conn = MMDFTransport(self.location)
         return conn
 
@@ -264,29 +284,22 @@ class Mailbox(models.Model):
             for header, value in msg.items():
                 new[header] = value
             for part in msg.get_payload():
-                new.attach(
-                    self._get_dehydrated_message(part, record)
-                )
+                new.attach(self._get_dehydrated_message(part, record))
         elif (
-            settings['strip_unallowed_mimetypes']
-            and not msg.get_content_type() in settings['allowed_mimetypes']
+            settings["strip_unallowed_mimetypes"]
+            and not msg.get_content_type() in settings["allowed_mimetypes"]
         ):
             for header, value in msg.items():
                 new[header] = value
             # Delete header, otherwise when attempting to  deserialize the
             # payload, it will be expecting a body for this.
-            del new['Content-Transfer-Encoding']
-            new[settings['altered_message_header']] = (
-                'Stripped; Content type %s not allowed' % (
-                    msg.get_content_type()
-                )
-            )
-            new.set_payload('')
-        elif (
-            (
-                msg.get_content_type() not in settings['text_stored_mimetypes']
-            ) or
-            ('attachment' in msg.get('Content-Disposition', ''))
+            del new["Content-Transfer-Encoding"]
+            new[
+                settings["altered_message_header"]
+            ] = "Stripped; Content type %s not allowed" % (msg.get_content_type())
+            new.set_payload("")
+        elif (msg.get_content_type() not in settings["text_stored_mimetypes"]) or (
+            "attachment" in msg.get("Content-Disposition", "")
         ):
             filename = None
             raw_filename = msg.get_filename()
@@ -297,17 +310,13 @@ class Mailbox(models.Model):
             else:
                 _, extension = os.path.splitext(filename)
             if not extension:
-                extension = '.bin'
+                extension = ".bin"
 
             attachment = MessageAttachment()
 
             attachment.document.save(
                 uuid.uuid4().hex + extension,
-                ContentFile(
-                    BytesIO(
-                        msg.get_payload(decode=True)
-                    ).getvalue()
-                )
+                ContentFile(BytesIO(msg.get_payload(decode=True)).getvalue()),
             )
             attachment.message = record
             for key, value in msg.items():
@@ -315,14 +324,14 @@ class Mailbox(models.Model):
             attachment.save()
 
             placeholder = EmailMessage()
-            placeholder[
-                settings['attachment_interpolation_header']
-            ] = str(attachment.pk)
+            placeholder[settings["attachment_interpolation_header"]] = str(
+                attachment.pk
+            )
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
             if not content_charset:
-                content_charset = 'ascii'
+                content_charset = "ascii"
             try:
                 # Make sure that the payload can be properly decoded in the
                 # defined charset, if it can't, let's mash some things
@@ -330,26 +339,15 @@ class Mailbox(models.Model):
                 msg.get_payload(decode=True).decode(content_charset)
             except LookupError:
                 logger.warning(
-                    "Unknown encoding %s; interpreting as ASCII!",
-                    content_charset
+                    "Unknown encoding %s; interpreting as ASCII!", content_charset
                 )
-                msg.set_payload(
-                    msg.get_payload(decode=True).decode(
-                        'ascii',
-                        'ignore'
-                    )
-                )
+                msg.set_payload(msg.get_payload(decode=True).decode("ascii", "ignore"))
             except ValueError:
                 logger.warning(
                     "Decoding error encountered; interpreting %s as ASCII!",
-                    content_charset
+                    content_charset,
                 )
-                msg.set_payload(
-                    msg.get_payload(decode=True).decode(
-                        'ascii',
-                        'ignore'
-                    )
-                )
+                msg.set_payload(msg.get_payload(decode=True).decode("ascii", "ignore"))
             new = msg
         return new
 
@@ -358,23 +356,19 @@ class Mailbox(models.Model):
         msg._email_object = message
         settings = utils.get_settings()
 
-        if settings['store_original_message']:
+        if settings["store_original_message"]:
             self._process_save_original_message(message, msg)
         msg.mailbox = self
-        if 'subject' in message:
-            msg.subject = (
-                utils.convert_header_to_unicode(message['subject'])[0:255]
-            )
-        if 'message-id' in message:
-            msg.message_id = message['message-id'][0:255].strip()
-        if 'from' in message:
-            msg.from_header = utils.convert_header_to_unicode(message['from'])
-        if 'to' in message:
-            msg.to_header = utils.convert_header_to_unicode(message['to'])
-        elif 'Delivered-To' in message:
-            msg.to_header = utils.convert_header_to_unicode(
-                message['Delivered-To']
-            )
+        if "subject" in message:
+            msg.subject = utils.convert_header_to_unicode(message["subject"])[0:255]
+        if "message-id" in message:
+            msg.message_id = message["message-id"][0:255].strip()
+        if "from" in message:
+            msg.from_header = utils.convert_header_to_unicode(message["from"])
+        if "to" in message:
+            msg.to_header = utils.convert_header_to_unicode(message["to"])
+        elif "Delivered-To" in message:
+            msg.to_header = utils.convert_header_to_unicode(message["Delivered-To"])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         try:
@@ -382,13 +376,16 @@ class Mailbox(models.Model):
         except KeyError as exc:
             # email.message.replace_header may raise 'KeyError' if the header
             # 'content-transfer-encoding' is missing
-            logger.warning("Failed to parse message: %s", exc,)
+            logger.warning(
+                "Failed to parse message: %s",
+                exc,
+            )
             return None
         msg.set_body(body)
-        if message['in-reply-to']:
+        if message["in-reply-to"]:
             try:
                 msg.in_reply_to = Message.objects.filter(
-                    message_id=message['in-reply-to'].strip()
+                    message_id=message["in-reply-to"].strip()
                 )[0]
             except IndexError:
                 pass
@@ -397,36 +394,31 @@ class Mailbox(models.Model):
 
     def _process_save_original_message(self, message, msg):
         settings = utils.get_settings()
-        if settings['compress_original_message']:
+        if settings["compress_original_message"]:
             with NamedTemporaryFile(suffix=".eml.gz") as fp_tmp:
                 with gzip.GzipFile(fileobj=fp_tmp, mode="w") as fp:
-                    fp.write(message.as_string().encode('utf-8'))
-                msg.eml.save(
-                    "{}.eml.gz".format(uuid.uuid4()),
-                    File(fp_tmp),
-                    save=False
-                )
+                    fp.write(message.as_string().encode("utf-8"))
+                msg.eml.save("{}.eml.gz".format(uuid.uuid4()), File(fp_tmp), save=False)
 
         else:
             msg.eml.save(
-                '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string()),
-                save=False
+                "%s.eml" % uuid.uuid4(), ContentFile(message.as_string()), save=False
             )
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
-        new_mail = []
+        # Delete this
+        # new_mail = []
         connection = self.get_connection()
         if not connection:
             return
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
-            if not msg is None:
+            if msg is not None:
                 yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
-            self.save(update_fields=['last_polling'])
+            self.save(update_fields=["last_polling"])
         else:
             self.save()
 
@@ -434,100 +426,97 @@ class Mailbox(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Mailbox')
-        verbose_name_plural = _('Mailboxes')
+        verbose_name = _("Mailbox")
+        verbose_name_plural = _("Mailboxes")
 
 
 class IncomingMessageManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(
-            outgoing=False,
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                outgoing=False,
+            )
         )
 
 
 class OutgoingMessageManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(
-            outgoing=True,
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                outgoing=True,
+            )
         )
 
 
 class UnreadMessageManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(
-            read=None
-        )
+        return super().get_queryset().filter(read=None)
 
 
 class Message(models.Model):
     mailbox = models.ForeignKey(
         Mailbox,
-        related_name='messages',
-        verbose_name=_('Mailbox'),
-        on_delete=models.CASCADE
+        related_name="messages",
+        verbose_name=_("Mailbox"),
+        on_delete=models.CASCADE,
     )
 
-    subject = models.CharField(
-        _('Subject'),
-        max_length=255
-    )
+    subject = models.CharField(_("Subject"), max_length=255)
 
-    message_id = models.CharField(
-        _('Message ID'),
-        max_length=255
-    )
+    message_id = models.CharField(_("Message ID"), max_length=255)
 
     in_reply_to = models.ForeignKey(
-        'django_mailbox.Message',
-        related_name='replies',
+        "django_mailbox.Message",
+        related_name="replies",
         blank=True,
         null=True,
-        verbose_name=_('In reply to'),
-        on_delete=models.CASCADE
+        verbose_name=_("In reply to"),
+        on_delete=models.CASCADE,
     )
 
     from_header = models.CharField(
-        _('From header'),
+        _("From header"),
         max_length=255,
     )
 
     to_header = models.TextField(
-        _('To header'),
+        _("To header"),
     )
 
     outgoing = models.BooleanField(
-        _('Outgoing'),
+        _("Outgoing"),
         default=False,
         blank=True,
     )
 
     body = models.TextField(
-        _('Body'),
+        _("Body"),
     )
 
     encoded = models.BooleanField(
-        _('Encoded'),
+        _("Encoded"),
         default=False,
-        help_text=_('True if the e-mail body is Base64 encoded'),
+        help_text=_("True if the e-mail body is Base64 encoded"),
     )
 
-    processed = models.DateTimeField(
-        _('Processed'),
-        auto_now_add=True
-    )
+    processed = models.DateTimeField(_("Processed"), auto_now_add=True)
 
     read = models.DateTimeField(
-        _('Read'),
+        _("Read"),
         default=None,
         blank=True,
         null=True,
     )
 
     eml = models.FileField(
-        _('Raw message contents'),
+        _("Raw message contents"),
         null=True,
         upload_to="messages",
-        help_text=_('Original full content of message')
+        help_text=_("Original full content of message"),
     )
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
@@ -570,13 +559,9 @@ class Message(models.Model):
     def to_addresses(self):
         """Returns a list of addresses to which this message was sent."""
         addresses = []
-        for address in self.to_header.split(','):
+        for address in self.to_header.split(","):
             if address:
-                addresses.append(
-                    parseaddr(
-                        address
-                    )[1].lower()
-                )
+                addresses.append(parseaddr(address)[1].lower())
         return addresses
 
     def reply(self, message):
@@ -593,14 +578,12 @@ class Message(models.Model):
                 message.from_email = self.mailbox.from_email
             else:
                 message.from_email = django_settings.DEFAULT_FROM_EMAIL
-        message.extra_headers['Message-ID'] = make_msgid()
-        message.extra_headers['Date'] = formatdate()
-        message.extra_headers['In-Reply-To'] = self.message_id.strip()
+        message.extra_headers["Message-ID"] = make_msgid()
+        message.extra_headers["Date"] = formatdate()
+        message.extra_headers["In-Reply-To"] = self.message_id.strip()
         message.send()
         return self.mailbox.record_outgoing_message(
-            email.message_from_string(
-                message.message().as_string()
-            )
+            email.message_from_string(message.message().as_string())
         )
 
     @property
@@ -608,18 +591,22 @@ class Message(models.Model):
         """
         Returns the message body matching content type 'text/plain'.
         """
-        return utils.get_body_from_message(
-            self.get_email_object(), 'text', 'plain'
-        ).replace('=\n', '').strip()
+        return (
+            utils.get_body_from_message(self.get_email_object(), "text", "plain")
+            .replace("=\n", "")
+            .strip()
+        )
 
     @property
     def html(self):
         """
         Returns the message body matching content type 'text/html'.
         """
-        return utils.get_body_from_message(
-            self.get_email_object(), 'text', 'html'
-        ).replace('\n', '').strip()
+        return (
+            utils.get_body_from_message(self.get_email_object(), "text", "html")
+            .replace("\n", "")
+            .strip()
+        )
 
     def _rehydrate(self, msg):
         new = EmailMessage()
@@ -629,53 +616,43 @@ class Message(models.Model):
             for header, value in msg.items():
                 new[header] = value
             for part in msg.get_payload():
-                new.attach(
-                    self._rehydrate(part)
-                )
-        elif settings['attachment_interpolation_header'] in msg.keys():
+                new.attach(self._rehydrate(part))
+        elif settings["attachment_interpolation_header"] in msg.keys():
             try:
                 attachment = MessageAttachment.objects.get(
-                    pk=msg[settings['attachment_interpolation_header']]
+                    pk=msg[settings["attachment_interpolation_header"]]
                 )
                 for header, value in attachment.items():
                     new[header] = value
-                encoding = new['Content-Transfer-Encoding']
-                if encoding and encoding.lower() == 'quoted-printable':
+                encoding = new["Content-Transfer-Encoding"]
+                if encoding and encoding.lower() == "quoted-printable":
                     # Cannot use `email.encoders.encode_quopri due to
                     # bug 14360: http://bugs.python.org/issue14360
                     output = BytesIO()
                     encode_quopri(
-                        BytesIO(
-                            attachment.document.read()
-                        ),
+                        BytesIO(attachment.document.read()),
                         output,
                         quotetabs=True,
                         header=False,
                     )
-                    new.set_payload(
-                        output.getvalue().decode().replace(' ', '=20')
-                    )
-                    del new['Content-Transfer-Encoding']
-                    new['Content-Transfer-Encoding'] = 'quoted-printable'
+                    new.set_payload(output.getvalue().decode().replace(" ", "=20"))
+                    del new["Content-Transfer-Encoding"]
+                    new["Content-Transfer-Encoding"] = "quoted-printable"
                 else:
-                    new.set_payload(
-                        attachment.document.read()
-                    )
-                    del new['Content-Transfer-Encoding']
+                    new.set_payload(attachment.document.read())
+                    del new["Content-Transfer-Encoding"]
                     encode_base64(new)
             except MessageAttachment.DoesNotExist:
-                new[settings['altered_message_header']] = (
-                    'Missing; Attachment %s not found' % (
-                        msg[settings['attachment_interpolation_header']]
-                    )
+                new[
+                    settings["altered_message_header"]
+                ] = "Missing; Attachment %s not found" % (
+                    msg[settings["attachment_interpolation_header"]]
                 )
-                new.set_payload('')
+                new.set_payload("")
         else:
             for header, value in msg.items():
                 new[header] = value
-            new.set_payload(
-                msg.get_payload()
-            )
+            new.set_payload(msg.get_payload())
         return new
 
     def get_body(self):
@@ -686,8 +663,8 @@ class Message(models.Model):
 
         """
         if self.encoded:
-            return base64.b64decode(self.body.encode('ascii'))
-        return self.body.encode('utf-8')
+            return base64.b64decode(self.body.encode("ascii"))
+        return self.body.encode("utf-8")
 
     def set_body(self, body):
         """Set the `body` field of this record.
@@ -698,7 +675,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        self.body = base64.b64encode(body.encode('utf-8')).decode('ascii')
+        self.body = base64.b64encode(body.encode("utf-8")).decode("ascii")
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
@@ -719,9 +696,9 @@ class Message(models.Model):
            (https://docs.python.org/3/library/email.message.html)
 
         """
-        if not hasattr(self, '_email_object'):  # Cache fill
+        if not hasattr(self, "_email_object"):  # Cache fill
             if self.eml:
-                if self.eml.name.endswith('.gz'):
+                if self.eml.name.endswith(".gz"):
                     body = gzip.GzipFile(fileobj=self.eml).read()
                 else:
                     self.eml.open()
@@ -744,28 +721,28 @@ class Message(models.Model):
         return self.subject
 
     class Meta:
-        verbose_name = _('E-mail message')
-        verbose_name_plural = _('E-mail messages')
+        verbose_name = _("E-mail message")
+        verbose_name_plural = _("E-mail messages")
 
 
 class MessageAttachment(models.Model):
     message = models.ForeignKey(
         Message,
-        related_name='attachments',
+        related_name="attachments",
         null=True,
         blank=True,
-        verbose_name=_('Message'),
-        on_delete=models.CASCADE
+        verbose_name=_("Message"),
+        on_delete=models.CASCADE,
     )
 
     headers = models.TextField(
-        _('Headers'),
+        _("Headers"),
         null=True,
         blank=True,
     )
 
     document = models.FileField(
-        _('Document'),
+        _("Document"),
         upload_to=utils.get_attachment_save_path,
     )
 
@@ -810,12 +787,12 @@ class MessageAttachment(models.Model):
     def __getitem__(self, name):
         value = self._get_rehydrated_headers()[name]
         if value is None:
-            raise KeyError('Header %s does not exist' % name)
+            raise KeyError("Header %s does not exist" % name)
         return value
 
     def __str__(self):
         return self.document.url
 
     class Meta:
-        verbose_name = _('Message attachment')
-        verbose_name_plural = _('Message attachments')
+        verbose_name = _("Message attachment")
+        verbose_name_plural = _("Message attachments")
