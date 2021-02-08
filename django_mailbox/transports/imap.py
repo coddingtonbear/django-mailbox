@@ -1,7 +1,5 @@
 import imaplib
 import logging
-from os.path import exists
-import json
 from django.conf import settings
 
 from .base import EmailTransport, MessageParseError
@@ -35,9 +33,6 @@ class ImapTransport(EmailTransport):
         )
         self.delete_message_from_server = getattr(
             settings, "DJANGO_MAILBOX_DELETE_MESSAGE_FROM_SERVER", True
-        )
-        self.delete_message_store = getattr(
-            settings, "DJANGO_MAILBOX_DELETE_MESSAGE_ID_STORE", "/tmp/store.json"
         )
         self.hostname = hostname
         self.port = port
@@ -111,28 +106,7 @@ class ImapTransport(EmailTransport):
                 # If the archive folder does not exist, create it
                 self.server.create(self.archive)
 
-        # PoC of alternative method of storing email
-        if not self.delete_message_from_server:
-            j = {"uids": []}
-            if exists("store.json"):
-                with open("store.json", "r") as f:
-                    j = json.load(f)
-            else:
-                with open("store.json", "w") as f:
-                    json.dump(j, f)
-        # PoC of alternative method of storing email
-
         for uid in message_ids:
-            # PoC of alternative method of storing email
-            if not self.delete_message_from_server:
-                if uid in j["uids"]:
-                    continue
-                else:
-                    j["uids"].append(uid)
-                    with open("store.json", "w") as f:
-                        json.dump(j, f)
-            # PoC of alternative method of storing email
-
             try:
                 typ, msg_contents = self.server.uid("fetch", uid, "(RFC822)")
                 if not msg_contents:

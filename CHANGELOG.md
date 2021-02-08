@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 [Also based on](https://github.com/conventional-changelog/standard-version/blob/master/CHANGELOG.md) so decending.
 
+## [0.1.2] - 2021-02-07
+### Added
+- adds unique constrain to the message id and a bit of a change on how to create a message
+- adds formatting updates and testing updates
+
 ## [0.1.1] - 2021-02-03
 ### Added
 - adds modified documenation

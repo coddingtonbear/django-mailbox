@@ -352,7 +352,10 @@ class Mailbox(models.Model):
         return new
 
     def _process_message(self, message):
-        msg = Message()
+        try:
+            msg = Message(message_id=message["message-id"][0:255].strip())
+        except Exception:
+            msg = Message()
         msg._email_object = message
         settings = utils.get_settings()
 
@@ -369,8 +372,13 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(message["to"])
         elif "Delivered-To" in message:
             msg.to_header = utils.convert_header_to_unicode(message["Delivered-To"])
-        msg.save()
-        message = self._get_dehydrated_message(message, msg)
+        try:
+            msg.save()
+            message = self._get_dehydrated_message(message, msg)
+        except django.db.utils.IntegrityError:
+            logger.warning("Already loaded")
+            return None
+
         try:
             body = message.as_string()
         except KeyError as exc:
@@ -467,7 +475,9 @@ class Message(models.Model):
 
     subject = models.CharField(_("Subject"), max_length=255)
 
-    message_id = models.CharField(_("Message ID"), max_length=255)
+    message_id = models.CharField(
+        _("Message ID"), max_length=255, blank=None, null=None, unique=True
+    )
 
     in_reply_to = models.ForeignKey(
         "django_mailbox.Message",

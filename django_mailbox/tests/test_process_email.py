@@ -10,7 +10,7 @@ from django_mailbox.models import Mailbox, Message
 from django_mailbox.utils import convert_header_to_unicode
 from django_mailbox import utils
 from django_mailbox.tests.base import EmailMessageTestCase
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.core.mail import EmailMessage
 
 __all__ = ["TestProcessEmail"]
@@ -347,11 +347,11 @@ class TestProcessEmail(EmailMessageTestCase):
         email_object = self._get_email_object(
             "message_with_long_content.eml",
         )
-        size = len(force_text(email_object.as_string()))
+        size = len(force_str(email_object.as_string()))
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        self.assertEqual(size, len(force_text(msg.get_email_object().as_string())))
+        self.assertEqual(size, len(force_str(msg.get_email_object().as_string())))
 
     def test_message_saved(self):
         message = self._get_email_object("generic_message.eml")
@@ -365,7 +365,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        self.assertNotEquals(msg.eml, None)
+        self.assertNotEqual(msg.eml, None)
 
         self.assertTrue(msg.eml.name.endswith(".eml"))
 
@@ -384,7 +384,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        self.assertEquals(msg.eml, None)
+        self.assertEqual(msg.eml, None)
 
     def test_message_compressed(self):
         message = self._get_email_object("generic_message.eml")
