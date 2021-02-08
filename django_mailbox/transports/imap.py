@@ -1,7 +1,5 @@
 import imaplib
 import logging
-from os.path import exists
-import json
 from django.conf import settings
 
 from .base import EmailTransport, MessageParseError
@@ -107,7 +105,6 @@ class ImapTransport(EmailTransport):
             if folders[0] is None:
                 # If the archive folder does not exist, create it
                 self.server.create(self.archive)
-
 
         for uid in message_ids:
             try:

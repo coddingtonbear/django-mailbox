@@ -14,7 +14,8 @@ These ingested messages will be stored in the database in Django models and you 
 or -- if you're in a hurry -- by using a signal receiver.
 
 
-### Usage
+Usage
+-----
 
 1. poetry add django-mailbox
 
@@ -36,3 +37,9 @@ or -- if you're in a hurry -- by using a signal receiver.
   `Github <http://github.com/coddingtonbear/django-mailbox/issues>`_.
 - Test status available on
   `Travis-CI <https://travis-ci.org/coddingtonbear/django-mailbox>`_.
+
+Development
+-----------
+
+export DJANGO_SETTINGS_MODULE=websrv.settings
+
