@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-mailbox2"
-version = "0.1.2"
+version = "0.1.4"
 description = "I'm forking and making it my own."
 authors = ["Joe <joe@sunset-crew.com>"]
 

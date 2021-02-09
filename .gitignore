@@ -17,3 +17,4 @@ manage.py
 old/
 poetry.lock
 websrv
+version_updater.json
