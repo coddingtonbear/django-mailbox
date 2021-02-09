@@ -4,7 +4,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("django_mailbox", "0002_add_eml_to_message"),
+        ("django_mailbox2", "0002_add_eml_to_message"),
     ]
 
     operations = [

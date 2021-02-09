@@ -2,9 +2,9 @@ import copy
 
 from unittest import mock
 
-from django_mailbox import models, utils
-from django_mailbox.models import Message
-from django_mailbox.tests.base import EmailMessageTestCase
+from django_mailbox2 import models, utils
+from django_mailbox2.models import Message
+from django_mailbox2.tests.base import EmailMessageTestCase
 
 
 __all__ = ["TestMessageFlattening"]
@@ -81,7 +81,7 @@ class TestMessageFlattening(EmailMessageTestCase):
         )
         default_settings = utils.get_settings()
 
-        with mock.patch("django_mailbox.utils.get_settings") as get_settings:
+        with mock.patch("django_mailbox2.utils.get_settings") as get_settings:
             altered = copy.deepcopy(default_settings)
             altered["strip_unallowed_mimetypes"] = True
             altered["allowed_mimetypes"] = ["text/plain"]

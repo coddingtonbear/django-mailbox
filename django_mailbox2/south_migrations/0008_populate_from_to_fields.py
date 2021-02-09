@@ -7,7 +7,7 @@ from django.db import models
 
 class Migration(DataMigration):
     def forwards(self, orm):
-        for message in orm["django_mailbox.message"].objects.all():
+        for message in orm["django_mailbox2.message"].objects.all():
             msg_object = email.message_from_string(message.body)
             message.from_header = msg_object["from"]
             message.to_header = msg_object["to"]
@@ -17,7 +17,7 @@ class Migration(DataMigration):
         raise RuntimeError("Cannot reverse this migration.")
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
@@ -33,7 +33,7 @@ class Migration(DataMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "body": ("django.db.models.fields.TextField", [], {}),
             "from_header": (
@@ -49,13 +49,13 @@ class Migration(DataMigration):
                     "blank": "True",
                     "related_name": "'replies'",
                     "null": "True",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -80,7 +80,7 @@ class Migration(DataMigration):
                     "related_name": "'referenced_by'",
                     "null": "True",
                     "symmetrical": "False",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "subject": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
@@ -88,5 +88,5 @@ class Migration(DataMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]
     symmetrical = True

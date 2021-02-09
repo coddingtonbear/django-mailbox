@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
         # Changing field 'Mailbox.uri'
         db.alter_column(
-            "django_mailbox_mailbox",
+            "django_mailbox2_mailbox",
             "uri",
             self.gf("django.db.models.fields.CharField")(max_length=255, null=True),
         )
@@ -22,7 +22,7 @@ class Migration(SchemaMigration):
         )
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
             "name": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
@@ -37,7 +37,7 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "body": ("django.db.models.fields.TextField", [], {}),
             "from_address": (
@@ -49,7 +49,7 @@ class Migration(SchemaMigration):
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -65,4 +65,4 @@ class Migration(SchemaMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

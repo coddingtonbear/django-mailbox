@@ -4,8 +4,8 @@ from urllib import parse
 
 from django.core.mail import EmailMultiAlternatives
 
-from django_mailbox.models import Mailbox
-from django_mailbox.tests.base import EmailMessageTestCase
+from django_mailbox2.models import Mailbox
+from django_mailbox2.tests.base import EmailMessageTestCase
 
 
 __all__ = ["TestImap"]

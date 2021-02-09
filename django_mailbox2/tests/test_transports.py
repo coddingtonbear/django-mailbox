@@ -3,8 +3,8 @@ from os.path import exists
 from os import remove
 from django.test.utils import override_settings
 
-from django_mailbox.tests.base import EmailMessageTestCase, get_email_as_text
-from django_mailbox.transports import ImapTransport, Pop3Transport
+from django_mailbox2.tests.base import EmailMessageTestCase, get_email_as_text
+from django_mailbox2.transports import ImapTransport, Pop3Transport
 
 FAKE_UID_SEARCH_ANSWER = (
     "OK",

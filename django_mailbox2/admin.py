@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Model configuration in application ``django_mailbox`` for administration
+Model configuration in application ``django_mailbox2`` for administration
 console.
 """
 
@@ -11,9 +11,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from django_mailbox.models import MessageAttachment, Message, Mailbox
-from django_mailbox.signals import message_received
-from django_mailbox.utils import convert_header_to_unicode
+from django_mailbox2.models import MessageAttachment, Message, Mailbox
+from django_mailbox2.signals import message_received
+from django_mailbox2.utils import convert_header_to_unicode
 
 
 logger = logging.getLogger(__name__)

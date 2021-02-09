@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'MessageAttachment'
         db.create_table(
-            "django_mailbox_messageattachment",
+            "django_mailbox2_messageattachment",
             (
                 ("id", self.gf("django.db.models.fields.AutoField")(primary_key=True)),
                 (
@@ -18,11 +18,11 @@ class Migration(SchemaMigration):
                 ),
             ),
         )
-        db.send_create_signal("django_mailbox", ["MessageAttachment"])
+        db.send_create_signal("django_mailbox2", ["MessageAttachment"])
 
         # Adding M2M table for field attachments on 'Message'
         db.create_table(
-            "django_mailbox_message_attachments",
+            "django_mailbox2_message_attachments",
             (
                 (
                     "id",
@@ -32,30 +32,31 @@ class Migration(SchemaMigration):
                 ),
                 (
                     "message",
-                    models.ForeignKey(orm["django_mailbox.message"], null=False),
+                    models.ForeignKey(orm["django_mailbox2.message"], null=False),
                 ),
                 (
                     "messageattachment",
                     models.ForeignKey(
-                        orm["django_mailbox.messageattachment"], null=False
+                        orm["django_mailbox2.messageattachment"], null=False
                     ),
                 ),
             ),
         )
         db.create_unique(
-            "django_mailbox_message_attachments", ["message_id", "messageattachment_id"]
+            "django_mailbox2_message_attachments",
+            ["message_id", "messageattachment_id"],
         )
 
     def backwards(self, orm):
 
         # Deleting model 'MessageAttachment'
-        db.delete_table("django_mailbox_messageattachment")
+        db.delete_table("django_mailbox2_messageattachment")
 
         # Removing M2M table for field attachments on 'Message'
-        db.delete_table("django_mailbox_message_attachments")
+        db.delete_table("django_mailbox2_message_attachments")
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "from_email": (
@@ -81,13 +82,13 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "attachments": (
                 "django.db.models.fields.related.ManyToManyField",
                 [],
                 {
-                    "to": "orm['django_mailbox.MessageAttachment']",
+                    "to": "orm['django_mailbox2.MessageAttachment']",
                     "symmetrical": "False",
                 },
             ),
@@ -105,13 +106,13 @@ class Migration(SchemaMigration):
                     "blank": "True",
                     "related_name": "'replies'",
                     "null": "True",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -136,7 +137,7 @@ class Migration(SchemaMigration):
             "subject": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
             "to_header": ("django.db.models.fields.TextField", [], {}),
         },
-        "django_mailbox.messageattachment": {
+        "django_mailbox2.messageattachment": {
             "Meta": {"object_name": "MessageAttachment"},
             "document": (
                 "django.db.models.fields.files.FileField",
@@ -147,4 +148,4 @@ class Migration(SchemaMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

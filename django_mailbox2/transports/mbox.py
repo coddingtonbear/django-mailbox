@@ -1,5 +1,5 @@
 from mailbox import mbox
-from django_mailbox.transports.generic import GenericFileMailbox
+from django_mailbox2.transports.generic import GenericFileMailbox
 
 
 class MboxTransport(GenericFileMailbox):

@@ -6,15 +6,15 @@ from django.db import models
 
 class Migration(SchemaMigration):
     def forwards(self, orm):
-        db.rename_column("django_mailbox_message", "from_address", "address")
-        db.rename_column("django_mailbox_message", "received", "processed")
+        db.rename_column("django_mailbox2_message", "from_address", "address")
+        db.rename_column("django_mailbox2_message", "received", "processed")
 
     def backwards(self, orm):
-        db.rename_column("django_mailbox_message", "address", "from_address")
-        db.rename_column("django_mailbox_message", "processed", "received")
+        db.rename_column("django_mailbox2_message", "address", "from_address")
+        db.rename_column("django_mailbox2_message", "processed", "received")
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "address": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
             "body": ("django.db.models.fields.TextField", [], {}),
@@ -38,7 +38,7 @@ class Migration(SchemaMigration):
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -59,4 +59,4 @@ class Migration(SchemaMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

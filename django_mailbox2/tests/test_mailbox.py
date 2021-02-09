@@ -2,7 +2,7 @@ import os
 
 from django.test import TestCase
 
-from django_mailbox.models import Mailbox
+from django_mailbox2.models import Mailbox
 
 
 __all__ = ["TestMailbox"]

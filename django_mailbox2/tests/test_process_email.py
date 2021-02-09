@@ -6,10 +6,10 @@ import os.path
 import copy
 from unittest import mock
 
-from django_mailbox.models import Mailbox, Message
-from django_mailbox.utils import convert_header_to_unicode
-from django_mailbox import utils
-from django_mailbox.tests.base import EmailMessageTestCase
+from django_mailbox2.models import Mailbox, Message
+from django_mailbox2.utils import convert_header_to_unicode
+from django_mailbox2 import utils
+from django_mailbox2.tests.base import EmailMessageTestCase
 from django.utils.encoding import force_str
 from django.core.mail import EmailMessage
 
@@ -358,7 +358,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         default_settings = utils.get_settings()
 
-        with mock.patch("django_mailbox.utils.get_settings") as get_settings:
+        with mock.patch("django_mailbox2.utils.get_settings") as get_settings:
             altered = copy.deepcopy(default_settings)
             altered["store_original_message"] = True
             get_settings.return_value = altered
@@ -377,7 +377,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         default_settings = utils.get_settings()
 
-        with mock.patch("django_mailbox.utils.get_settings") as get_settings:
+        with mock.patch("django_mailbox2.utils.get_settings") as get_settings:
             altered = copy.deepcopy(default_settings)
             altered["store_original_message"] = False
             get_settings.return_value = altered
@@ -391,7 +391,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
         default_settings = utils.get_settings()
 
-        with mock.patch("django_mailbox.utils.get_settings") as get_settings:
+        with mock.patch("django_mailbox2.utils.get_settings") as get_settings:
             altered = copy.deepcopy(default_settings)
             altered["compress_original_message"] = True
             altered["store_original_message"] = True

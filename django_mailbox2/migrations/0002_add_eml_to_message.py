@@ -4,7 +4,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("django_mailbox", "0001_initial"),
+        ("django_mailbox2", "0001_initial"),
     ]
 
     operations = [

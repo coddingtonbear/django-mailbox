@@ -8,7 +8,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Mailbox.active'
         db.add_column(
-            "django_mailbox_mailbox",
+            "django_mailbox2_mailbox",
             "active",
             self.gf("django.db.models.fields.BooleanField")(default=True),
             keep_default=False,
@@ -16,10 +16,10 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         # Deleting field 'Mailbox.active'
-        db.delete_column("django_mailbox_mailbox", "active")
+        db.delete_column("django_mailbox2_mailbox", "active")
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
@@ -35,7 +35,7 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "body": ("django.db.models.fields.TextField", [], {}),
             "from_address": (
@@ -47,7 +47,7 @@ class Migration(SchemaMigration):
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -63,4 +63,4 @@ class Migration(SchemaMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

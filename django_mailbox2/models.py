@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Models declaration for application ``django_mailbox``.
+Models declaration for application ``django_mailbox2``.
 """
 import gzip
 from email.encoders import encode_base64
@@ -28,9 +28,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
-from django_mailbox import utils
-from django_mailbox.signals import message_received
-from django_mailbox.transports import (
+from django_mailbox2 import utils
+from django_mailbox2.signals import message_received
+from django_mailbox2.transports import (
     Pop3Transport,
     ImapTransport,
     MaildirTransport,
@@ -215,7 +215,7 @@ class Mailbox(models.Model):
         """Returns the transport instance for this mailbox.
 
         These will always be instances of
-        `django_mailbox.transports.base.EmailTransport`.
+        `django_mailbox2.transports.base.EmailTransport`.
 
         """
         if not self.uri:
@@ -480,7 +480,7 @@ class Message(models.Model):
     )
 
     in_reply_to = models.ForeignKey(
-        "django_mailbox.Message",
+        "django_mailbox2.Message",
         related_name="replies",
         blank=True,
         null=True,

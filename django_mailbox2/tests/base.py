@@ -5,8 +5,8 @@ import time
 from django.conf import settings
 from django.test import TestCase
 
-from django_mailbox import models, utils
-from django_mailbox.models import Mailbox, Message
+from django_mailbox2 import models, utils
+from django_mailbox2.models import Mailbox, Message
 
 
 class EmailIntegrationTimeout(Exception):

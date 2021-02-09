@@ -4,7 +4,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("django_mailbox", "0003_auto_20150409_0316"),
+        ("django_mailbox2", "0003_auto_20150409_0316"),
     ]
 
     operations = [

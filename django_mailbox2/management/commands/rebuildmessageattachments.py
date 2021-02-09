@@ -4,7 +4,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from django_mailbox.models import MessageAttachment, Message
+from django_mailbox2.models import MessageAttachment, Message
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

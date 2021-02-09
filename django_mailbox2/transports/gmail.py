@@ -1,6 +1,6 @@
 import logging
 
-from django_mailbox.transports.imap import ImapTransport
+from django_mailbox2.transports.imap import ImapTransport
 
 
 logger = logging.getLogger(__name__)

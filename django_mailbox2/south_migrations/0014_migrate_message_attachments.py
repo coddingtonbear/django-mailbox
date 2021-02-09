@@ -8,18 +8,18 @@ class Migration(SchemaMigration):
     no_dry_run = True
 
     def forwards(self, orm):
-        for message in orm["django_mailbox.Message"].objects.all():
+        for message in orm["django_mailbox2.Message"].objects.all():
             for attachment in message.attachments.all():
                 attachment.message = message
                 attachment.save()
 
     def backwards(self, orm):
-        for attachment in orm["django_mailbox.MessageAttachment"].objects.all():
+        for attachment in orm["django_mailbox2.MessageAttachment"].objects.all():
             if attachment.message:
                 attachment.message.attachments.add(attachment)
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "from_email": (
@@ -45,7 +45,7 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "attachments": (
                 "django.db.models.fields.related.ManyToManyField",
@@ -54,7 +54,7 @@ class Migration(SchemaMigration):
                     "symmetrical": "False",
                     "related_name": "'messages_old'",
                     "blank": "True",
-                    "to": "orm['django_mailbox.MessageAttachment']",
+                    "to": "orm['django_mailbox2.MessageAttachment']",
                 },
             ),
             "body": ("django.db.models.fields.TextField", [], {}),
@@ -71,13 +71,13 @@ class Migration(SchemaMigration):
                     "blank": "True",
                     "related_name": "'replies'",
                     "null": "True",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -102,7 +102,7 @@ class Migration(SchemaMigration):
             "subject": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
             "to_header": ("django.db.models.fields.TextField", [], {}),
         },
-        "django_mailbox.messageattachment": {
+        "django_mailbox2.messageattachment": {
             "Meta": {"object_name": "MessageAttachment"},
             "document": (
                 "django.db.models.fields.files.FileField",
@@ -117,10 +117,10 @@ class Migration(SchemaMigration):
                     "blank": "True",
                     "related_name": "'attachments_new'",
                     "null": "True",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

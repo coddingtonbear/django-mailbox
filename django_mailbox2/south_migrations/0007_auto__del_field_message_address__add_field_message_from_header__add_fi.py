@@ -7,11 +7,11 @@ from django.db import models
 class Migration(SchemaMigration):
     def forwards(self, orm):
         # Deleting field 'Message.address'
-        db.delete_column("django_mailbox_message", "address")
+        db.delete_column("django_mailbox2_message", "address")
 
         # Adding field 'Message.from_header'
         db.add_column(
-            "django_mailbox_message",
+            "django_mailbox2_message",
             "from_header",
             self.gf("django.db.models.fields.CharField")(default="", max_length=255),
             keep_default=False,
@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'Message.to_header'
         db.add_column(
-            "django_mailbox_message",
+            "django_mailbox2_message",
             "to_header",
             self.gf("django.db.models.fields.TextField")(default=""),
             keep_default=False,
@@ -32,13 +32,13 @@ class Migration(SchemaMigration):
             "Cannot reverse this migration. 'Message.address' and its values cannot be restored."
         )
         # Deleting field 'Message.from_header'
-        db.delete_column("django_mailbox_message", "from_header")
+        db.delete_column("django_mailbox2_message", "from_header")
 
         # Deleting field 'Message.to_header'
-        db.delete_column("django_mailbox_message", "to_header")
+        db.delete_column("django_mailbox2_message", "to_header")
 
     models = {
-        "django_mailbox.mailbox": {
+        "django_mailbox2.mailbox": {
             "Meta": {"object_name": "Mailbox"},
             "active": ("django.db.models.fields.BooleanField", [], {"default": "True"}),
             "id": ("django.db.models.fields.AutoField", [], {"primary_key": "True"}),
@@ -54,7 +54,7 @@ class Migration(SchemaMigration):
                 },
             ),
         },
-        "django_mailbox.message": {
+        "django_mailbox2.message": {
             "Meta": {"object_name": "Message"},
             "body": ("django.db.models.fields.TextField", [], {}),
             "from_header": (
@@ -70,13 +70,13 @@ class Migration(SchemaMigration):
                     "blank": "True",
                     "related_name": "'replies'",
                     "null": "True",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "mailbox": (
                 "django.db.models.fields.related.ForeignKey",
                 [],
-                {"related_name": "'messages'", "to": "orm['django_mailbox.Mailbox']"},
+                {"related_name": "'messages'", "to": "orm['django_mailbox2.Mailbox']"},
             ),
             "message_id": (
                 "django.db.models.fields.CharField",
@@ -101,7 +101,7 @@ class Migration(SchemaMigration):
                     "related_name": "'referenced_by'",
                     "null": "True",
                     "symmetrical": "False",
-                    "to": "orm['django_mailbox.Message']",
+                    "to": "orm['django_mailbox2.Message']",
                 },
             ),
             "subject": ("django.db.models.fields.CharField", [], {"max_length": "255"}),
@@ -109,4 +109,4 @@ class Migration(SchemaMigration):
         },
     }
 
-    complete_apps = ["django_mailbox"]
+    complete_apps = ["django_mailbox2"]

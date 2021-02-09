@@ -9,7 +9,7 @@ except ImportError:
 
 from django.core.management.base import BaseCommand
 
-from django_mailbox.models import Mailbox
+from django_mailbox2.models import Mailbox
 
 
 logger = logging.getLogger(__name__)

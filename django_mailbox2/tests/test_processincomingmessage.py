@@ -14,7 +14,7 @@ class CommandsTestCase(TestCase):
         # Mock handle so that the test doesn't hang waiting for input. Note that we are only testing
         # the argument parsing here -- functionality should be tested elsewhere
         with mock.patch(
-            "django_mailbox.management.commands.processincomingmessage.Command.handle"
+            "django_mailbox2.management.commands.processincomingmessage.Command.handle"
         ) as handle:
             # Don't care about the return value
             handle.return_value = None
@@ -38,7 +38,7 @@ class CommandsTestCase(TestCase):
         mailbox_name = "foo_mailbox"
 
         with mock.patch(
-            "django_mailbox.management.commands.processincomingmessage.Command.handle"
+            "django_mailbox2.management.commands.processincomingmessage.Command.handle"
         ) as handle:
             handle.return_value = None
 
