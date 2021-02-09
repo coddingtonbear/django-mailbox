@@ -1,0 +1,1 @@
+[{"name": "Makefile", "searchStr": "VERSION :=", "formatStr": "VERSION := {0}\n"}, {"name": "tests/test_django-mailbox2.py", "searchStr": "    assert __version__", "formatStr": "    assert __version__ == \"{0}\"\n"}, {"name": "django-mailbox2/__init__.py", "searchStr": "__version__ =", "formatStr": "__version__ = \"{0}\"\n"}]

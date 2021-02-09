@@ -1,0 +1,22 @@
+from django.db import models, migrations
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("django_mailbox2", "0001_initial"),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name="message",
+            name="eml",
+            field=models.FileField(
+                help_text="Original full content of message",
+                upload_to=b"messages",
+                null=True,
+                verbose_name="Message as a file",
+            ),
+            preserve_default=True,
+        ),
+    ]
