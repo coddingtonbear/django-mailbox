@@ -369,6 +369,16 @@ class Mailbox(models.Model):
             msg.message_id = message['message-id'][0:255].strip()
         if 'from' in message:
             msg.from_header = utils.convert_header_to_unicode(message['from'])
+            logger.info(
+                "from_header set to %s",
+                msg.from_header
+            )
+            if msg.from_header:
+                msg.from_email_address = parseaddr(msg.from_header)[1].lower()
+                logger.info(
+                    "from_email_address set to %s",
+                    msg.from_email_address
+                )
         if 'to' in message:
             msg.to_header = utils.convert_header_to_unicode(message['to'])
         elif 'Delivered-To' in message:
@@ -460,6 +470,11 @@ class UnreadMessageManager(models.Manager):
 
 
 class Message(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['from_email_address']),
+        ]
+
     mailbox = models.ForeignKey(
         Mailbox,
         related_name='messages',
@@ -489,6 +504,13 @@ class Message(models.Model):
     from_header = models.CharField(
         _('From header'),
         max_length=255,
+    )
+
+    from_email_address = models.CharField(
+        _('From email address'),
+        max_length = 255,
+        blank=True,
+        null=True,
     )
 
     to_header = models.TextField(
