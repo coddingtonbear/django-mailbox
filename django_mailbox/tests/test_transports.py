@@ -1,5 +1,4 @@
-import mock
-import six
+from unittest import mock
 
 from django.test.utils import override_settings
 
@@ -9,24 +8,22 @@ from django_mailbox.transports import ImapTransport, Pop3Transport
 FAKE_UID_SEARCH_ANSWER = (
     'OK',
     [
-        six.b(
-            '18 19 20 21 22 23 24 25 26 27 28 29 '
-            '30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'
-        )
+        b'18 19 20 21 22 23 24 25 26 27 28 29 ' + 
+        b'30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'
     ]
 )
 FAKE_UID_FETCH_SIZES = (
     'OK',
     [
-        six.b('1 (UID 18 RFC822.SIZE 58070000000)'),
-        six.b('2 (UID 19 RFC822.SIZE 2593)')
+        b'1 (UID 18 RFC822.SIZE 58070000000)',
+        b'2 (UID 19 RFC822.SIZE 2593)'
     ]
 )
 FAKE_UID_FETCH_MSG = (
     'OK',
     [
         (
-            six.b('1 (UID 18 RFC822 {5807}'),
+            b'1 (UID 18 RFC822 {5807}',
             get_email_as_text('generic_message.eml')
         ),
     ]
@@ -34,13 +31,13 @@ FAKE_UID_FETCH_MSG = (
 FAKE_UID_COPY_MSG = (
     'OK',
     [
-        six.b('[COPYUID 1 2 2] (Success)')
+        b'[COPYUID 1 2 2] (Success)'
     ]
 )
 FAKE_LIST_ARCHIVE_FOLDERS_ANSWERS = (
     'OK',
     [
-        six.b('(\\HasNoChildren \\All) "/" "[Gmail]/All Mail"')
+        b'(\\HasNoChildren \\All) "/" "[Gmail]/All Mail"'
     ]
 )
 
@@ -66,12 +63,12 @@ class IMAPTestCase(EmailMessageTestCase):
         self.imap_server = mock.Mock()
         self.imap_server.uid = imap_server_uid_method
         self.imap_server.list = imap_server_list_method
-        super(IMAPTestCase, self).setUp()
+        super().setUp()
 
 
 class TestImapTransport(IMAPTestCase):
     def setUp(self):
-        super(TestImapTransport, self).setUp()
+        super().setUp()
         self.arbitrary_hostname = 'one.two.three'
         self.arbitrary_port = 100
         self.ssl = False
@@ -92,7 +89,7 @@ class TestImapTransport(IMAPTestCase):
 
 class TestImapArchivedTransport(TestImapTransport):
     def setUp(self):
-        super(TestImapArchivedTransport, self).setUp()
+        super().setUp()
         self.archive = 'Archive'
         self.transport = ImapTransport(
             self.arbitrary_hostname,
@@ -107,7 +104,7 @@ class TestMaxSizeImapTransport(TestImapTransport):
 
     @override_settings(DJANGO_MAILBOX_MAX_MESSAGE_SIZE=5807)
     def setUp(self):
-        super(TestMaxSizeImapTransport, self).setUp()
+        super().setUp()
 
         self.transport = ImapTransport(
             self.arbitrary_hostname,
@@ -142,7 +139,7 @@ class TestPop3Transport(EmailMessageTestCase):
             self.ssl
         )
         self.transport.server = None
-        super(TestPop3Transport, self).setUp()
+        super().setUp()
 
     def test_get_email_message(self):
         with mock.patch.object(self.transport, 'server') as server:

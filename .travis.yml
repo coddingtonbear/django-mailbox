@@ -1,48 +1,46 @@
+version: ~> 1.0
+os: linux
 language: python
-python:
-- '2.7'
-- '3.4'
-- '3.5'
-- '3.6'
 
-env:
-  matrix:
-  - DJANGO='>=1.7,<1.8'
-  - DJANGO='>=1.8,<1.9'
-  - DJANGO='>=1.9,<1.10'
-  - DJANGO='>=1.10,<1.11'
-  - DJANGO='>=1.11,<2.0'
-  - DJANGO='>=2.0,<2.1'
-  global:
-  - secure: aswHU7pQroGM+GHoYlhXzzk2FYfqxXJORjqXPsbgoHAIu4Bssaj8+YAzIcdy3j9kSt4I8VBpjnn8H/wzQXki75JBZOosQrIeMK018+uR+ZMONBLqDYW/N7EJHLgZt9QXxQNKeZygrD4GN/Dc4gLHGvPQC/RfPuuHcnF0Liaahoo=
-  - secure: RZ6M6984P885GRoyx9n/WCCWGoFAzYpS8sZkXu3e/HK9oPXfaM2IEHjkq03jIC/FcWn/QMtFjOUBqQU94rnqdivFdFkeZHk1WUQgC0hztH3Qhh9zu2PNIrYUDpVD5dJqBpprWbSwFP8yNsJlP9A2RUubTlZblKHuaBhhiuNN+kU=
-  - secure: gsAAl/RaTodLJDHWOuHZWtooa9/psyXBONF7ElZOTki3WvH+KugtjuXn3pXBGbUhvGqd5qfgPqX7WQOFP9KTdkXBbkU20rCHLh3SV8V2vRkGFAFiGPBTFfSA83zFNMvmgEnTww4OzYsfs4wHTEyxBeQkggnB5bXEvqkFVrHBjuQ=
-  - secure: mMa7UUt+CQDB52fGM1T3oRL67OzQzRIc+BQCOqUEUhBV7p5g7Y1Hv6NTdVZTvK16x3DsP+5kFNd1v7rsTFw2qzP3hOxIv2BtMPuSzZdnN85Zd/nGwnztxzj/rqw7TMBaYvIdEZZbpRF/K0p0Xr6LJK2s9UkPXPUaLqly7kNi360=
-matrix:
-  exclude:
-# sort by django version, next to by python version
-# Django 1.7 support Python 2.7, 3.4
-  - env: DJANGO='>=1.7,<1.8'
-    python: '3.5'
-  - env: DJANGO='>=1.7,<1.8'
-    python: '3.6'
-# Django 1.8 support Python 2.7, 3.4, 3.5
-  - env: DJANGO='>=1.8,<1.9'
-    python: '3.6'
-# Django 1.9 support Python 2.7, 3.4, 3.5
-  - env: DJANGO='>=1.9,<1.10'
-    python: '3.6'
-# Django 1.10 support Python 2.7, 3.4, 3.5
-  - env: DJANGO='>=1.10,<1.11'
-    python: '3.6'
-# Django 1.11 support all supported Python interpreter
-# Django 2.0 support Python 3.4, 3.5, 3.6
-  - env: DJANGO='>=2.0,<2.1'
-    python: '2.7'
+jobs:
+  - env: TOX_ENV=docs
+    python: 3.8
+  # sort by django version, next to by python version
+  # Django 1.11 support all supported Python interpreter
+  - env: TOX_ENV=django111-py35
+    python: 3.5
+  - env: TOX_ENV=django111-py36
+    python: 3.6
+  # Django 2.0 support 3.5, 3.6
+  - env: TOX_ENV=django20-py35
+    python: 3.5
+  - env: TOX_ENV=django20-py36
+    python: 3.6
+
+  # Django 2.1 support Python 3.5, 3.6, 3.7
+  - env: TOX_ENV=django21-py35
+    python: 3.5
+  - env: TOX_ENV=django21-py36
+    python: 3.6
+  - env: TOX_ENV=django21-py37
+    python: 3.7
+  # Django 2.2 support Python 3.5, 3.6, 3.7
+  - env: TOX_ENV=django22-py35
+    python: 3.5
+  - env: TOX_ENV=django22-py36
+    python: 3.6
+  - env: TOX_ENV=django22-py37
+    python: 3.7
+  # Django 3.0 (beta) support Python 3.6, 3.7, 3.8
+  - env: TOX_ENV=django30-py36
+    python: 3.6
+  - env: TOX_ENV=django30-py37
+    python: 3.7
+  - env: TOX_ENV=django30-py38 INTEGRATION=1
+    python: 3.8
+
 install:
-  - pip install -q Django$DJANGO
-  - pip install -r test_requirements.txt
-  - pip install -q -e .
+  - pip install tox
+
 script:
-  - python manage.py test
-sudo: false
+  - tox -e $TOX_ENV

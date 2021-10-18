@@ -3,8 +3,7 @@ import os.path
 import sys
 
 import copy
-import mock
-import six
+from unittest import mock
 
 from django_mailbox.models import Mailbox, Message
 from django_mailbox.utils import convert_header_to_unicode
@@ -54,18 +53,18 @@ class TestProcessEmail(EmailMessageTestCase):
 
         attachments = msg.attachments.order_by('pk').all()
         self.assertEqual(
-            u'\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
-            u'\u043e\u0436\u0435\u043d\u0438\u0439 HSE Career Fair 8 \u0430'
-            u'\u043f\u0440\u0435\u043b\u044f 2016.pdf',
+            '\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
+            '\u043e\u0436\u0435\u043d\u0438\u0439 HSE Career Fair 8 \u0430'
+            '\u043f\u0440\u0435\u043b\u044f 2016.pdf',
             attachments[0].get_filename()
         )
         self.assertEqual(
-            u'\u0412\u0435\u0434\u043e\u043c\u043e\u0441\u0442\u0438.pdf',
+            '\u0412\u0435\u0434\u043e\u043c\u043e\u0441\u0442\u0438.pdf',
             attachments[1].get_filename()
         )
         self.assertEqual(
-            u'\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
-            u'\u043e\u0436\u0435\u043d\u0438\u0439 2016.pptx',
+            '\u041f\u0430\u043a\u0435\u0442 \u043f\u0440\u0435\u0434\u043b'
+            '\u043e\u0436\u0435\u043d\u0438\u0439 2016.pptx',
             attachments[2].get_filename()
         )
 
@@ -87,33 +86,6 @@ class TestProcessEmail(EmailMessageTestCase):
         self.assertEqual(
             attachment.get_filename(),
             'heart.png',
-        )
-
-    def test_message_with_not_decoded_attachment_header(self):
-        if sys.version_info > (3, 0):
-            self.skipTest(
-                "This test is only relevant on Python 2.x."
-            )
-
-        email_object = self._get_email_object(
-            'message_with_not_decoded_attachment_header.eml',
-        )
-
-        mailbox = Mailbox.objects.create()
-        msg = mailbox.process_incoming_message(email_object)
-
-        expected_count = 1
-        actual_count = msg.attachments.count()
-
-        self.assertEqual(
-            expected_count,
-            actual_count,
-        )
-
-        attachment = msg.attachments.all()[0]
-        self.assertEqual(
-            attachment.get_filename(),
-            u'\xc3\xb0\xcc\x9eo\xce\xb2\xcc\x9ele.png',
         )
 
     def test_message_with_utf8_attachment_header(self):
@@ -138,13 +110,13 @@ class TestProcessEmail(EmailMessageTestCase):
         attachment = msg.attachments.all()[0]
         self.assertEqual(
             attachment.get_filename(),
-            u'pi\u0142kochwyty.jpg'
+            'pi\u0142kochwyty.jpg'
         )
 
         attachment = msg.attachments.all()[1]
         self.assertEqual(
             attachment.get_filename(),
-            u'odpowied\u017a Burmistrza.jpg'
+            'odpowied\u017a Burmistrza.jpg'
         )
 
     def test_message_get_text_body(self):
@@ -187,7 +159,7 @@ class TestProcessEmail(EmailMessageTestCase):
                 'messages/generic_message.eml'
             )
         ) as f:
-            unicode_body = six.u(f.read())
+            unicode_body = f.read()
 
         message = Message()
         message.body = unicode_body
@@ -281,10 +253,8 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        expected_text = six.u(
-            'This message contains funny UTF16 characters like this one: '
-            '"\xc2\xa0" and this one "\xe2\x9c\xbf".'
-        )
+        expected_text = 'This message contains funny UTF16 characters ' + \
+            'like this one: "\xc2\xa0" and this one "\xe2\x9c\xbf".'
         actual_text = msg.text
 
         self.assertEqual(
@@ -320,14 +290,12 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.process_incoming_message(email_object)
 
         actual_text = msg.text
-        expected_body = six.u(
-            '\u042d\u0442\u043e '
-            '\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 '
-            '\u0438\u043c\u0435\u0435\u0442 '
-            '\u043d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d'
-            '\u0443\u044e '
+        expected_body = '\u042d\u0442\u043e ' + \
+            '\u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 ' + \
+            '\u0438\u043c\u0435\u0435\u0442 ' + \
+            '\u043d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d' + \
+            '\u0443\u044e ' + \
             '\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u043a\u0430.'
-        )
 
         self.assertEqual(
             actual_text,
@@ -341,23 +309,15 @@ class TestProcessEmail(EmailMessageTestCase):
 
         msg = self.mailbox.process_incoming_message(email_object)
 
-        expected_subject = six.u(
-            '\u00D3\u00E7\u00ED\u00E0\u00E9 \u00EA\u00E0\u00EA '
-            '\u00E7\u00E0\u00F0\u00E0\u00E1\u00E0\u00F2\u00FB\u00E2'
-            '\u00E0\u00F2\u00FC \u00EE\u00F2 1000$ \u00E2 '
+        expected_subject = '\u00D3\u00E7\u00ED\u00E0\u00E9 \u00EA\u00E0\u00EA ' + \
+            '\u00E7\u00E0\u00F0\u00E0\u00E1\u00E0\u00F2\u00FB\u00E2' + \
+            '\u00E0\u00F2\u00FC \u00EE\u00F2 1000$ \u00E2 ' + \
             '\u00ED\u00E5\u00E4\u00E5\u00EB\u00FE!'
-        )
         actual_subject = msg.subject
         self.assertEqual(actual_subject, expected_subject)
 
-        if sys.version_info >= (3, 3):
-            # There were various bugfixes in Py3k's email module,
-            # this is apparently one of them.
-            expected_from = six.u('test test <mr.test32@mail.ru>')
-        else:
-            expected_from = six.u('test test<mr.test32@mail.ru>')
+        expected_from = 'test test <mr.test32@mail.ru>'
         actual_from = msg.from_header
-
         self.assertEqual(expected_from, actual_from)
 
     def test_message_reply(self):
@@ -426,15 +386,15 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        actual_email_object = msg.get_email_object()
-
         self.assertNotEquals(msg.eml, None)
 
         self.assertTrue(msg.eml.name.endswith('.eml'))
 
         with open(msg.eml.name, 'rb') as f:
-            self.assertEqual(f.read(),
-                             self._get_email_as_text('generic_message.eml'))
+            self.assertEqual(
+                f.read(),
+                self._get_email_as_text('generic_message.eml')
+            )
 
     def test_message_saving_ignored(self):
         message = self._get_email_object('generic_message.eml')

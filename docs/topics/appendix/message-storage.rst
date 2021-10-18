@@ -5,7 +5,7 @@ Message Storage Details
 First, it may be helpful to know a little bit about how e-mail messages
 are actually sent across the wire:
 
-.. code-block:: http
+.. code-block::
   
    MIME-Version: 1.0
    Received: by 10.221.0.211 with HTTP; Sun, 20 Jan 2013 12:07:07 -0800 (PST)
@@ -52,7 +52,7 @@ and alter the message body removing the original payload component, but writing
 a custom header providing the library enough information to re-build the
 message in the event that one needs a python ``email.message.Message`` object.
 
-.. code-block:: http
+.. code-block::
 
    MIME-Version: 1.0
    Received: by 10.221.0.211 with HTTP; Sun, 20 Jan 2013 12:07:07 -0800 (PST)
@@ -113,7 +113,7 @@ in the place of the original attachment, the attachment was stored in a
 And were one to run the ``django_mailbox.Message`` instance's 
 ``get_email_object`` method, the following message will be returned:
 
-.. code-block:: http
+.. code-block::
   
    MIME-Version: 1.0
    Received: by 10.221.0.211 with HTTP; Sun, 20 Jan 2013 12:07:07 -0800 (PST)
