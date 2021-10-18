@@ -1,5 +1,3 @@
-import six
-
 from poplib import POP3, POP3_SSL
 
 from .base import EmailTransport, MessageParseError
@@ -24,9 +22,7 @@ class Pop3Transport(EmailTransport):
         self.server.pass_(password)
 
     def get_message_body(self, message_lines):
-        if six.PY3:
-            return six.binary_type('\r\n', 'ascii').join(message_lines)
-        return '\r\n'.join(message_lines)
+        return bytes('\r\n', 'ascii').join(message_lines)
 
     def get_message(self, condition=None):
         message_count = len(self.server.list()[1])

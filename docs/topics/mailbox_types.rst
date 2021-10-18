@@ -56,7 +56,7 @@ SSL) and you would like to fetch new emails from folder named `Myfolder` and arc
 into a folder named ``Archived``, you
 would enter the following as your URI::
 
-    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=Archived&folder=Myfolder
 
 Additional IMAP Mailbox Features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,6 +76,8 @@ to the end of your URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?folder=MyFolder
 
+.. _gmail-oauth:
+
 Specifying an archive folder
 ++++++++++++++++++++++++++++
 
@@ -91,7 +93,9 @@ after processing, add ``?archive=myarchivefolder`` to the end of the URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=myarchivefolder
 
-.. _gmail-oauth:
+If you want to specifying both folder use ``&``::
+
+    imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?archive=myarchivefolder&folder=MyFolder
 
 Gmail IMAP with Oauth2 authentication
 -------------------------------------

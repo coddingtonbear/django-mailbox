@@ -1,7 +1,6 @@
 import os
 import uuid
-
-from six.moves.urllib import parse
+from urllib import parse
 
 from django.core.mail import EmailMultiAlternatives
 
@@ -14,7 +13,7 @@ __all__ = ['TestImap']
 
 class TestImap(EmailMessageTestCase):
     def setUp(self):
-        super(TestImap, self).setUp()
+        super().setUp()
 
         self.test_imap_server = (
             os.environ.get('EMAIL_IMAP_SERVER')
