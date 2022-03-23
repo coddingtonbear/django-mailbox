@@ -20,8 +20,8 @@ class Migration(SchemaMigration):
         # Adding M2M table for field attachments on 'Message'
         db.create_table('django_mailbox_message_attachments', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('message', models.ForeignKey(orm['django_mailbox.message'], null=False)),
-            ('messageattachment', models.ForeignKey(orm['django_mailbox.messageattachment'], null=False))
+            ('message', models.ForeignKey(orm['django_mailbox.message'], on_delete=models.CASCADE,  null=False)),
+            ('messageattachment', models.ForeignKey(orm['django_mailbox.messageattachment'], on_delete=models.CASCADE,  null=False))
         ))
         db.create_unique('django_mailbox_message_attachments', ['message_id', 'messageattachment_id'])
 
