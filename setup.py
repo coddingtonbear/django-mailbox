@@ -13,6 +13,10 @@ gmail_oauth2_require = [
     'python-social-auth',
 ]
 
+office365_oauth2_require = [
+    'O365',
+]
+
 setup(
     name='django-mailbox',
     version=version_string,
@@ -25,7 +29,8 @@ setup(
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     extras_require={
-        'gmail-oauth2': gmail_oauth2_require
+        'gmail-oauth2': gmail_oauth2_require,
+        'office365-oauth2': office365_oauth2_require
     },
     python_requires=">=3",
     classifiers=[
