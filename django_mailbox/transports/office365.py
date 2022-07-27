@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class Office365Transport(EmailTransport):
     def __init__(
         self, hostname, port=None, ssl=False, tls=False,
-        archive='', folder=None,
+        archive='', folder=None, client_id=None, client_secret=None, tenant_id=None
     ):
         self.max_message_size = getattr(
             settings,
@@ -23,30 +23,32 @@ class Office365Transport(EmailTransport):
             'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
             None
         )
-        # self.hostname = hostname
-        # self.port = port
-        # self.archive = archive
-        # self.folder = folder
-        # self.tls = tls
-        # if ssl:
-        # #    self.transport = imaplib.IMAP4_SSL
-        #     if not self.port:
-        #         self.port = 993
-        # else:
-        #     self.transport = imaplib.IMAP4
-        #     if not self.port:
-        #         self.port = 143
+        self.hostname = hostname
+        self.port = port
+        self.archive = archive
+        self.folder = folder
+        self.tls = tls
+        if ssl:
+             #self.transport = imaplib.IMAP4_SSL
+            if not self.port:
+                self.port = 993
+        else:
+            #self.transport = imaplib.IMAP4
+            if not self.port:
+                self.port = 143
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.tenant_id = tenant_id
 
     def connect(self, username, password):
-        # self.server = self.transport(self.hostname, self.port)
-        # if self.tls:
-        #     self.server.starttls()
-        # typ, msg = self.server.login(username, password)
-        #
-        # if self.folder:
-        #     self.server.select(self.folder)
-        # else:
-        #     self.server.select()
+        credentials = (self.client_id, self.client_secret)
+
+        # the default protocol will be Microsoft Graph
+        # the default authentication method will be "on behalf of a user"
+
+        self.server = O365.Account(credentials, auth_flow_type='credentials', tenant_id=self.tenant_id)
+        if self.server.authenticate(scopes=['mailbox']):
+            print('Authenticated!')
 
     def _get_all_message_ids(self):
         # # Fetch all the message uids
