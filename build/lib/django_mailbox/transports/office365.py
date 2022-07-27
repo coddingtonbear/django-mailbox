@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Office365Transport(EmailTransport):
     def __init__(
-        self, hostname, port=None, ssl=False, tls=False,
+        self, port=None, ssl=False, tls=False,
         archive='', folder=None, client_id=None, client_secret=None, tenant_id=None
     ):
         self.max_message_size = getattr(
@@ -23,7 +23,6 @@ class Office365Transport(EmailTransport):
             'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
             None
         )
-        self.hostname = hostname
         self.port = port
         self.archive = archive
         self.folder = folder
@@ -59,7 +58,7 @@ class Office365Transport(EmailTransport):
         # # splitting into individual UIDs.
         # if message_id_string:
         #     return message_id_string.decode().split(' ')
-        # return []
+        return []
 
     def _get_small_message_ids(self, message_ids):
         # Using existing message uids, get the sizes and

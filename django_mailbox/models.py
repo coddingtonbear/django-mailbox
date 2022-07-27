@@ -208,7 +208,7 @@ class Mailbox(models.Model):
     @property
     def tenant_id(self):
         """Returns (if specified) the tenant id for Office365."""
-        tenant_id = self._query_string.get('tentant_id', None)
+        tenant_id = self._query_string.get('tenant_id', None)
         if not tenant_id:
             return None
         return tenant_id[0]
