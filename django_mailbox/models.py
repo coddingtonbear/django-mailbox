@@ -249,12 +249,13 @@ class Mailbox(models.Model):
             conn.connect(self.username, self.password)
         elif self.type == 'office365':
             conn = Office365Transport(
+                self.location,
                 port=self.port if self.port else None,
                 ssl=True,
-                archive=self.archive,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
-                tenant_id=self.tenant_id
+                tenant_id=self.tenant_id,
+                folder=self.folder
             )
             conn.connect(self.username, self.password)
         elif self.type == 'maildir':
