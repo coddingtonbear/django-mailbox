@@ -10,7 +10,3 @@ class EmailTransport:
 
         return message
 
-    def get_email_from_string(self, contents):
-        message = email.message_from_string(contents)
-
-        return message

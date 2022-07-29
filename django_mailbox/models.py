@@ -251,8 +251,6 @@ class Mailbox(models.Model):
             conn = Office365Transport(
                 self.location,
                 self.username,
-                port=self.port if self.port else None,
-                ssl=True,
                 folder=self.folder
             )
             conn.connect(self.client_id, self.client_secret, self.tenant_id)
