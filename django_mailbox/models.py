@@ -250,14 +250,12 @@ class Mailbox(models.Model):
         elif self.type == 'office365':
             conn = Office365Transport(
                 self.location,
+                self.username,
                 port=self.port if self.port else None,
                 ssl=True,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                tenant_id=self.tenant_id,
                 folder=self.folder
             )
-            conn.connect(self.username, self.password)
+            conn.connect(self.client_id, self.client_secret, self.tenant_id)
         elif self.type == 'maildir':
             conn = MaildirTransport(self.location)
         elif self.type == 'mbox':

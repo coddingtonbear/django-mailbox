@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Office365Transport(EmailTransport):
     def __init__(
-        self, hostname, port=None, ssl=False, tls=False,
-        archive='', folder=None, client_id=None, client_secret=None, tenant_id=None
+        self, hostname, username, port=None, ssl=False, tls=False, folder=None
     ):
         self.max_message_size = getattr(
             settings,
@@ -24,8 +23,8 @@ class Office365Transport(EmailTransport):
             None
         )
         self.hostname = hostname
+        self.username = username
         self.port = port
-        self.archive = archive
         self.folder = folder
         self.tls = tls
         if ssl:
@@ -36,85 +35,29 @@ class Office365Transport(EmailTransport):
             #self.transport = imaplib.IMAP4
             if not self.port:
                 self.port = 143
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.tenant_id = tenant_id
 
-    def connect(self, username, password):
-        credentials = (self.client_id, self.client_secret)
+    def connect(self, client_id, client_secret, tenant_id):
+        credentials = (client_id, client_secret)
 
-        # the default protocol will be Microsoft Graph
-        # the default authentication method will be "on behalf of a user"
+        self.account = O365.Account(credentials, auth_flow_type='credentials', tenant_id=tenant_id)
+        self.account.authenticate()
 
-        self.server = O365.Account(credentials, auth_flow_type='credentials', tenant_id=self.tenant_id)
-        if self.server.authenticate(scopes=['mailbox']):
-            print('Authenticated!')
+        self.mailbox = self.account.mailbox(resource=self.username)
+        self.mailbox_folder = self.mailbox.inbox_folder()
+        if self.folder:
+            self.mailbox_folder = self.mailbox.get_folder(folder_name=self.folder)
 
-    def _get_all_message_ids(self):
-        # # Fetch all the message uids
-        # response, message_ids = self.server.uid('search', None, 'ALL')
-        # message_id_string = message_ids[0].strip()
-        # # Usually `message_id_string` will be a list of space-separated
-        # # ids; we must make sure that it isn't an empty string before
-        # # splitting into individual UIDs.
-        # if message_id_string:
-        #     return message_id_string.decode().split(' ')
-        # return []
-
-    def _get_small_message_ids(self, message_ids):
-        # Using existing message uids, get the sizes and
-        # return only those that are under the size
-        # limit
-        safe_message_ids = []
-
-        status, data = self.server.uid(
-            'fetch',
-            ','.join(message_ids),
-            '(RFC822.SIZE)'
-        )
-
-        for each_msg in data:
-            each_msg = each_msg.decode()
-            try:
-                uid = each_msg.split(' ')[2]
-                size = each_msg.split(' ')[4].rstrip(')')
-                if int(size) <= int(self.max_message_size):
-                    safe_message_ids.append(uid)
-            except ValueError as e:
-                logger.warning(
-                    "ValueError: {} working on {}".format(e, each_msg[0])
-                )
-                pass
-        return safe_message_ids
+    def get_message_body(self, message_lines):
+        return bytes('\r\n', 'ascii').join(message_lines)
 
     def get_message(self, condition=None):
-        message_ids = self._get_all_message_ids()
-
-        if not message_ids:
-            return
-
-        # Limit the uids to the small ones if we care about that
-        if self.max_message_size:
-            message_ids = self._get_small_message_ids(message_ids)
-
-        if self.archive:
-            typ, folders = self.server.list(pattern=self.archive)
-            if folders[0] is None:
-                # If the archive folder does not exist, create it
-                self.server.create(self.archive)
-
-        for uid in message_ids:
+        message_count = len(self.server.list()[1])
+        for i in range(message_count):
             try:
-                typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
-                if not msg_contents:
-                    continue
-                try:
-                    message = self.get_email_from_bytes(msg_contents[0][1])
-                except TypeError:
-                    # This happens if another thread/process deletes the
-                    # message between our generating the ID list and our
-                    # processing it here.
-                    continue
+                msg_contents = self.get_message_body(
+                    self.server.retr(i + 1)[1]
+                )
+                message = self.get_email_from_bytes(msg_contents)
 
                 if condition and not condition(message):
                     continue
@@ -122,10 +65,18 @@ class Office365Transport(EmailTransport):
                 yield message
             except MessageParseError:
                 continue
+            self.server.dele(i + 1)
 
-            if self.archive:
-                self.server.uid('copy', uid, self.archive)
+        for message in self.mailbox.get_messages(order_by='receivedDateTime'):
+            try:
+                mime_content = message.get_mime_content()
+                message = self.get_email_from_string(mime_content)
 
-            self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
-        self.server.expunge()
+                if condition and not condition(message):
+                    continue
+
+                yield message
+            except MessageParseError:
+                continue
         return
+
