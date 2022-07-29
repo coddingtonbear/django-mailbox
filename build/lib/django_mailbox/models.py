@@ -208,7 +208,7 @@ class Mailbox(models.Model):
     @property
     def tenant_id(self):
         """Returns (if specified) the tenant id for Office365."""
-        tenant_id = self._query_string.get('tentant_id', None)
+        tenant_id = self._query_string.get('tenant_id', None)
         if not tenant_id:
             return None
         return tenant_id[0]
@@ -249,14 +249,13 @@ class Mailbox(models.Model):
             conn.connect(self.username, self.password)
         elif self.type == 'office365':
             conn = Office365Transport(
+                self.location,
+                self.username,
                 port=self.port if self.port else None,
                 ssl=True,
-                archive=self.archive,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                tenant_id=self.tenant_id
+                folder=self.folder
             )
-            conn.connect(self.username, self.password)
+            conn.connect(self.client_id, self.client_secret, self.tenant_id)
         elif self.type == 'maildir':
             conn = MaildirTransport(self.location)
         elif self.type == 'mbox':

@@ -51,7 +51,7 @@ class Office365Transport(EmailTransport):
         for message in self.mailbox.get_messages(order_by='receivedDateTime'):
             try:
                 mime_content = message.get_mime_content()
-                message = self.get_email_from_string(mime_content)
+                message = self.get_email_from_bytes(mime_content)
 
                 if condition and not condition(message):
                     continue
