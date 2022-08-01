@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Office365Transport(EmailTransport):
     def __init__(
-        self, hostname, username, folder=None
+        self, hostname, username, archive='', folder=None
     ):
         self.integration_testing_subject = getattr(
             settings,
@@ -18,6 +18,7 @@ class Office365Transport(EmailTransport):
         )
         self.hostname = hostname
         self.username = username
+        self.archive = archive
         self.folder = folder
 
     def connect(self, client_id, client_secret, tenant_id):
@@ -39,6 +40,9 @@ class Office365Transport(EmailTransport):
             self.mailbox_folder = self.mailbox.get_folder(folder_name=self.folder)
 
     def get_message(self, condition=None):
+        if self.archive:
+            self.mailbox.create_child_folder(self.archive)
+
         for message in self.mailbox.get_messages(order_by='receivedDateTime'):
             try:
                 mime_content = message.get_mime_content()
@@ -50,5 +54,10 @@ class Office365Transport(EmailTransport):
                 yield message
             except MessageParseError:
                 continue
+
+            if self.archive:
+                message.copy(self.archive)
+
+            message.delete()
         return
 

@@ -251,6 +251,7 @@ class Mailbox(models.Model):
             conn = Office365Transport(
                 self.location,
                 self.username,
+                archive=self.archive,
                 folder=self.folder
             )
             conn.connect(self.client_id, self.client_secret, self.tenant_id)
