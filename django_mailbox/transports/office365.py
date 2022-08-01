@@ -40,12 +40,15 @@ class Office365Transport(EmailTransport):
             self.mailbox_folder = self.mailbox.get_folder(folder_name=self.folder)
 
     def get_message(self, condition=None):
+        archive_folder = None
         if self.archive:
-            self.mailbox.create_child_folder(self.archive)
+            archive_folder = self.mailbox.get_folder(folder_name=self.archive)
+            if not archive_folder:
+                archive_folder = self.mailbox.create_child_folder(self.archive)
 
-        for message in self.mailbox.get_messages(order_by='receivedDateTime'):
+        for o365message in self.mailbox_folder.get_messages(order_by='receivedDateTime'):
             try:
-                mime_content = message.get_mime_content()
+                mime_content = o365message.get_mime_content()
                 message = self.get_email_from_bytes(mime_content)
 
                 if condition and not condition(message):
@@ -55,9 +58,9 @@ class Office365Transport(EmailTransport):
             except MessageParseError:
                 continue
 
-            if self.archive:
-                message.copy(self.archive)
+            if self.archive and archive_folder:
+                o365message.copy(archive_folder)
 
-            message.delete()
+            o365message.delete()
         return
 
