@@ -15,7 +15,6 @@ import email
 import logging
 import mimetypes
 import os.path
-import sys
 import uuid
 from tempfile import NamedTemporaryFile
 
@@ -416,13 +415,12 @@ class Mailbox(models.Model):
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
-        new_mail = []
         connection = self.get_connection()
         if not connection:
             return
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
-            if not msg is None:
+            if msg is not None:
                 yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields

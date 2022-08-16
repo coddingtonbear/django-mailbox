@@ -1,6 +1,5 @@
 import gzip
 import os.path
-import sys
 
 import copy
 from unittest import mock
@@ -182,7 +181,7 @@ class TestProcessEmail(EmailMessageTestCase):
             # it's ok to call as_string() before passing email_object
             # to _get_dehydrated_message()
             email_object.as_string()
-        except:
+        except Exception:
             it = 'do not works'
 
         success = True
@@ -227,7 +226,7 @@ class TestProcessEmail(EmailMessageTestCase):
         try:
             # here as_string raises UnicodeEncodeError
             str_msg = message.as_string()
-        except:
+        except Exception:
             success = False
 
         msg.set_body(str_msg)
@@ -422,8 +421,6 @@ class TestProcessEmail(EmailMessageTestCase):
             get_settings.return_value = altered
 
             msg = self.mailbox.process_incoming_message(message)
-
-        actual_email_object = msg.get_email_object()
 
         self.assertTrue(msg.eml.name.endswith('.eml.gz'))
 
