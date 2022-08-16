@@ -1,0 +1,27 @@
+name: django-mailbox
+
+on:
+  push:
+    branches:
+      - fix-ci
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: install tox
+        run:  python -m pip install tox tox-gh-actions
+      - name: run tox using the version of Python in PATH
+        run: tox
+

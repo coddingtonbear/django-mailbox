@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
-   :target: https://travis-ci.org/coddingtonbear/django-mailbox
+.. image:: https://github.com/fleur/django-mailbox/actions/workflows/ci.yaml/badge.svg
+    :target: https://github.com/fleur/django-mailbox/commit/$GITHUB_SHA/checks
 
 .. image:: https://badge.fury.io/py/django-mailbox.png
     :target: http://badge.fury.io/py/django-mailbox
