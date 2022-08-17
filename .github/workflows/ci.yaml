@@ -1,9 +1,7 @@
 name: django-mailbox
 
-on:
-  push:
-    branches:
-      - fix-ci
+on: [push]
+
 jobs:
   build:
 
