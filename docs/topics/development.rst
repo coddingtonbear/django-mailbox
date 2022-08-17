@@ -52,8 +52,8 @@ To add support for a new version perform the following task:
 
 * Ensure that ``tox.ini`` file reflects support for new Django release.
 * Verify in tox that the code is executed correctly on all versions of the Python interpreter.
-* Ensure that ``.travis.yml`` file reflects support for new Django release. Note the excluded versions of the Python interpreter.
-* Verify by pushing changes on a separate branch to see if the changes in TravisCI are correct.
+* Ensure that the ``.github/workflows/ci.yaml`` file reflects support for new Django release. Note the excluded versions of the Python interpreter.
+* Verify by pushing changes on a separate branch to see if the changes in github ci are correct.
 * Proceed to the standard procedure for a new package release (see `How to do a new release?`_ ).
 
 A `spreadsheet with generator is available <https://docs.google.com/spreadsheets/d/1YsVPDeOAgf_c_7XOXh6SZUO2ebMNoFXysxfj4r1tFiM/edit?usp=sharing>`_ that can assist this process.

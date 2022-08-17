@@ -1,5 +1,5 @@
 include *.rst
-include .travis.yml
+include .github/workflows/ci.yaml
 include MANIFEST
 recursive-include django_mailbox *.eml
 recursive-include docs *.py
