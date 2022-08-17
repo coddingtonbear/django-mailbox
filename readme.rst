@@ -1,4 +1,4 @@
-.. image:: https://github.com/fleur/django-mailbox/actions/workflows/ci.yaml/badge.svg
+.. image:: https://github.com/coddingtonbear/django-mailbox/actions/workflows/ci.yaml/badge.svg
 
 .. image:: https://badge.fury.io/py/django-mailbox.svg
     :target: https://badge.fury.io/py/django-mailbox
