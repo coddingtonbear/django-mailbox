@@ -33,9 +33,13 @@ class Office365ImapTransport(ImapTransport):
                     f"Could not acquire the access token for {username} exception details={e}"
                 )
 
-        auth_string = f"user={username}\1auth=Bearer {access_token}\1\1"
+        auth_string = 'user={}\1auth=Bearer {}\1\1'.format(
+            username,
+            access_token
+        )
         self.server = self.transport(self.hostname, self.port)
-        self.server.authenticate("XOAUTH2", lambda x: auth_string)
+        typ, dat = self.server.authenticate("XOAUTH2", lambda x: auth_string)
+        logger.info(f'[_connect_oauth] auth string is: {auth_string} and typ={typ} dat={dat}')
         self.server.select()
 
     def get_office365_access_token(self):
