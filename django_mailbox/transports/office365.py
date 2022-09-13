@@ -38,7 +38,7 @@ class Office365ImapTransport(ImapTransport):
         self.server.authenticate("XOAUTH2", lambda x: auth_string)
         self.server.select()
 
-    def get_office365_access_token():
+    def get_office365_access_token(self):
         url = f"https://login.microsoftonline.com/{settings.MICROSOFT_0365_TENENT_ID}/oauth2/v2.0/token"
         oauth_params = {
             "client_id": settings.MICROSOFT_0365_CLIENT_ID,
