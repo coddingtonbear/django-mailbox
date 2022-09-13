@@ -39,10 +39,10 @@ class Office365ImapTransport(ImapTransport):
         self.server.select()
 
     def get_office365_access_token(self):
-        url = f"https://login.microsoftonline.com/{settings.MICROSOFT_0365_TENENT_ID}/oauth2/v2.0/token"
+        url = f"https://login.microsoftonline.com/{settings.MICROSOFT_O365_TENENT_ID}/oauth2/v2.0/token"
         oauth_params = {
-            "client_id": settings.MICROSOFT_0365_CLIENT_ID,
-            "client_secret": settings.MICROSOFT_0365_CLIENT_SECRET,
+            "client_id": settings.MICROSOFT_O365_CLIENT_ID,
+            "client_secret": settings.MICROSOFT_O365_CLIENT_SECRET,
             "grant_type": "client_credentials",
             "scope": "https://graph.microsoft.com/.default",
         }
