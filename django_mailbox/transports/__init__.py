@@ -8,4 +8,4 @@ from django_mailbox.transports.babyl import BabylTransport
 from django_mailbox.transports.mh import MHTransport
 from django_mailbox.transports.mmdf import MMDFTransport
 from django_mailbox.transports.gmail import GmailImapTransport
-from django_mailbox.transports.office365 import Office365ImapTransport
+from django_mailbox.transports.office365 import Office365Transport
