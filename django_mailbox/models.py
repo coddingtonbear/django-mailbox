@@ -220,8 +220,10 @@ class Mailbox(models.Model):
             conn = Office365ImapTransport(
                 self.location,
                 port=self.port if self.port else None,
-                ssl=True,
-                archive=self.archive
+                tls=self.use_tls,
+                ssl=self.use_ssl,
+                archive=self.archive,
+                folder=self.folder
             )
             conn.connect(self.username, self.password)
         elif self.type == 'pop3':
