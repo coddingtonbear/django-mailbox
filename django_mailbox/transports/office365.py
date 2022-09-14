@@ -37,7 +37,10 @@ class Office365ImapTransport(ImapTransport):
             username,
             access_token
         )
+
         self.server = self.transport(self.hostname, self.port)
+        logger.info(f'[_connect_oauth] hostname = {self.hostname}')
+        logger.info(f'[_connect_oauth] auth string is: {auth_string}')
         typ, dat = self.server.authenticate("XOAUTH2", lambda x: auth_string)
         logger.info(f'[_connect_oauth] auth string is: {auth_string} and typ={typ} dat={dat}')
         self.server.select()
