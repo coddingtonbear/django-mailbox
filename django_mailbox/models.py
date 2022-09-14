@@ -216,24 +216,24 @@ class Mailbox(models.Model):
                 archive=self.archive
             )
             conn.connect(self.username, self.password)
-        # elif self.type == 'office365':
-        #     conn = Office365ImapTransport(
-        #         self.location,
-        #         port=self.port if self.port else None,
-        #         tls=self.use_tls,
-        #         ssl=self.use_ssl,
-        #         archive=self.archive,
-        #         folder=self.folder
-        #     )
-        #     conn.connect(self.username, self.password)
         elif self.type == 'office365':
             conn = Office365Transport(
                 self.location,
-                self.username,
-                folder=self.folder,
-                archive=self.archive
+                port=self.port if self.port else None,
+                tls=self.use_tls,
+                ssl=self.use_ssl,
+                archive=self.archive,
+                folder=self.folder
             )
-            conn.connect()
+            conn.connect(self.username, self.password)
+        # elif self.type == 'office365':
+        #     conn = Office365Transport(
+        #         self.location,
+        #         self.username,
+        #         folder=self.folder,
+        #         archive=self.archive
+        #     )
+        #     conn.connect()
         elif self.type == 'pop3':
             conn = Pop3Transport(
                 self.location,
