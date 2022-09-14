@@ -233,7 +233,7 @@ class Mailbox(models.Model):
                 folder=self.folder,
                 archive=self.archive
             )
-            conn.connect(self.client_id, self.client_secret, self.tenant_id)
+            conn.connect()
         elif self.type == 'pop3':
             conn = Pop3Transport(
                 self.location,

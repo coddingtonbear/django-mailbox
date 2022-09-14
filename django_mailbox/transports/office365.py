@@ -87,7 +87,7 @@ class Office365Transport(EmailTransport):
         self.archive = archive
         self.folder = folder
 
-    def connect(self, client_id, client_secret, tenant_id):
+    def connect(self):
         try:
             import O365
         except ImportError:
@@ -95,9 +95,9 @@ class Office365Transport(EmailTransport):
                 "Install o365 to use oauth2 auth for office365"
             )
 
-        credentials = (client_id, client_secret)
+        credentials = (settings.MICROSOFT_O365_CLIENT_ID, settings.MICROSOFT_O365_CLIENT_SECRET)
 
-        self.account = O365.Account(credentials, auth_flow_type='credentials', tenant_id=tenant_id)
+        self.account = O365.Account(credentials, auth_flow_type='credentials', tenant_id=settings.MICROSOFT_O365_TENENT_ID)
         self.account.authenticate()
 
         self.mailbox = self.account.mailbox(resource=self.username)
