@@ -31,7 +31,7 @@ from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport, Office365ImapTransport
+    MMDFTransport, GmailImapTransport, Office365Transport
 
 logger = logging.getLogger(__name__)
 
@@ -216,16 +216,24 @@ class Mailbox(models.Model):
                 archive=self.archive
             )
             conn.connect(self.username, self.password)
+        # elif self.type == 'office365':
+        #     conn = Office365ImapTransport(
+        #         self.location,
+        #         port=self.port if self.port else None,
+        #         tls=self.use_tls,
+        #         ssl=self.use_ssl,
+        #         archive=self.archive,
+        #         folder=self.folder
+        #     )
+        #     conn.connect(self.username, self.password)
         elif self.type == 'office365':
-            conn = Office365ImapTransport(
+            conn = Office365Transport(
                 self.location,
-                port=self.port if self.port else None,
-                tls=self.use_tls,
-                ssl=self.use_ssl,
-                archive=self.archive,
-                folder=self.folder
+                self.username,
+                folder=self.folder,
+                archive=self.archive
             )
-            conn.connect(self.username, self.password)
+            conn.connect(self.client_id, self.client_secret, self.tenant_id)
         elif self.type == 'pop3':
             conn = Pop3Transport(
                 self.location,
