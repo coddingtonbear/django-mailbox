@@ -65,6 +65,7 @@
 #             )
 
 import logging
+import os
 
 from django.conf import settings
 
@@ -97,7 +98,11 @@ class Office365Transport(EmailTransport):
 
         credentials = (settings.MICROSOFT_O365_CLIENT_ID, settings.MICROSOFT_O365_CLIENT_SECRET)
 
-        self.account = O365.Account(credentials, auth_flow_type='credentials', tenant_id=settings.MICROSOFT_O365_TENENT_ID)
+        if not os.path.isdir(settings.O365_TOKEN_PATH):
+            os.mkdir(settings.O365_TOKEN_PATH)
+            
+        token_path=os.path.join(settings.O365_TOKEN_PATH, 'token.txt')
+        self.account = O365.Account(credentials, auth_flow_type='credentials', tenant_id=settings.MICROSOFT_O365_TENENT_ID, token_path=token_path)
         self.account.authenticate()
 
         self.mailbox = self.account.mailbox(resource=self.username)
