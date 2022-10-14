@@ -42,3 +42,6 @@ class Pop3Transport(EmailTransport):
             self.server.dele(i + 1)
         self.server.quit()
         return
+
+    def get_message_ro(self, since=None):
+        raise NotImplementedError("Pop3Transport.get_message_ro not implemented!")
