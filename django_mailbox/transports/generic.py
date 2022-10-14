@@ -24,3 +24,6 @@ class GenericFileMailbox(EmailTransport):
             yield message
         repository.flush()
         repository.unlock()
+
+    def get_new_message_ro(self, since=None):
+        raise NotImplementedError("GenericFileMailbox.get_new_message_ro not implemented!")

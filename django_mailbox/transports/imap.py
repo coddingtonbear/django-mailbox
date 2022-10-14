@@ -99,19 +99,47 @@ class ImapTransport(EmailTransport):
         if not message_ids:
             return
 
-        # Limit the uids to the small ones if we care about that
-        if self.max_message_size:
-            message_ids = self._get_small_message_ids(message_ids)
-
         if self.archive:
             typ, folders = self.server.list(pattern=self.archive)
             if folders[0] is None:
                 # If the archive folder does not exist, create it
                 self.server.create(self.archive)
 
+        for message in self._iter_messages(message_ids):
+            yield message
+
+        self.server.expunge()
+        return
+
+    def get_new_message_ro(self, since):
+        """Read-only version of `get_message`. Uses a timestamp to fetch only messages
+        originating later than `since` parameter.
+        """
+
+        date_format = "%d-%b-%Y"
+        typ, [raw_msg_ids] = self.server.search(None, '(since "%s")' % (since.strftime(date_format)))
+
+        message_ids = raw_msg_ids.decode().split()
+
+        if not message_ids:
+            return
+
+        for message in self._iter_messages(message_ids, archive=False, delete=False):
+            yield message
+
+        self.server.expunge()
+        return
+
+
+    def _iter_messages(self, message_ids, condition=None, archive=True, delete=True):
+
+        # Limit the uids to the small ones if we care about that
+        if self.max_message_size:
+            message_ids = self._get_small_message_ids(message_ids)
+
         for uid in message_ids:
             try:
-                typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
+                typ, msg_contents = self.server.fetch(uid, '(RFC822)')
                 if not msg_contents:
                     continue
                 try:
@@ -129,9 +157,8 @@ class ImapTransport(EmailTransport):
             except MessageParseError:
                 continue
 
-            if self.archive:
+            if archive and self.archive:
                 self.server.uid('copy', uid, self.archive)
 
-            self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
-        self.server.expunge()
-        return
+            if delete:
+                self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
