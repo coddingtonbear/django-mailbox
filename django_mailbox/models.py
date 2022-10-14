@@ -428,7 +428,7 @@ class Mailbox(models.Model):
         if since is None:
             since = now() - timedelta(days=INITIAL_IMPORT_LOOKBACK_DAYS)
 
-        for message in connection.get_new_message_ro(since=since):
+        for message in connection.get_message_ro(since=since):
             msg = self.process_incoming_message(message)
             if not msg is None:
                 yield msg

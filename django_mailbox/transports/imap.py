@@ -111,7 +111,7 @@ class ImapTransport(EmailTransport):
         self.server.expunge()
         return
 
-    def get_new_message_ro(self, since):
+    def get_message_ro(self, since):
         """Read-only version of `get_message`. Uses a timestamp to fetch only messages
         originating later than `since` parameter.
         """
