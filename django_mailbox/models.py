@@ -17,6 +17,7 @@ import mimetypes
 import os.path
 import sys
 import uuid
+from datetime import timedelta
 from tempfile import NamedTemporaryFile
 
 import django
@@ -34,6 +35,8 @@ from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MMDFTransport, GmailImapTransport
 
 logger = logging.getLogger(__name__)
+
+INITIAL_IMPORT_LOOKBACK_DAYS = 365
 
 
 class MailboxQuerySet(models.QuerySet):
@@ -420,7 +423,12 @@ class Mailbox(models.Model):
         connection = self.get_connection()
         if not connection:
             return
-        for message in connection.get_message(condition):
+
+        since = self.last_polling
+        if since is None:
+            since = now() - timedelta(days=INITIAL_IMPORT_LOOKBACK_DAYS)
+
+        for message in connection.get_new_message_ro(since=since):
             msg = self.process_incoming_message(message)
             if not msg is None:
                 yield msg
