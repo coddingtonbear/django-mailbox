@@ -378,6 +378,11 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
+
+        if Message.objects.filter(message_id=msg.message_id).count() != 0:
+            logger.info("Skipping existing message: %s", msg.message_id,)
+            return None
+
         msg.save()
         message = self._get_dehydrated_message(message, msg)
         try:
