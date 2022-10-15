@@ -14,9 +14,7 @@ class GmailImapTransport(ImapTransport):
             self._connect_oauth(username)
         except (TypeError, ValueError) as e:
             logger.warning("Couldn't do oauth2 because %s" % e)
-            self.server = self.transport(self.hostname, self.port)
-            typ, msg = self.server.login(username, password)
-            self.server.select()
+            super().connect(username, password)
 
     def _connect_oauth(self, username):
         # username should be an email address that has already been authorized
@@ -54,4 +52,7 @@ class GmailImapTransport(ImapTransport):
         )
         self.server = self.transport(self.hostname, self.port)
         self.server.authenticate('XOAUTH2', lambda x: auth_string)
-        self.server.select()
+        if self.folder:
+            self.server.select(self.folder)
+        else:
+            self.server.select()
