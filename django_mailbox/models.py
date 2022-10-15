@@ -216,7 +216,8 @@ class Mailbox(models.Model):
                 self.location,
                 port=self.port if self.port else None,
                 ssl=True,
-                archive=self.archive
+                archive=self.archive,
+                folder=self.folder,
             )
             conn.connect(self.username, self.password)
         elif self.type == 'pop3':
