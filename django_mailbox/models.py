@@ -430,9 +430,9 @@ class Mailbox(models.Model):
         if not connection:
             return
 
-        # since = self.last_polling
-        # if since is None:
-        since = now() - timedelta(days=INITIAL_IMPORT_LOOKBACK_DAYS)
+        since = self.last_polling
+        if since is None:
+            since = now() - timedelta(days=INITIAL_IMPORT_LOOKBACK_DAYS)
 
         for message in connection.get_message_ro(since=since):
             msg = self.process_incoming_message(message)
