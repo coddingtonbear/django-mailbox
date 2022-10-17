@@ -37,7 +37,7 @@ from django_mailbox.transports import Pop3Transport, ImapTransport, \
 
 logger = logging.getLogger(__name__)
 
-INITIAL_IMPORT_LOOKBACK_DAYS = 365
+INITIAL_IMPORT_LOOKBACK_DAYS = 14
 
 
 class MailboxQuerySet(models.QuerySet):
