@@ -384,6 +384,8 @@ class Mailbox(models.Model):
             msg.timestamp = parser.parse(message["date"])
         elif "Date" in message:
             msg.timestamp = parser.parse(message["Date"])
+        else:
+            msg.timestamp = now()
 
 
         if Message.objects.filter(message_id=msg.message_id).count() != 0:
