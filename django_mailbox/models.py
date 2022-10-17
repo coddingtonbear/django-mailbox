@@ -18,6 +18,7 @@ import os.path
 import sys
 import uuid
 from datetime import timedelta
+from dateutil import parser
 from tempfile import NamedTemporaryFile
 
 import django
@@ -379,6 +380,11 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
+        if "date" in message:
+            msg.timestamp = parser.parse(message["date"])
+        elif "Date" in message:
+            msg.timestamp = parser.parse(message["Date"])
+
 
         if Message.objects.filter(message_id=msg.message_id).count() != 0:
             logger.info("Skipping existing message: %s", msg.message_id,)
@@ -524,6 +530,8 @@ class Message(models.Model):
         default=False,
         help_text=_('True if the e-mail body is Base64 encoded'),
     )
+
+    timestamp = models.DateTimeField(_('Timestamp'))
 
     processed = models.DateTimeField(
         _('Processed'),

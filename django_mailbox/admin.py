@@ -79,6 +79,7 @@ class MessageAdmin(admin.ModelAdmin):
     ]
     list_display = (
         'subject',
+        'timestamp',
         'processed',
         'read',
         'mailbox',
