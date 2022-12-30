@@ -31,7 +31,7 @@ from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport
+    MMDFTransport, GmailImapTransport, Office365Transport
 
 logger = logging.getLogger(__name__)
 
@@ -216,6 +216,14 @@ class Mailbox(models.Model):
                 archive=self.archive
             )
             conn.connect(self.username, self.password)
+        elif self.type == 'office365':
+            conn = Office365Transport(
+                self.location,
+                self.username,
+                folder=self.folder,
+                archive=self.archive
+            )
+            conn.connect()
         elif self.type == 'pop3':
             conn = Pop3Transport(
                 self.location,
@@ -382,8 +390,13 @@ class Mailbox(models.Model):
         except KeyError as exc:
             # email.message.replace_header may raise 'KeyError' if the header
             # 'content-transfer-encoding' is missing
-            logger.warning("Failed to parse message: %s", exc,)
-            return None
+            try:
+                # Before we give up, let's try mailman's approach:
+                #   https://bugs.python.org/msg308362
+                body = message.as_bytes(self).decode('ascii', 'replace')
+            except KeyError as exc:
+                logger.warning("Failed to parse message: %s", exc,)
+                return None
         msg.set_body(body)
         if message['in-reply-to']:
             try:
