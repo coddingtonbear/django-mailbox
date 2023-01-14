@@ -430,6 +430,27 @@ class Mailbox(models.Model):
         else:
             self.save()
 
+    @staticmethod
+    def get_new_mail_all_mailboxes(args=None):
+        mailboxes = Mailbox.active_mailboxes.all()
+        if args:
+            mailboxes = mailboxes.filter(
+                name=' '.join(args)
+            )
+        for mailbox in mailboxes:
+            logger.info(
+                'Gathering messages for %s',
+                mailbox.name
+            )
+            messages = mailbox.get_new_mail()
+            for message in messages:
+                logger.info(
+                    'Received %s (from %s)',
+                    message.subject,
+                    message.from_address
+                )
+
+
     def __str__(self):
         return self.name
 
