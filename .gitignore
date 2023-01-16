@@ -13,3 +13,4 @@ dummy_project/*
 .tox/
 messages
 *.sqlite3
+.idea/

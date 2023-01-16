@@ -31,7 +31,7 @@ from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport
+    MMDFTransport, GmailImapTransport, Office365Transport
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +189,30 @@ class Mailbox(models.Model):
             return None
         return folder[0]
 
+    @property
+    def client_id(self):
+        """Returns (if specified) the client id for Office365."""
+        client_id = self._query_string.get('client_id', None)
+        if not client_id:
+            return None
+        return client_id[0]
+
+    @property
+    def client_secret(self):
+        """Returns (if specified) the client secret for Office365."""
+        client_secret = self._query_string.get('client_secret', None)
+        if not client_secret:
+            return None
+        return client_secret[0]
+
+    @property
+    def tenant_id(self):
+        """Returns (if specified) the tenant id for Office365."""
+        tenant_id = self._query_string.get('tenant_id', None)
+        if not tenant_id:
+            return None
+        return tenant_id[0]
+
     def get_connection(self):
         """Returns the transport instance for this mailbox.
 
@@ -223,6 +247,14 @@ class Mailbox(models.Model):
                 ssl=self.use_ssl
             )
             conn.connect(self.username, self.password)
+        elif self.type == 'office365':
+            conn = Office365Transport(
+                self.location,
+                self.username,
+                folder=self.folder,
+                archive=self.archive
+            )
+            conn.connect(self.client_id, self.client_secret, self.tenant_id)
         elif self.type == 'maildir':
             conn = MaildirTransport(self.location)
         elif self.type == 'mbox':

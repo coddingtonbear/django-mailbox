@@ -13,6 +13,7 @@ POP3 and IMAP as well as local file-based mailboxes.
   POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
   IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://`` or STARTTLS with ``imap+tls``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
   Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
+  Office365 API``office365://`` Uses OAuth authentication for  Office365 API transport.  See :ref:`office365-oauth` for details.
   Maildir      ``maildir://``
   Mbox         ``mbox://``
   Babyl        ``babyl://``
@@ -113,6 +114,25 @@ It will fall back to use your specified password as needed.
 Build your URI accordingly::
 
     gmail+ssl://youremailaddress%40gmail.com:oauth2@imap.gmail.com?archive=Archived
+
+
+.. _office365-oauth:
+Office 365 API
+-------------------------------------
+
+Office 365 allows through the API to read a mailbox with Oauth.
+The O365_ library is used.
+
+.. _O365: https://github.com/O365/python-o365
+.. _configuration: https://github.com/O365/python-o365#authentication
+
+For the configuration_ you need to register an application and get a client_id, client_secret and tenant_id.
+
+This implementation uses the client credentials grant flow and the password you specify will be ignored.
+
+Build your URI accordingly::
+
+    office365://youremailaddress%40yourdomain.com:oauth2@outlook.office365.com?client_id=client_id&client_secret=client_secret&tenant_id=tenant_id&archive=Archived
 
 
 Local File-based Mailboxes
