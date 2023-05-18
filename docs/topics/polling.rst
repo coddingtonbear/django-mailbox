@@ -20,11 +20,11 @@ Using a cron job
 ----------------
 
 You can easily consume incoming mail by running the management command named
-``getmail``  (optionally with an argument of the name of the mailbox you'd like
-to get the mail for).::
+``getmail``  (optionally with an argument of the name(s) of the mailbox(es) you'd like
+to get the mail for. You can also pass maximum number of email count to read).::
 
     python manage.py getmail
-
+    python manage.py getmail --mailboxes mailbox1 mailbox2 --max_read 10
 
 .. _receiving-mail-from-exim4-or-postfix:
 
