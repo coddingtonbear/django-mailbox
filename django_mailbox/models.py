@@ -446,15 +446,19 @@ class Mailbox(models.Model):
                 save=False
             )
 
-    def get_new_mail(self, condition=None):
+    def get_new_mail(self, condition=None, max_read=None):
         """Connect to this transport and fetch new messages."""
         new_mail = []
         connection = self.get_connection()
         if not connection:
             return
         for message in connection.get_message(condition):
+            if max_read is not None and max_read <= 0:
+                break
             msg = self.process_incoming_message(message)
-            if not msg is None:
+            if msg is not None:
+                if max_read is not None:
+                    max_read -= 1
                 yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
@@ -463,18 +467,18 @@ class Mailbox(models.Model):
             self.save()
 
     @staticmethod
-    def get_new_mail_all_mailboxes(args=None):
+    def get_new_mail_all_mailboxes(options: dict):
         mailboxes = Mailbox.active_mailboxes.all()
-        if args:
+        if options.get('mailboxes'):
             mailboxes = mailboxes.filter(
-                name=' '.join(args)
+                name__in=options['mailboxes']
             )
         for mailbox in mailboxes:
             logger.info(
                 'Gathering messages for %s',
                 mailbox.name
             )
-            messages = mailbox.get_new_mail()
+            messages = mailbox.get_new_mail(max_read=options.get('max_read'))
             for message in messages:
                 logger.info(
                     'Received %s (from %s)',
