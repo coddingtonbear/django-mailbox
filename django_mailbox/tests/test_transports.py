@@ -8,7 +8,7 @@ from django_mailbox.transports import ImapTransport, Pop3Transport
 FAKE_UID_SEARCH_ANSWER = (
     'OK',
     [
-        b'18 19 20 21 22 23 24 25 26 27 28 29 ' + 
+        b'18 19 20 21 22 23 24 25 26 27 28 29 ' +
         b'30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'
     ]
 )

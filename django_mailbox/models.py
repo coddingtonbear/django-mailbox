@@ -15,7 +15,6 @@ import email
 import logging
 import mimetypes
 import os.path
-import sys
 import uuid
 from tempfile import NamedTemporaryFile
 
@@ -42,7 +41,7 @@ class MailboxQuerySet(models.QuerySet):
         for mailbox in self.all():
             logger.debug('Receiving mail for %s' % mailbox)
             count += sum(1 for i in mailbox.get_new_mail())
-        logger.debug('Received %d %s.', count, 'mails' if count != 1 else 'mail')
+        logger.debug('Received %d %s.', count, 'mail(s)')
 
 
 class MailboxManager(models.Manager):
@@ -122,6 +121,13 @@ class Mailbox(models.Model):
 
     objects = MailboxManager()
     active_mailboxes = ActiveMailboxManager()
+
+    class Meta:
+        verbose_name = _('Mailbox')
+        verbose_name_plural = _('Mailboxes')
+
+    def __str__(self):
+        return self.name
 
     @property
     def _protocol_info(self):
@@ -448,13 +454,12 @@ class Mailbox(models.Model):
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
-        new_mail = []
         connection = self.get_connection()
         if not connection:
             return
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
-            if not msg is None:
+            if msg is not None:
                 yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
@@ -481,14 +486,6 @@ class Mailbox(models.Model):
                     message.subject,
                     message.from_address
                 )
-
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = _('Mailbox')
-        verbose_name_plural = _('Mailboxes')
 
 
 class IncomingMessageManager(models.Manager):
@@ -757,7 +754,7 @@ class Message(models.Model):
         """Returns an `email.message.EmailMessage` instance representing the
         contents of this message and all attachments.
 
-        See [email.message.EmailMessage]_ for more information as to what methods
+        See [email.message.EmailMessage]_ for more information like what methods
         and properties are available on `email.message.EmailMessage` instances.
 
         .. note::
