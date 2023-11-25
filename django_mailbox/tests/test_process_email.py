@@ -385,7 +385,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        assert msg.eml
+        self.assertNotEqual(msg.eml, None)
 
         self.assertTrue(msg.eml.name.endswith('.eml'))
 
@@ -407,7 +407,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        assert not msg.eml
+        self.assertEqual(msg.eml, None)
 
     def test_message_compressed(self):
         message = self._get_email_object('generic_message.eml')
@@ -422,7 +422,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        # actual_email_object = msg.get_email_object()
+        actual_email_object = msg.get_email_object()
 
         self.assertTrue(msg.eml.name.endswith('.eml.gz'))
 
