@@ -121,12 +121,15 @@ Office 365 API
 -------------------------------------
 
 Office 365 allows through the API to read a mailbox with Oauth.
-The O365_ library is used.
+The O365_ library is used and must be installed.
 
 .. _O365: https://github.com/O365/python-o365
 .. _configuration: https://github.com/O365/python-o365#authentication
 
-For the configuration_ you need to register an application and get a client_id, client_secret and tenant_id.
+For the Oauth configuration you need to follow the instructions on the O365 configuration_ page.
+You need to register an application and get a client_id, client_secret and tenant_id.
+
+client_secret is equivalent to the app secret value and not the ID.
 
 This implementation uses the client credentials grant flow and the password you specify will be ignored.
 
