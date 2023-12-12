@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Unreleased
+4.9.0
 -----
 
 * Add Django 3.2, 4.0, 4.1, 4.2, 5.0 support

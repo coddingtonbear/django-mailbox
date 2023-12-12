@@ -8,7 +8,7 @@ make it simple.
 How to file a ticket?
 ---------------------
 
-Just go to https://github.com/coddingtonbear/django-mailbox and create new
+Just go to https://github.com/coddingtonbear/django-mailbox/issues and create new
 one.
 
 
@@ -50,10 +50,8 @@ Changes are only necessary for new minor or major Django versions.
 
 To add support for a new version perform the following task:
 
+* Ensure that ``.github/workflows/main.yml`` file reflects support for new Python release.
 * Ensure that ``tox.ini`` file reflects support for new Django release.
 * Verify in tox that the code is executed correctly on all versions of the Python interpreter.
-* Ensure that ``.travis.yml`` file reflects support for new Django release. Note the excluded versions of the Python interpreter.
-* Verify by pushing changes on a separate branch to see if the changes in TravisCI are correct.
+* Verify by pushing changes on a separate branch to see if the changes in Github Actions are correct.
 * Proceed to the standard procedure for a new package release (see `How to do a new release?`_ ).
-
-A `spreadsheet with generator is available <https://docs.google.com/spreadsheets/d/1YsVPDeOAgf_c_7XOXh6SZUO2ebMNoFXysxfj4r1tFiM/edit?usp=sharing>`_ that can assist this process.

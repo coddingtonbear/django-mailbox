@@ -1,11 +1,8 @@
-.. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
-   :target: https://travis-ci.org/coddingtonbear/django-mailbox
+.. image:: https://github.com/coddingtonbear/django-mailbox/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/coddingtonbear/django-mailbox/actions/workflows/main.yml
 
 .. image:: https://badge.fury.io/py/django-mailbox.png
-    :target: http://badge.fury.io/py/django-mailbox
-
-.. image:: https://pypip.in/d/django-mailbox/badge.png
-    :target: https://pypi.python.org/pypi/django-mailbox
+    :target: https://pypi.org/project/django-mailbox/
 
 
 Easily ingest messages from POP3, IMAP, Office365 API or local mailboxes into your Django application.
@@ -21,7 +18,7 @@ or -- if you're in a hurry -- by using a signal receiver.
 - Please post issues on
   `Github <http://github.com/coddingtonbear/django-mailbox/issues>`_.
 - Test status available on
-  `Travis-CI <https://travis-ci.org/coddingtonbear/django-mailbox>`_.
+  `Github-Actions <https://github.com/coddingtonbear/django-mailbox/actions/workflows/main.yml>`_.
 
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
