@@ -80,3 +80,9 @@ Settings
   * Default: ``False``
   * Type: ``boolean``
   * Controls whether or not we store original messages in ``eml`` field
+
+* ``DJANGO_MAILBOX_MESSAGE_UPLOAD_TO``
+
+  * Default: ``messages/``
+  * Type: ``string``
+  * Original message will be saved to this location.
