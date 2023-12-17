@@ -80,3 +80,9 @@ Settings
   * Default: ``False``
   * Type: ``boolean``
   * Controls whether or not we store original messages in ``eml`` field
+
+* ``DJANGO_MAILBOX_DEFAULT_CHARSET``
+
+  * Default: ``iso8859-1``
+  * Type: ``string``
+  * Controls which charset is used if the charset is not specified in the header.
