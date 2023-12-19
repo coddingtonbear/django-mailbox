@@ -298,7 +298,10 @@ class Mailbox(models.Model):
         settings = utils.get_settings()
 
         new = EmailMessage()
-        if msg.is_multipart():
+        if (
+            msg.is_multipart()
+            and not 'attachment' in msg.get('Content-Disposition', '')
+        ):
             for header, value in msg.items():
                 new[header] = value
             for part in msg.get_payload():
@@ -339,11 +342,21 @@ class Mailbox(models.Model):
 
             attachment = MessageAttachment()
 
+            if msg.get_content_type() == 'message/rfc822':
+                attachment_payloads = msg.get_payload()
+                if len(attachment_payloads) != 1:
+                    raise AssertionError(
+                        "Attachment of type 'message/rfc822' "
+                        'must have exactly 1 payload.'
+                    )
+                attachment_payload = attachment_payloads[0].as_bytes()
+            else:
+                attachment_payload = msg.get_payload(decode=True)
             attachment.document.save(
                 uuid.uuid4().hex + extension,
                 ContentFile(
                     BytesIO(
-                        msg.get_payload(decode=True)
+                        attachment_payload
                     ).getvalue()
                 )
             )
@@ -832,6 +845,11 @@ class MessageAttachment(models.Model):
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):
+        if email_object._payload is None:
+            # otherwise it breaks in
+            # lib/python3.x/email/generator.py:_handle_message,
+            # line: "self._fp.write(payload)"
+            email_object._payload = ""
         self.headers = email_object.as_string()
 
     def __delitem__(self, name):

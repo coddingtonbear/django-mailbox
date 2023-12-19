@@ -1,0 +1,62 @@
+From: Adam Coddington <test@adamcoddington.net>
+To: Adam Coddington <test@adamcoddington.net>
+Subject: Email with RFC 822 attachment
+Date: Fri, 15 May 2020 11:15:00 +0000
+Message-ID: <ce1f843c1a2d4de7a0c7c78c84a50f8d@adamcoddington.net>
+Content-Type: multipart/mixed;
+	boundary="_004_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_"
+Return-Path: test@adamcoddington.net
+MIME-Version: 1.0
+
+--_004_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_
+Content-Type: multipart/alternative;
+	boundary="_000_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_"
+
+--_000_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Dear Sir or Madam,
+
+I am sending you an email message as an attachment.
+
+
+--_000_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns=3D"http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+</head>
+<body>
+<div>
+<p>Dear Sir or Madam,</p>
+<p>I am sending you an email message as an attachment.</p>
+</div>
+</body>
+</html>
+
+--_000_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_--
+
+--_004_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_
+Content-Type: message/rfc822
+Content-Disposition: attachment;
+	creation-date="Fri, 15 May 2020 11:10:00 GMT";
+	modification-date="Fri, 15 May 2020 11:10:00 GMT"
+
+From: Adam Coddington <test@adamcoddington.net>
+To: Adam Coddington <test@adamcoddington.net>
+Subject: Attached email
+Date: Fri, 15 May 2020 09:00:00 +0000
+Message-ID: <ujURpHHC.xh4Qpg28.RLQSSkBK.cQSyhEG5.PmxCEEdV@127.0.0.1>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hello!
+
+This is the attached email.
+
+--_004_ce1f843c1a2d4de7a0c7c78c84a50f8dadamcoddington.net_--

@@ -87,6 +87,23 @@ class TestProcessEmail(EmailMessageTestCase):
             'heart.png',
         )
 
+    def test_message_with_rfc822_attachment(self):
+        message = self._get_email_object('message_with_rfc822_attachment.eml')
+
+        mailbox = Mailbox.objects.create()
+        msg = mailbox.process_incoming_message(message)
+
+        expected_count = 1
+        actual_count = msg.attachments.count()
+
+        self.assertEqual(
+            expected_count,
+            actual_count,
+        )
+
+        attachment = msg.attachments.all()[0]
+        self.assertIsNone(attachment.get_filename())
+
     def test_message_with_utf8_attachment_header(self):
         """ Ensure that we properly handle UTF-8 encoded attachment
 
