@@ -14,3 +14,4 @@ dummy_project/*
 messages
 *.sqlite3
 .idea/
+venv/
