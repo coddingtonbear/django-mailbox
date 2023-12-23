@@ -63,4 +63,3 @@ class Office365Transport(EmailTransport):
 
             o365message.delete()
         return
-

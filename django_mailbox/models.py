@@ -15,7 +15,6 @@ import email
 import logging
 import mimetypes
 import os.path
-import sys
 import uuid
 from tempfile import NamedTemporaryFile
 
@@ -42,7 +41,7 @@ class MailboxQuerySet(models.QuerySet):
         for mailbox in self.all():
             logger.debug('Receiving mail for %s' % mailbox)
             count += sum(1 for i in mailbox.get_new_mail())
-        logger.debug('Received %d %s.', count, 'mails' if count != 1 else 'mail')
+        logger.debug('Received %d %s.', count, 'mail(s)')
 
 
 class MailboxManager(models.Manager):
@@ -122,6 +121,13 @@ class Mailbox(models.Model):
 
     objects = MailboxManager()
     active_mailboxes = ActiveMailboxManager()
+
+    class Meta:
+        verbose_name = _('Mailbox')
+        verbose_name_plural = _('Mailboxes')
+
+    def __str__(self):
+        return self.name
 
     @property
     def _protocol_info(self):
@@ -292,7 +298,10 @@ class Mailbox(models.Model):
         settings = utils.get_settings()
 
         new = EmailMessage()
-        if msg.is_multipart():
+        if (
+            msg.is_multipart()
+            and not 'attachment' in msg.get('Content-Disposition', '')
+        ):
             for header, value in msg.items():
                 new[header] = value
             for part in msg.get_payload():
@@ -333,11 +342,21 @@ class Mailbox(models.Model):
 
             attachment = MessageAttachment()
 
+            if msg.get_content_type() == 'message/rfc822':
+                attachment_payloads = msg.get_payload()
+                if len(attachment_payloads) != 1:
+                    raise AssertionError(
+                        "Attachment of type 'message/rfc822' "
+                        'must have exactly 1 payload.'
+                    )
+                attachment_payload = attachment_payloads[0].as_bytes()
+            else:
+                attachment_payload = msg.get_payload(decode=True)
             attachment.document.save(
                 uuid.uuid4().hex + extension,
                 ContentFile(
                     BytesIO(
-                        msg.get_payload(decode=True)
+                        attachment_payload
                     ).getvalue()
                 )
             )
@@ -448,13 +467,12 @@ class Mailbox(models.Model):
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
-        new_mail = []
         connection = self.get_connection()
         if not connection:
             return
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
-            if not msg is None:
+            if msg is not None:
                 yield msg
         self.last_polling = now()
         if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
@@ -481,14 +499,6 @@ class Mailbox(models.Model):
                     message.subject,
                     message.from_address
                 )
-
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = _('Mailbox')
-        verbose_name_plural = _('Mailboxes')
 
 
 class IncomingMessageManager(models.Manager):
@@ -579,6 +589,7 @@ class Message(models.Model):
     eml = models.FileField(
         _('Raw message contents'),
         null=True,
+        blank=True,
         upload_to="messages",
         help_text=_('Original full content of message')
     )
@@ -677,7 +688,6 @@ class Message(models.Model):
     def _rehydrate(self, msg):
         new = EmailMessage()
         settings = utils.get_settings()
-
         if msg.is_multipart():
             for header, value in msg.items():
                 new[header] = value
@@ -696,24 +706,24 @@ class Message(models.Model):
                 if encoding and encoding.lower() == 'quoted-printable':
                     # Cannot use `email.encoders.encode_quopri due to
                     # bug 14360: http://bugs.python.org/issue14360
-                    output = BytesIO()
-                    encode_quopri(
-                        BytesIO(
-                            attachment.document.read()
-                        ),
-                        output,
-                        quotetabs=True,
-                        header=False,
-                    )
-                    new.set_payload(
-                        output.getvalue().decode().replace(' ', '=20')
-                    )
+                    with open(attachment.document.path, 'rb') as f:
+                        output = BytesIO()
+                        encode_quopri(
+                            BytesIO(
+                                f.read()
+                            ),
+                            output,
+                            quotetabs=True,
+                            header=False,
+                        )
+                        new.set_payload(
+                            output.getvalue().decode().replace(' ', '=20')
+                        )
                     del new['Content-Transfer-Encoding']
                     new['Content-Transfer-Encoding'] = 'quoted-printable'
                 else:
-                    new.set_payload(
-                        attachment.document.read()
-                    )
+                    with open(attachment.document.path, 'rb') as f:
+                        new.set_payload(f.read())
                     del new['Content-Transfer-Encoding']
                     encode_base64(new)
             except MessageAttachment.DoesNotExist:
@@ -757,7 +767,7 @@ class Message(models.Model):
         """Returns an `email.message.EmailMessage` instance representing the
         contents of this message and all attachments.
 
-        See [email.message.EmailMessage]_ for more information as to what methods
+        See [email.message.EmailMessage]_ for more information like what methods
         and properties are available on `email.message.EmailMessage` instances.
 
         .. note::
@@ -777,9 +787,8 @@ class Message(models.Model):
                 if self.eml.name.endswith('.gz'):
                     body = gzip.GzipFile(fileobj=self.eml).read()
                 else:
-                    self.eml.open()
-                    body = self.eml.file.read()
-                    self.eml.close()
+                    with self.eml.open():
+                        body = self.eml.file.read()
             else:
                 body = self.get_body()
             flat = email.message_from_bytes(body)
@@ -834,6 +843,11 @@ class MessageAttachment(models.Model):
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):
+        if email_object._payload is None:
+            # otherwise it breaks in
+            # lib/python3.x/email/generator.py:_handle_message,
+            # line: "self._fp.write(payload)"
+            email_object._payload = ""
         self.headers = email_object.as_string()
 
     def __delitem__(self, name):

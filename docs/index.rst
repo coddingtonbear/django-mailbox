@@ -6,8 +6,8 @@
 Django-mailbox
 ==============
 
-.. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
-   :target: https://travis-ci.org/coddingtonbear/django-mailbox
+.. image:: https://github.com/coddingtonbear/django-mailbox/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/coddingtonbear/django-mailbox/actions/workflows/main.yml
 
 How many times have you had to consume some sort of POP3, IMAP, or local mailbox for incoming content, 
 or had to otherwise construct an application driven by e-mail?
