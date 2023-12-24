@@ -881,7 +881,8 @@ class MessageAttachment(models.Model):
         return value
 
     def __str__(self):
-        return self.document.url
+        return f'{self.message}: {self.document.url if self.document else None}'
+
 
     class Meta:
         verbose_name = _('Message attachment')
