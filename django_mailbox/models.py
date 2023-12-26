@@ -881,7 +881,9 @@ class MessageAttachment(models.Model):
         return value
 
     def __str__(self):
-        return f'{self.message}: {self.document.url if self.document else None}'
+        if self.document:
+            return f'{self.get_filename()}: {self.document.url}'
+        return self.get_filename()
 
 
     class Meta:
