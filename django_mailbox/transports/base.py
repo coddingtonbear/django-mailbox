@@ -9,3 +9,6 @@ class EmailTransport:
         message = email.message_from_bytes(contents)
 
         return message
+
+    def close(self):
+        pass

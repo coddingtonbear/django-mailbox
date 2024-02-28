@@ -6,13 +6,6 @@ from django.conf import settings
 from .base import EmailTransport, MessageParseError
 
 
-# By default, imaplib will raise an exception if it encounters more
-# than 10k bytes; sometimes users attempt to consume mailboxes that
-# have a more, and modern computers are skookum-enough to handle just
-# a *few* more messages without causing any sort of problem.
-imaplib._MAXLINE = 1000000
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -55,6 +48,10 @@ class ImapTransport(EmailTransport):
             self.server.select(self.folder)
         else:
             self.server.select()
+
+    def close(self):
+        self.server.close()
+        self.server.logout()
 
     def _get_all_message_ids(self):
         # Fetch all the message uids

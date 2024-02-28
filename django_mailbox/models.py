@@ -470,15 +470,18 @@ class Mailbox(models.Model):
         connection = self.get_connection()
         if not connection:
             return
-        for message in connection.get_message(condition):
-            msg = self.process_incoming_message(message)
-            if msg is not None:
-                yield msg
-        self.last_polling = now()
-        if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
-            self.save(update_fields=['last_polling'])
-        else:
-            self.save()
+        try:
+            for message in connection.get_message(condition):
+                msg = self.process_incoming_message(message)
+                if msg is not None:
+                    yield msg
+            self.last_polling = now()
+            if django.VERSION >= (1, 5):  # Django 1.5 introduces update_fields
+                self.save(update_fields=['last_polling'])
+            else:
+                self.save()
+        finally:
+            connection.close()
 
     @staticmethod
     def get_new_mail_all_mailboxes(args=None):
