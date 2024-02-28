@@ -50,8 +50,12 @@ class ImapTransport(EmailTransport):
             self.server.select()
 
     def close(self):
-        self.server.close()
-        self.server.logout()
+        try:
+            self.server.close()
+            self.server.logout()
+        except (imaplib.IMAP4.error, OSError) as  e:
+            logger.warning(f'Failed to close IMAP connection, ignoring: {e}')
+            pass
 
     def _get_all_message_ids(self):
         # Fetch all the message uids
