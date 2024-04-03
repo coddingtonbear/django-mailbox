@@ -655,6 +655,9 @@ class Message(models.Model):
         pre-set it.
 
         """
+        if not isinstance(message, EmailMessage):
+            raise ValueError('Message must be an instance of EmailMessage')
+
         if not message.from_email:
             if self.mailbox.from_email:
                 message.from_email = self.mailbox.from_email
