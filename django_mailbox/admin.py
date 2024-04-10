@@ -9,6 +9,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import admin
+from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from django_mailbox.models import MessageAttachment, Message, Mailbox
@@ -60,8 +61,11 @@ class MessageAttachmentInline(admin.TabularInline):
 
 
 class MessageAdmin(admin.ModelAdmin):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).annotate(num_attachments=Count('attachements'))
+
     def attachment_count(self, msg):
-        return msg.attachments.count()
+        return msg.num_attachments
 
     attachment_count.short_description = _('Attachment count')
 
