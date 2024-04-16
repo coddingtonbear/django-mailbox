@@ -62,7 +62,7 @@ class MessageAttachmentInline(admin.TabularInline):
 
 class MessageAdmin(admin.ModelAdmin):
     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).annotate(num_attachments=Count('attachements'))
+        return super().get_queryset(*args, **kwargs).annotate(num_attachments=Count('attachments'))
 
     def attachment_count(self, msg):
         return msg.num_attachments
