@@ -446,3 +446,13 @@ class TestProcessEmail(EmailMessageTestCase):
         with gzip.open(msg.eml.name, 'rb') as f:
             self.assertEqual(f.read(),
                              self._get_email_as_text('generic_message.eml'))
+            
+    def test_message_bad_character_in_attachment_filename(self):
+        '''
+        Regression test for handling weird characters in attachment filename headers.
+        Previously accessing msg.text threw an exception.
+        '''
+        message = self._get_email_object('bad_character_attachment.eml')
+        msg = self.mailbox.process_incoming_message(message)
+
+        self.assertIsNotNone(msg.text)

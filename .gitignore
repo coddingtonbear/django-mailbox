@@ -11,7 +11,7 @@ include/*
 dummy_project/*
 .cache/
 .tox/
-messages
+/messages
 *.sqlite3
 .idea/
 venv/

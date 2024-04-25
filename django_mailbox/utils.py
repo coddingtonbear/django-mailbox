@@ -103,7 +103,7 @@ def get_body_from_message(message, maintype, subtype):
     """
     body = ''
     for part in message.walk():
-        if part.get('content-disposition', '').startswith('attachment;'):
+        if convert_header_to_unicode(part.get('content-disposition', '')).startswith('attachment;'):
             continue
         if part.get_content_maintype() == maintype and \
                 part.get_content_subtype() == subtype:
