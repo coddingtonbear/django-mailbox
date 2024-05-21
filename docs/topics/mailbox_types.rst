@@ -77,6 +77,11 @@ to the end of your URI::
 
     imap+ssl://youremailaddress%40gmail.com:1234@imap.gmail.com?folder=MyFolder
 
+If you have a space in your folder like ``Junk Mail`` you have to wrap the
+foldername in (encoded)quotes like:
+
+``…?folder=%22Junk%20Mail%22``
+
 .. _gmail-oauth:
 
 Specifying an archive folder
