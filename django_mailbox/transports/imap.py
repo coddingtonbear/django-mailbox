@@ -53,7 +53,7 @@ class ImapTransport(EmailTransport):
         try:
             self.server.close()
             self.server.logout()
-        except (imaplib.IMAP4.error, OSError) as  e:
+        except (imaplib.IMAP4.error, OSError) as e:
             logger.warning(f'Failed to close IMAP connection, ignoring: {e}')
             pass
 

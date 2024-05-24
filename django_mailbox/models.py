@@ -300,7 +300,7 @@ class Mailbox(models.Model):
         new = EmailMessage()
         if (
             msg.is_multipart()
-            and not 'attachment' in msg.get('Content-Disposition', '')
+            and 'attachment' not in msg.get('Content-Disposition', '')
         ):
             for header, value in msg.items():
                 new[header] = value
@@ -647,14 +647,24 @@ class Message(models.Model):
         return addresses
 
     def reply(self, message):
-        """Sends a message as a reply to this message instance.
+        """Sends an EmailMessage as a reply to this message instance::
+
+            from django.core.mail import EmailMessage
+
+            message.reply(
+                EmailMessage(subject="pong", body="pongpong")
+            )
 
         Although Django's e-mail processing will set both Message-ID
         and Date upon generating the e-mail message, we will not be able
         to retrieve that information through normal channels, so we must
         pre-set it.
-
         """
+        from django.core.mail import EmailMessage as DjangoEmailMessage
+
+        if not isinstance(message, DjangoEmailMessage):
+            raise ValueError('Message must be an instance of django.core.mail.EmailMessage')
+
         if not message.from_email:
             if self.mailbox.from_email:
                 message.from_email = self.mailbox.from_email
@@ -887,7 +897,6 @@ class MessageAttachment(models.Model):
         if self.document:
             return f'{self.get_filename()}: {self.document.url}'
         return self.get_filename()
-
 
     class Meta:
         verbose_name = _('Message attachment')
