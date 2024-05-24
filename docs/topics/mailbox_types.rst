@@ -7,20 +7,20 @@ POP3 and IMAP as well as local file-based mailboxes.
 
 .. table:: 'Protocol' Options
 
-  ============ ================ ====================================================================================================================================================================
-  Mailbox Type 'Protocol'://    Notes
-  ============ ================ ====================================================================================================================================================================
-  POP3         ``pop3://``      Can also specify SSL with ``pop3+ssl://``
-  IMAP         ``imap://``      Can also specify SSL with ``imap+ssl://`` or STARTTLS with ``imap+tls``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
-  Gmail IMAP   ``gmail+ssl://`` Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
-  Office365 API``office365://`` Uses OAuth authentication for  Office365 API transport.  See :ref:`office365-oauth` for details.
-  Maildir      ``maildir://``
-  Mbox         ``mbox://``
-  Babyl        ``babyl://``
-  MH           ``mh://``
-  MMDF         ``mmdf://``
-  Piped Mail   *empty*          See :ref:`receiving-mail-from-exim4-or-postfix`
-  ============ ================ ====================================================================================================================================================================
+  ================  ================  ====================================================================================================================================================================
+  Mailbox Type      'Protocol'://     Notes
+  ================  ================  ====================================================================================================================================================================
+  POP3              ``pop3://``       Can also specify SSL with ``pop3+ssl://``
+  IMAP              ``imap://``       Can also specify SSL with ``imap+ssl://`` or STARTTLS with ``imap+tls``; additional configuration is also possible: see :ref:`pop3-and-imap-mailboxes` for details.
+  Gmail IMAP        ``gmail+ssl://``  Uses OAuth authentication for  Gmail's IMAP transport.  See :ref:`gmail-oauth` for details.
+  Office365 API     ``office365://``  Uses OAuth authentication for  Office365 API transport.  See :ref:`office365-oauth` for details.
+  Maildir           ``maildir://``    *empty*
+  Mbox              ``mbox://``       *empty*
+  Babyl             ``babyl://``      *empty*
+  MH                ``mh://``         *empty*
+  MMDF              ``mmdf://``       *empty*
+  Piped Mail        *empty*           See :ref:`receiving-mail-from-exim4-or-postfix`
+  ================  ================  ====================================================================================================================================================================
 
 
 .. warning::
@@ -117,6 +117,7 @@ Build your URI accordingly::
 
 
 .. _office365-oauth:
+
 Office 365 API
 -------------------------------------
 

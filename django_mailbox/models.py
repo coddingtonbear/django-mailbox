@@ -654,9 +654,16 @@ class Message(models.Model):
         to retrieve that information through normal channels, so we must
         pre-set it.
 
+        For conveninence, you can use django.core.mail.EmailMessage to build a Message instance::
+
+            from django.core.mail import EmailMessage
+
+            message.reply(
+                EmailMessage(subject="pong", body="pongpong")
+            )
         """
         if not isinstance(message, EmailMessage):
-            raise ValueError('Message must be an instance of EmailMessage')
+            raise ValueError('Message must be an instance of email.Message')
 
         if not message.from_email:
             if self.mailbox.from_email:
