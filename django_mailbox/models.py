@@ -662,8 +662,10 @@ class Message(models.Model):
                 EmailMessage(subject="pong", body="pongpong")
             )
         """
-        if not isinstance(message, EmailMessage):
-            raise ValueError('Message must be an instance of email.Message')
+        from django.core.mail import EmailMessage as DjangoEmailMessage
+
+        if not isinstance(message, DjangoEmailMessage):
+            raise ValueError('Message must be an instance of django.core.mail.EmailMessage')
 
         if not message.from_email:
             if self.mailbox.from_email:
