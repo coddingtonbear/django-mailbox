@@ -345,6 +345,9 @@ class TestProcessEmail(EmailMessageTestCase):
         )
         msg = self.mailbox.record_outgoing_message(email_object.message())
 
+        with self.assertRaises(ValueError):
+            msg.reply(Message(subject="ping", body="pong"))
+
         self.assertTrue(msg.outgoing)
 
         actual_from = 'username@example.com'
@@ -439,7 +442,7 @@ class TestProcessEmail(EmailMessageTestCase):
 
             msg = self.mailbox.process_incoming_message(message)
 
-        actual_email_object = msg.get_email_object()
+        _actual_email_object = msg.get_email_object()
 
         self.assertTrue(msg.eml.name.endswith('.eml.gz'))
 
