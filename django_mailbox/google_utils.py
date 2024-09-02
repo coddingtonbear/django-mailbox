@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 import requests
-from social.apps.django_app.default.models import UserSocialAuth
+from social_django.models import UserSocialAuth
 
 
 logger = logging.getLogger(__name__)
