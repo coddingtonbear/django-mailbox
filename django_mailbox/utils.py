@@ -78,6 +78,8 @@ def convert_header_to_unicode(header):
             return value
         if not encoding or encoding == 'unknown-8bit':
             encoding = default_charset
+        elif encoding == 'iso-8859-8-i':
+            encoding = 'iso-8859-8'
         return value.decode(encoding, 'replace')
 
     try:
