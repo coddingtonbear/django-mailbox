@@ -59,6 +59,10 @@ def google_api_get(email, url):
     if r.status_code == 401:
         # Go use the refresh token
         refresh_authorization(email)
+        # Force use of the new token
+        headers = dict(
+            Authorization="Bearer %s" % get_google_access_token(email),
+        )
         r = requests.get(url, headers=headers)
         logger.info("I got a %s", r.status_code)
     if r.status_code == 200:
