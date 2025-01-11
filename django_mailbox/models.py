@@ -374,6 +374,12 @@ class Mailbox(models.Model):
             content_charset = msg.get_content_charset()
             if not content_charset:
                 content_charset = 'ascii'
+            elif content_charset == 'iso-8859-8-i':
+                content_charset = 'iso-8859-8'
+                logger.warning(
+                    "Unhandled encoding %s; interpreting as iso-8859-8",
+                    content_charset
+                )
             try:
                 # Make sure that the payload can be properly decoded in the
                 # defined charset, if it can't, let's mash some things
