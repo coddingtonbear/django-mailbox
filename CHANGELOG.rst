@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Unreleased
+-----
+
+* Add Python 3.13, 3.14 support
+* Add Django 5.1, 5.2, 6.0 support
+* Remove support for deprecated Django versions
+
 4.9.0
 -----
 
