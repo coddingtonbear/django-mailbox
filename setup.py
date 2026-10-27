@@ -28,6 +28,9 @@ setup(
     license='MIT',
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
+    install_requires=[
+        'Django>=3.2',
+    ],
     extras_require={
         'gmail-oauth2': gmail_oauth2_require,
         'office365-oauth2': office365_oauth2_require
