@@ -310,7 +310,7 @@ class Mailbox(models.Model):
                 )
         elif (
             settings['strip_unallowed_mimetypes']
-            and not msg.get_content_type() in settings['allowed_mimetypes']
+            and msg.get_content_type() not in settings['allowed_mimetypes']
         ):
             for header, value in msg.items():
                 new[header] = value
@@ -674,10 +674,9 @@ class Message(models.Model):
         message.extra_headers['Date'] = formatdate()
         message.extra_headers['In-Reply-To'] = self.message_id.strip()
         message.send()
+
         return self.mailbox.record_outgoing_message(
-            email.message_from_string(
-                message.message().as_string()
-            )
+            message.message()
         )
 
     @property
